@@ -250,44 +250,18 @@
       border: 2px solid var(--primary-color);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
       background-color: var(--card-bg);
+      cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .perfil-superior:hover {
+      transform: scale(1.05);
     }
 
     #foto-perfil-header {
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-
-    /* ---------------------------------------------------------------------
-       BOTÓN TEMA CLARO / OSCURO
-       --------------------------------------------------------------------- */
-    .btn-theme-toggle {
-      position: absolute;
-      top: calc(16px + env(safe-area-inset-top));
-      right: 16px;
-      z-index: 3000;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      cursor: pointer;
-      background: var(--glass-bg-strong);
-      border: 1px solid rgba(71, 133, 167, 0.5);
-      color: var(--text-color);
-      -webkit-backdrop-filter: blur(14px);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(71, 133, 167, 0.12);
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    }
-
-    .btn-theme-toggle:hover {
-      transform: translateY(-1px) rotate(15deg);
-      border-color: var(--primary-color);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3), 0 0 0 6px rgba(71, 133, 167, 0.18);
     }
 
     /* ---------------------------------------------------------------------
@@ -469,7 +443,7 @@
       box-shadow: 0 0 0 3px rgba(71, 133, 167, 0.22), 0 0 26px rgba(71, 133, 167, 0.18);
     }
 
-    /* Iconos por campo (SVG embebido, color primario) */
+    /* Iconos por campo (SVG embebido) */
     #reg-nombre {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
     }
@@ -498,7 +472,7 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E");
     }
 
-    /* Etiquetas flotantes (mejora progresiva) */
+    /* Etiquetas flotantes */
     @supports selector(:has(a)) {
       .input-group:has(> :is(#reg-nombre, #reg-telefono, #reg-email, #reg-vehiculo, #reg-placa, #reg-comercio-nombre, #reg-comercio-categoria, #input-origen, #input-destino)) > input {
         height: 64px;
@@ -655,7 +629,6 @@
       animation: fadeIn 0.6s ease both;
     }
 
-    /* Rejilla técnica */
     .pantalla-inicio::before {
       content: "";
       position: absolute;
@@ -669,7 +642,6 @@
       mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
     }
 
-    /* Orbe luminoso */
     .pantalla-inicio::after {
       content: "";
       position: absolute;
@@ -1025,9 +997,6 @@
       border-radius: 6px;
     }
 
-    /* ---------------------------------------------------------------------
-       ADAPTACIONES
-       --------------------------------------------------------------------- */
     @media (max-height: 720px) {
       .pantalla-inicio { gap: 14px; justify-content: flex-start; padding-top: 32px; }
       .logo-hex { width: 82px; height: 82px; }
@@ -1052,7 +1021,7 @@
 </head>
 <body class="dark-mode">
   <!-- PERFIL SUPERIOR (AVATAR DEL USUARIO) -->
-  <div id="perfil-superior" class="perfil-superior oculto">
+  <div id="perfil-superior" class="perfil-superior oculto" title="Toca para cerrar sesión">
     <img id="foto-perfil-header" src="" alt="Foto de Perfil">
   </div>
 
@@ -1060,6 +1029,7 @@
   <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Modo">
     <span id="theme-icon">☀️</span>
   </button>
+
   <!-- PANTALLA DE INICIO (SELECCIÓN DE ROL) -->
   <div id="pantalla-inicio" class="pantalla-inicio">
     <div class="fx-scan" aria-hidden="true"></div>
@@ -1093,7 +1063,7 @@
 
       <div class="roles-container">
         <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
-          <span class="rol-icon">????</span>
+          <span class="rol-icon">🚶</span>
           <span class="rol-text">
             <span class="rol-title">Pasajero</span>
             <span class="rol-desc">Solicita un viaje al instante</span>
@@ -1101,7 +1071,7 @@
         </button>
 
         <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
-          <span class="rol-icon">????</span>
+          <span class="rol-icon">🚗</span>
           <span class="rol-text">
             <span class="rol-title">Conductor</span>
             <span class="rol-desc">Recibe solicitudes en tiempo real</span>
@@ -1109,7 +1079,7 @@
         </button>
 
         <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
-          <span class="rol-icon">????</span>
+          <span class="rol-icon">🏪</span>
           <span class="rol-text">
             <span class="rol-title">Comercio</span>
             <span class="rol-desc">Registra tu establecimiento</span>
@@ -1153,9 +1123,10 @@
 
       <!-- Campos dinámicos según el rol (vehículo, nombre de comercio, etc.) -->
       <div id="campos-especificos"></div>
+
       <!-- Subir Foto en tiempo real -->
       <div class="input-group foto-group">
-        <label for="reg-foto" class="label-foto">???? Capturar / Subir Foto:</label>
+        <label for="reg-foto" class="label-foto">📸 Capturar / Subir Foto:</label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
         <div id="preview-foto-container" class="preview-container oculto">
           <img id="preview-foto" src="" alt="Vista previa de foto">
@@ -1164,12 +1135,13 @@
 
       <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top: 8px;">Volver</button>
-      <p class="form-note">???? Tus datos se guardan de forma segura</p>
+      <p class="form-note">🔒 Tus datos se guardan de forma segura</p>
     </form>
   </div>
+
   <!-- Selector de Modo en la parte superior -->
   <div id="mode-selector">
-    <button id="btn-cambiar-modo" class="btn-secondary">Modo: ???? Pasajero (Cambiar a Conductor)</button>
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 🚶 Pasajero (Cambiar a Conductor)</button>
   </div>
 
   <!-- Contenedor del Mapa -->
@@ -1207,13 +1179,13 @@
 const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
 
-const PASAJERO_ID_PRUEBA = "5";
-const CONDUCTOR_ID_PRUEBA = "10";
+let PASAJERO_ID_PRUEBA = "5";
+let CONDUCTOR_ID_PRUEBA = "10";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Variables de Estado
-let modoActual = 'pasajero'; // 'pasajero' o 'conductor'
+let modoActual = 'pasajero';
 let origen = null;
 let destino = null;
 let marcadorOrigen = null;
@@ -1221,6 +1193,8 @@ let marcadorDestino = null;
 let timerBusqueda = null;
 let rolSeleccionado = null;
 let fotoBase64 = null;
+let usuarioActual = null; // Almacena el usuario autenticado activo
+
 // Elementos DOM
 const btnCambiarModo = document.getElementById('btn-cambiar-modo');
 const uiPasajero = document.getElementById('ui-pasajero');
@@ -1249,6 +1223,66 @@ const regFoto = document.getElementById('reg-foto');
 const previewFotoContainer = document.getElementById('preview-foto-container');
 const previewFoto = document.getElementById('preview-foto');
 const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
+const perfilSuperior = document.getElementById('perfil-superior');
+const fotoPerfilHeader = document.getElementById('foto-perfil-header');
+
+// -------------------------------------------------------------
+// CONTROL DE SESIÓN PERMANENTE (LOCALSTORAGE)
+// -------------------------------------------------------------
+function verificarSesionGuardada() {
+  const sesionGuardada = localStorage.getItem('bikar_usuario');
+  if (sesionGuardada) {
+    try {
+      usuarioActual = JSON.parse(sesionGuardada);
+      aplicarSesionUsuario(usuarioActual);
+    } catch (e) {
+      console.error("Error al cargar sesión:", e);
+    }
+  }
+}
+
+function aplicarSesionUsuario(usuario) {
+  if (!usuario) return;
+
+  // Ocultar pantalla inicial y modal
+  pantallaInicio.classList.add('oculto');
+  modalRegistro.classList.add('oculto');
+
+  // Asignar avatar de perfil en la cabecera
+  if (usuario.foto && fotoPerfilHeader && perfilSuperior) {
+    fotoPerfilHeader.src = usuario.foto;
+    perfilSuperior.classList.remove('oculto');
+  }
+
+  // Asignar rol predeterminado
+  rolSeleccionado = usuario.tipo_usuario || 'pasajero';
+
+  if (rolSeleccionado === 'conductor') {
+    modoActual = 'conductor';
+    btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.remove('oculto');
+    cargarViajesSolicitados();
+  } else {
+    modoActual = 'pasajero';
+    btnCambiarModo.innerText = "Modo: 🚶 Pasajero (Cambiar a Conductor)";
+    uiConductor.classList.add('oculto');
+    uiPasajero.classList.remove('oculto');
+  }
+}
+
+// Cierre de sesión manual haciendo clic en la foto de perfil
+perfilSuperior.addEventListener('click', () => {
+  if (confirm("¿Deseas cerrar sesión en BIKAR?")) {
+    localStorage.removeItem('bikar_usuario');
+    usuarioActual = null;
+    perfilSuperior.classList.add('oculto');
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.add('oculto');
+    pantallaInicio.classList.remove('oculto');
+  }
+});
+
 // Inicialización del Mapa
 const map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1274,13 +1308,13 @@ if ("geolocation" in navigator) {
 btnCambiarModo.addEventListener('click', () => {
   if (modoActual === 'pasajero') {
     modoActual = 'conductor';
-    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
+    btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
     uiPasajero.classList.add('oculto');
     uiConductor.classList.remove('oculto');
     cargarViajesSolicitados();
   } else {
     modoActual = 'pasajero';
-    btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
+    btnCambiarModo.innerText = "Modo: 🚶 Pasajero (Cambiar a Conductor)";
     uiConductor.classList.add('oculto');
     uiPasajero.classList.remove('oculto');
   }
@@ -1369,9 +1403,10 @@ btnPedirViaje.addEventListener('click', async () => {
   btnPedirViaje.innerText = "Solicitando...";
 
   const tarifa = parseFloat(btnPedirViaje.dataset.tarifa) || 5000;
+  const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
 
   const { data, error } = await supabaseClient.from('viajes').insert([{
-    pasajero_id: PASAJERO_ID_PRUEBA,
+    pasajero_id: pasajeroId,
     origen_lat: origen.lat,
     origen_lon: origen.lon,
     destino_lat: destino.lat,
@@ -1381,8 +1416,9 @@ btnPedirViaje.addEventListener('click', async () => {
   }]).select();
 
   if (error) {
-    alert("Error al solicitar viaje.");
+    alert("Error al solicitar viaje: " + error.message);
     btnPedirViaje.disabled = false;
+    btnPedirViaje.innerText = "Pedir Viaje Ahora";
   } else {
     statusTextPasajero.innerText = "¡Viaje solicitado! Buscando conductor...";
     escucharEstadoViajePasajero(data[0].id);
@@ -1431,9 +1467,11 @@ function renderizarTarjetaViaje(viaje) {
 }
 
 async function aceptarViaje(viajeId) {
+  const conductorId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+  
   const { error } = await supabaseClient
     .from('viajes')
-    .update({ estado: 'aceptado', conductor_id: CONDUCTOR_ID_PRUEBA })
+    .update({ estado: 'aceptado', conductor_id: conductorId })
     .eq('id', viajeId);
 
   if (!error) {
@@ -1442,7 +1480,7 @@ async function aceptarViaje(viajeId) {
   }
 }
 
-// Realtime para Conductor: detecta nuevos viajes en tiempo real
+// Realtime para Conductor
 supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
   event: 'INSERT', schema: 'public', table: 'viajes'
 }, () => {
@@ -1459,13 +1497,14 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
             Math.sin(dLon/2) * Math.sin(dLon/2);
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
 }
+
 // -------------------------------------------------------------
 // MODO CLARO / OSCURO
 // -------------------------------------------------------------
 btnThemeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   const esOscuro = document.body.classList.contains('dark-mode');
-  themeIcon.innerText = esOscuro ? '☀️' : '????';
+  themeIcon.innerText = esOscuro ? '☀️' : '🌙';
 });
 
 // -------------------------------------------------------------
@@ -1505,10 +1544,6 @@ btnCancelarRegistro.addEventListener('click', () => {
   pantallaInicio.classList.remove('oculto');
 });
 
-// ELEMENTOS DEL PERFIL SUPERIOR
-const perfilSuperior = document.getElementById('perfil-superior');
-const fotoPerfilHeader = document.getElementById('foto-perfil-header');
-
 // CAPTURA Y PREVIEW DE FOTO EN TIEMPO REAL
 regFoto.addEventListener('change', (e) => {
   const file = e.target.files[0];
@@ -1517,11 +1552,11 @@ regFoto.addEventListener('change', (e) => {
     reader.onload = function(evt) {
       fotoBase64 = evt.target.result;
 
-      // 1. Mostrar en la vista previa del formulario
+      // 1. Mostrar en vista previa
       previewFoto.src = fotoBase64;
       previewFotoContainer.classList.remove('oculto');
 
-      // 2. Mostrar inmediatamente en la cabecera superior
+      // 2. Mostrar en la cabecera
       if (fotoPerfilHeader && perfilSuperior) {
         fotoPerfilHeader.src = fotoBase64;
         perfilSuperior.classList.remove('oculto');
@@ -1530,8 +1565,8 @@ regFoto.addEventListener('change', (e) => {
     reader.readAsDataURL(file);
   }
 });
-// GUARDAR USUARIO Y FOTO EN SUPABASE
-// GUARDAR USUARIO Y FOTO EN SUPABASE CON TABLAS REALES
+
+// GUARDAR USUARIO, FOTO Y GUARDAR SESIÓN PERMANENTE
 formRegistro.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -1541,11 +1576,9 @@ formRegistro.addEventListener('submit', async (e) => {
   btnGuardar.disabled = true;
   btnGuardar.innerText = "Guardando...";
 
-  // Capturar valores de DNI / CE
   const regTipoDoc = document.getElementById('reg-tipo-doc');
   const regNumDoc = document.getElementById('reg-num-doc');
 
-  // 1. Objeto para la tabla 'usuarios'
   const datosUsuario = {
     nombre: regNombre.value,
     telefono: regTelefono.value,
@@ -1556,7 +1589,7 @@ formRegistro.addEventListener('submit', async (e) => {
     foto: fotoBase64
   };
 
-  // Insertar en tabla usuarios
+  // Insertar en tabla 'usuarios'
   const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
     .from('usuarios')
     .insert([datosUsuario])
@@ -1570,9 +1603,15 @@ formRegistro.addEventListener('submit', async (e) => {
     return;
   }
 
-  const nuevoUsuarioId = usuarioInsertado[0].id || usuarioInsertado[0].Id;
+  const usuarioCreado = usuarioInsertado[0];
+  usuarioActual = usuarioCreado;
 
-  // 2. Si es conductor, relacionar con tablas 'conductores' y 'vehiculos'
+  // GUARDAR SESIÓN LOCALMENTE PARA QUE NO VUELVA A PEDIR DATOS NI FOTO
+  localStorage.setItem('bikar_usuario', JSON.stringify(usuarioCreado));
+
+  const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
+
+  // Si es conductor, insertar en 'conductores' y 'vehiculos'
   if (rolSeleccionado === 'conductor') {
     const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
     const vehiculoPlaca = document.getElementById('reg-placa')?.value;
@@ -1596,19 +1635,13 @@ formRegistro.addEventListener('submit', async (e) => {
   btnGuardar.innerText = "Guardar y Continuar";
 
   alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
-  modalRegistro.classList.add('oculto');
-
-  if (rolSeleccionado === 'conductor') {
-    modoActual = 'conductor';
-    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
-    uiPasajero.classList.add('oculto');
-    uiConductor.classList.remove('oculto');
-    cargarViajesSolicitados();
-  } else {
-    modoActual = 'pasajero';
-    uiPasajero.classList.remove('oculto');
-  }
+  
+  // Aplicar sesión automáticamente
+  aplicarSesionUsuario(usuarioCreado);
 });
+
+// VERIFICAR SESIÓN GUARDADA AL INICIAR LA APP
+verificarSesionGuardada();
   </script>
 </body>
 </html>
