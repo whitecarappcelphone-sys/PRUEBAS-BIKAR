@@ -1255,6 +1255,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // Geolocalización
 // Geolocalización con dirección automática en el Popup
+// Geolocalización con dirección corta y limpia en el Popup
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
@@ -1264,14 +1265,29 @@ if ("geolocation" in navigator) {
       // Crear marcador inicial con texto temporal
       marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Obteniendo dirección...").openPopup();
 
-      // Obtener dirección real mediante Nominatim
+      // Obtener y formatear dirección corta mediante Nominatim
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${origen.lat}&lon=${origen.lon}`);
         const data = await res.json();
-        const direccionExacta = data.display_name || "Tu ubicación";
-        
-        // Actualizar el Popup con la dirección encontrada
-        marcadorOrigen.setPopupContent(`<b>Tu ubicación:</b><br>${direccionExacta}`).openPopup();
+        const addr = data.address || {};
+
+        // Extraer componentes principales
+        const via = addr.road || addr.pedestrian || addr.suburb || '';
+        const numero = addr.house_number ? ` #${addr.house_number}` : '';
+        const barrio = addr.neighbourhood || addr.suburb || '';
+        const ciudad = addr.city || addr.town || addr.village || '';
+
+        // Armar una dirección limpia y legible
+        let direccionCorta = "";
+        if (via) {
+          direccionCorta = `${via}${numero}${barrio ? ' (' + barrio + ')' : ''}${ciudad ? ', ' + ciudad : ''}`;
+        } else {
+          // Si no detecta calle, tomar las dos primeras partes del nombre general
+          direccionCorta = data.display_name.split(',').slice(0, 2).join(',');
+        }
+
+        // Actualizar el Popup con la dirección corta
+        marcadorOrigen.setPopupContent(`<b>Tu ubicación:</b><br>${direccionCorta}`).openPopup();
       } catch (err) {
         console.error("Error al obtener la dirección:", err);
         marcadorOrigen.setPopupContent("Tu ubicación").openPopup();
@@ -1279,8 +1295,7 @@ if ("geolocation" in navigator) {
     },
     () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; }
   );
-}
-// -------------------------------------------------------------
+}// -------------------------------------------------------------
 // CONTROL DE CAMBIO DE MODO (Pasajero <-> Conductor)
 // -------------------------------------------------------------
 btnCambiarModo.addEventListener('click', () => {
