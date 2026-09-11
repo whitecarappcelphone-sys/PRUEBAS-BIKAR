@@ -142,6 +142,7 @@
       font-family: inherit;
     }
 
+    /* Mapa en tono oscuro cuando el tema es oscuro */
     body.dark-mode .leaflet-tile-pane {
       filter: invert(1) hue-rotate(195deg) brightness(0.82) contrast(0.92) saturate(0.5);
     }
@@ -256,6 +257,37 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    /* ---------------------------------------------------------------------
+       BOTÓN TEMA CLARO / OSCURO
+       --------------------------------------------------------------------- */
+    .btn-theme-toggle {
+      position: absolute;
+      top: calc(16px + env(safe-area-inset-top));
+      right: 16px;
+      z-index: 3000;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      cursor: pointer;
+      background: var(--glass-bg-strong);
+      border: 1px solid rgba(71, 133, 167, 0.5);
+      color: var(--text-color);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(71, 133, 167, 0.12);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .btn-theme-toggle:hover {
+      transform: translateY(-1px) rotate(15deg);
+      border-color: var(--primary-color);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3), 0 0 0 6px rgba(71, 133, 167, 0.18);
     }
 
     /* ---------------------------------------------------------------------
@@ -437,7 +469,7 @@
       box-shadow: 0 0 0 3px rgba(71, 133, 167, 0.22), 0 0 26px rgba(71, 133, 167, 0.18);
     }
 
-    /* Iconos por campo (SVG embebido) */
+    /* Iconos por campo (SVG embebido, color primario) */
     #reg-nombre {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
     }
@@ -466,7 +498,7 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E");
     }
 
-    /* Etiquetas flotantes */
+    /* Etiquetas flotantes (mejora progresiva) */
     @supports selector(:has(a)) {
       .input-group:has(> :is(#reg-nombre, #reg-telefono, #reg-email, #reg-vehiculo, #reg-placa, #reg-comercio-nombre, #reg-comercio-categoria, #input-origen, #input-destino)) > input {
         height: 64px;
@@ -623,6 +655,7 @@
       animation: fadeIn 0.6s ease both;
     }
 
+    /* Rejilla técnica */
     .pantalla-inicio::before {
       content: "";
       position: absolute;
@@ -636,6 +669,7 @@
       mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
     }
 
+    /* Orbe luminoso */
     .pantalla-inicio::after {
       content: "";
       position: absolute;
@@ -1026,7 +1060,6 @@
   <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Modo">
     <span id="theme-icon">☀️</span>
   </button>
-
   <!-- PANTALLA DE INICIO (SELECCIÓN DE ROL) -->
   <div id="pantalla-inicio" class="pantalla-inicio">
     <div class="fx-scan" aria-hidden="true"></div>
@@ -1060,7 +1093,7 @@
 
       <div class="roles-container">
         <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
-          <span class="rol-icon">👤</span>
+          <span class="rol-icon">????</span>
           <span class="rol-text">
             <span class="rol-title">Pasajero</span>
             <span class="rol-desc">Solicita un viaje al instante</span>
@@ -1068,7 +1101,7 @@
         </button>
 
         <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
-          <span class="rol-icon">🚗</span>
+          <span class="rol-icon">????</span>
           <span class="rol-text">
             <span class="rol-title">Conductor</span>
             <span class="rol-desc">Recibe solicitudes en tiempo real</span>
@@ -1076,7 +1109,7 @@
         </button>
 
         <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
-          <span class="rol-icon">🏪</span>
+          <span class="rol-icon">????</span>
           <span class="rol-text">
             <span class="rol-title">Comercio</span>
             <span class="rol-desc">Registra tu establecimiento</span>
@@ -1120,10 +1153,9 @@
 
       <!-- Campos dinámicos según el rol (vehículo, nombre de comercio, etc.) -->
       <div id="campos-especificos"></div>
-
       <!-- Subir Foto en tiempo real -->
       <div class="input-group foto-group">
-        <label for="reg-foto" class="label-foto">📷 Capturar / Subir Foto:</label>
+        <label for="reg-foto" class="label-foto">???? Capturar / Subir Foto:</label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
         <div id="preview-foto-container" class="preview-container oculto">
           <img id="preview-foto" src="" alt="Vista previa de foto">
@@ -1132,13 +1164,12 @@
 
       <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top: 8px;">Volver</button>
-      <p class="form-note">🔒 Tus datos se guardan de forma segura</p>
+      <p class="form-note">???? Tus datos se guardan de forma segura</p>
     </form>
   </div>
-
   <!-- Selector de Modo en la parte superior -->
   <div id="mode-selector">
-    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 👤 Pasajero (Cambiar a Conductor)</button>
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: ???? Pasajero (Cambiar a Conductor)</button>
   </div>
 
   <!-- Contenedor del Mapa -->
@@ -1148,13 +1179,11 @@
   <div id="ui-pasajero" class="ui-panel">
     <h3 class="panel-title">Solicitar Viaje</h3>
     
-    <!-- CAMPO ORIGEN FIJADO Y RESTAURADO -->
     <div class="input-group">
-      <input type="text" id="input-origen" placeholder="Escribe la dirección de origen" autocomplete="off">
+      <input type="text" id="input-origen" placeholder="Tu ubicación o dirección origen" autocomplete="off">
       <div id="sugerencias-origen" class="lista-sugerencias"></div>
     </div>
 
-    <!-- CAMPO DESTINO -->
     <div class="input-group">
       <input type="text" id="input-destino" placeholder="Escribe la dirección de destino" autocomplete="off">
       <div id="sugerencias-destino" class="lista-sugerencias"></div>
@@ -1175,420 +1204,411 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
 
-    const PASAJERO_ID_PRUEBA = "5";
-    const CONDUCTOR_ID_PRUEBA = "10";
+const PASAJERO_ID_PRUEBA = "5";
+const CONDUCTOR_ID_PRUEBA = "10";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Variables de Estado
-    let modoActual = 'pasajero'; // 'pasajero' o 'conductor'
-    let origen = null;
-    let destino = null;
-    let marcadorOrigen = null;
-    let marcadorDestino = null;
-    let timerBusqueda = null;
-    let rolSeleccionado = null;
-    let fotoBase64 = null;
+// Variables de Estado
+let modoActual = 'pasajero'; // 'pasajero' o 'conductor'
+let origen = null;
+let destino = null;
+let marcadorOrigen = null;
+let marcadorDestino = null;
+let timerBusqueda = null;
+let rolSeleccionado = null;
+let fotoBase64 = null;
+// Elementos DOM
+const btnCambiarModo = document.getElementById('btn-cambiar-modo');
+const uiPasajero = document.getElementById('ui-pasajero');
+const uiConductor = document.getElementById('ui-conductor');
 
-    // Elementos DOM
-    const btnCambiarModo = document.getElementById('btn-cambiar-modo');
-    const uiPasajero = document.getElementById('ui-pasajero');
-    const uiConductor = document.getElementById('ui-conductor');
+const inputOrigen = document.getElementById('input-origen');
+const inputDestino = document.getElementById('input-destino');
+const sugerenciasOrigen = document.getElementById('sugerencias-origen');
+const sugerenciasDestino = document.getElementById('sugerencias-destino');
 
-    const inputOrigen = document.getElementById('input-origen');
-    const sugerenciasOrigen = document.getElementById('sugerencias-origen');
-    const inputDestino = document.getElementById('input-destino');
-    const sugerenciasDestino = document.getElementById('sugerencias-destino');
+const statusTextPasajero = document.getElementById('status-text-pasajero');
+const btnPedirViaje = document.getElementById('btn-pedir-viaje');
 
-    const statusTextPasajero = document.getElementById('status-text-pasajero');
-    const btnPedirViaje = document.getElementById('btn-pedir-viaje');
+const statusTextConductor = document.getElementById('status-text-conductor');
+const contenedorSolicitudes = document.getElementById('contenedor-solicitudes');
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const pantallaInicio = document.getElementById('pantalla-inicio');
+const modalRegistro = document.getElementById('modal-registro');
+const registroTitulo = document.getElementById('registro-titulo');
+const formRegistro = document.getElementById('form-registro');
+const regNombre = document.getElementById('reg-nombre');
+const regTelefono = document.getElementById('reg-telefono');
+const camposEspecificos = document.getElementById('campos-especificos');
+const regFoto = document.getElementById('reg-foto');
+const previewFotoContainer = document.getElementById('preview-foto-container');
+const previewFoto = document.getElementById('preview-foto');
+const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
+// Inicialización del Mapa
+const map = L.map('map').setView([0, 0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap'
+}).addTo(map);
 
-    const statusTextConductor = document.getElementById('status-text-conductor');
-    const contenedorSolicitudes = document.getElementById('contenedor-solicitudes');
-    const btnThemeToggle = document.getElementById('btn-theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const pantallaInicio = document.getElementById('pantalla-inicio');
-    const modalRegistro = document.getElementById('modal-registro');
-    const registroTitulo = document.getElementById('registro-titulo');
-    const formRegistro = document.getElementById('form-registro');
-    const regNombre = document.getElementById('reg-nombre');
-    const regTelefono = document.getElementById('reg-telefono');
-    const camposEspecificos = document.getElementById('campos-especificos');
-    const regFoto = document.getElementById('reg-foto');
-    const previewFotoContainer = document.getElementById('preview-foto-container');
-    const previewFoto = document.getElementById('preview-foto');
-    const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
+// Geolocalización
+if ("geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      origen = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      map.setView([origen.lat, origen.lon], 15);
+      marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
+    },
+    () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; }
+  );
+}
 
-    // Inicialización del Mapa
-    const map = L.map('map').setView([0, 0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
+// -------------------------------------------------------------
+// CONTROL DE CAMBIO DE MODO (Pasajero <-> Conductor)
+// -------------------------------------------------------------
+btnCambiarModo.addEventListener('click', () => {
+  if (modoActual === 'pasajero') {
+    modoActual = 'conductor';
+    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.remove('oculto');
+    cargarViajesSolicitados();
+  } else {
+    modoActual = 'pasajero';
+    btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
+    uiConductor.classList.add('oculto');
+    uiPasajero.classList.remove('oculto');
+  }
+});
 
-    // Geolocalización con dirección automática en el Popup y en el Input Origen
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          origen = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-          map.setView([origen.lat, origen.lon], 15);
-          
-          marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Obteniendo dirección...").openPopup();
+// -------------------------------------------------------------
+// LÓGICA PASAJERO
+// -------------------------------------------------------------
+map.on('click', (e) => {
+  if (modoActual !== 'pasajero') return;
+  destino = { lat: e.latlng.lat, lon: e.latlng.lng };
 
-          try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${origen.lat}&lon=${origen.lon}`);
-            const data = await res.json();
-            const direccionExacta = data.display_name || "Tu ubicación actual";
-            
-            marcadorOrigen.setPopupContent(`<b>Origen:</b><br>${direccionExacta}`).openPopup();
-            if (inputOrigen) inputOrigen.value = direccionExacta;
-          } catch (err) {
-            console.error("Error al obtener la dirección:", err);
-            marcadorOrigen.setPopupContent("Tu ubicación").openPopup();
-          }
-        },
-        () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; }
-      );
-    }
+  if (marcadorDestino) {
+    marcadorDestino.setLatLng(e.latlng);
+  } else {
+    marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
+  }
 
-    // -------------------------------------------------------------
-    // CONTROL DE CAMBIO DE MODO (Pasajero <-> Conductor)
-    // -------------------------------------------------------------
-    btnCambiarModo.addEventListener('click', () => {
-      if (modoActual === 'pasajero') {
-        modoActual = 'conductor';
-        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
-        uiPasajero.classList.add('oculto');
-        uiConductor.classList.remove('oculto');
-        cargarViajesSolicitados();
-      } else {
-        modoActual = 'pasajero';
-        btnCambiarModo.innerText = "Modo: 👤 Pasajero (Cambiar a Conductor)";
-        uiConductor.classList.add('oculto');
-        uiPasajero.classList.remove('oculto');
-      }
-    });
+  actualizarCalculoRuta();
+});
 
-    // -------------------------------------------------------------
-    // LÓGICA PASAJERO
-    // -------------------------------------------------------------
-    map.on('click', (e) => {
-      if (modoActual !== 'pasajero') return;
-      destino = { lat: e.latlng.lat, lon: e.latlng.lng };
+function buscarSugerencias(texto, contenedor, alSeleccionar) {
+  clearTimeout(timerBusqueda);
+  contenedor.innerHTML = "";
+  if (texto.trim().length < 3) return;
 
-      if (marcadorDestino) {
-        marcadorDestino.setLatLng(e.latlng);
-      } else {
-        marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
-      }
-
-      actualizarCalculoRuta();
-    });
-
-    function buscarSugerencias(texto, contenedor, alSeleccionar) {
-      clearTimeout(timerBusqueda);
+  timerBusqueda = setTimeout(async () => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&limit=5`);
+      const datos = await res.json();
       contenedor.innerHTML = "";
-      if (texto.trim().length < 3) return;
 
-      timerBusqueda = setTimeout(async () => {
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&limit=5`);
-          const datos = await res.json();
+      datos.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'sugerencia-item';
+        div.innerText = item.display_name;
+        div.addEventListener('click', () => {
+          alSeleccionar(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
           contenedor.innerHTML = "";
-
-          datos.forEach((item) => {
-            const div = document.createElement('div');
-            div.className = 'sugerencia-item';
-            div.innerText = item.display_name;
-            div.addEventListener('click', () => {
-              alSeleccionar(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
-              contenedor.innerHTML = "";
-            });
-            contenedor.appendChild(div);
-          });
-        } catch (err) { console.error(err); }
-      }, 400);
-    }
-
-    // Listener para sugerencias de ORIGEN
-    if (inputOrigen) {
-      inputOrigen.addEventListener('input', () => {
-        buscarSugerencias(inputOrigen.value, sugerenciasOrigen, (lat, lon, nombre) => {
-          inputOrigen.value = nombre;
-          origen = { lat, lon };
-          if (marcadorOrigen) marcadorOrigen.setLatLng([lat, lon]);
-          else marcadorOrigen = L.marker([lat, lon]).addTo(map);
-          actualizarCalculoRuta();
         });
+        contenedor.appendChild(div);
       });
+    } catch (err) { console.error(err); }
+  }, 400);
+}
+
+inputOrigen.addEventListener('input', () => {
+  buscarSugerencias(inputOrigen.value, sugerenciasOrigen, (lat, lon, nombre) => {
+    inputOrigen.value = nombre;
+    origen = { lat, lon };
+    if (marcadorOrigen) marcadorOrigen.setLatLng([lat, lon]);
+    else marcadorOrigen = L.marker([lat, lon]).addTo(map);
+    map.setView([lat, lon], 15);
+    actualizarCalculoRuta();
+  });
+});
+
+inputDestino.addEventListener('input', () => {
+  buscarSugerencias(inputDestino.value, sugerenciasDestino, (lat, lon, nombre) => {
+    inputDestino.value = nombre;
+    destino = { lat, lon };
+    if (marcadorDestino) marcadorDestino.setLatLng([lat, lon]);
+    else marcadorDestino = L.marker([lat, lon]).addTo(map);
+    actualizarCalculoRuta();
+  });
+});
+
+function actualizarCalculoRuta() {
+  if (origen && destino) {
+    const grupo = new L.featureGroup([marcadorOrigen, marcadorDestino]);
+    map.fitBounds(grupo.getBounds().pad(0.2));
+
+    const distanciaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
+    const tarifaEstimada = Math.round(5000 + (distanciaKm * 2000));
+    
+    statusTextPasajero.innerText = `Tarifa estimada: $${tarifaEstimada}`;
+    btnPedirViaje.dataset.tarifa = tarifaEstimada;
+    btnPedirViaje.innerText = "Pedir Viaje Ahora";
+  }
+}
+
+btnPedirViaje.addEventListener('click', async () => {
+  if (!origen || !destino) return alert("Selecciona origen y destino.");
+
+  btnPedirViaje.disabled = true;
+  btnPedirViaje.innerText = "Solicitando...";
+
+  const tarifa = parseFloat(btnPedirViaje.dataset.tarifa) || 5000;
+
+  const { data, error } = await supabaseClient.from('viajes').insert([{
+    pasajero_id: PASAJERO_ID_PRUEBA,
+    origen_lat: origen.lat,
+    origen_lon: origen.lon,
+    destino_lat: destino.lat,
+    destino_lon: destino.lon,
+    tarifa: tarifa,
+    estado: 'solicitado'
+  }]).select();
+
+  if (error) {
+    alert("Error al solicitar viaje.");
+    btnPedirViaje.disabled = false;
+  } else {
+    statusTextPasajero.innerText = "¡Viaje solicitado! Buscando conductor...";
+    escucharEstadoViajePasajero(data[0].id);
+  }
+});
+
+function escucharEstadoViajePasajero(viajeId) {
+  supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
+    event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}`
+  }, (payload) => {
+    if (payload.new.estado === 'aceptado') {
+      statusTextPasajero.innerText = "¡Un conductor ha aceptado tu viaje!";
+      btnPedirViaje.innerText = "En Ruta";
     }
+  }).subscribe();
+}
 
-    // Listener para sugerencias de DESTINO
-    inputDestino.addEventListener('input', () => {
-      buscarSugerencias(inputDestino.value, sugerenciasDestino, (lat, lon, nombre) => {
-        inputDestino.value = nombre;
-        destino = { lat, lon };
-        if (marcadorDestino) marcadorDestino.setLatLng([lat, lon]);
-        else marcadorDestino = L.marker([lat, lon]).addTo(map);
-        actualizarCalculoRuta();
-      });
-    });
+// -------------------------------------------------------------
+// LÓGICA CONDUCTOR
+// -------------------------------------------------------------
+async function cargarViajesSolicitados() {
+  contenedorSolicitudes.innerHTML = "";
+  statusTextConductor.innerText = "Buscando solicitudes cercanas...";
 
-    function actualizarCalculoRuta() {
-      if (origen && destino) {
-        const grupo = new L.featureGroup([marcadorOrigen, marcadorDestino]);
-        map.fitBounds(grupo.getBounds().pad(0.2));
+  const { data, error } = await supabaseClient
+    .from('viajes')
+    .select('*')
+    .eq('estado', 'solicitado');
 
-        const distanciaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
-        const tarifaEstimada = Math.round(5000 + (distanciaKm * 2000));
-        
-        statusTextPasajero.innerText = `Distancia: ${distanciaKm.toFixed(1)} km | Tarifa estimada: $${tarifaEstimada}`;
-        btnPedirViaje.dataset.tarifa = tarifaEstimada;
-        btnPedirViaje.innerText = "Pedir Viaje Ahora";
-      }
-    }
+  if (data && data.length > 0) {
+    statusTextConductor.innerText = `${data.length} viaje(s) disponible(s):`;
+    data.forEach(viaje => renderizarTarjetaViaje(viaje));
+  } else {
+    statusTextConductor.innerText = "No hay viajes disponibles por ahora.";
+  }
+}
 
-    btnPedirViaje.addEventListener('click', async () => {
-      if (!origen || !destino) return alert("Selecciona origen y destino.");
+function renderizarTarjetaViaje(viaje) {
+  const tarjeta = document.createElement('div');
+  tarjeta.className = 'tarjeta-viaje';
+  tarjeta.innerHTML = `
+    <p><strong>Tarifa:</strong> $${viaje.tarifa}</p>
+    <button class="btn-main" onclick="aceptarViaje(${viaje.id})">Aceptar Viaje</button>
+  `;
+  contenedorSolicitudes.appendChild(tarjeta);
+}
 
-      btnPedirViaje.disabled = true;
-      btnPedirViaje.innerText = "Solicitando...";
+async function aceptarViaje(viajeId) {
+  const { error } = await supabaseClient
+    .from('viajes')
+    .update({ estado: 'aceptado', conductor_id: CONDUCTOR_ID_PRUEBA })
+    .eq('id', viajeId);
 
-      const tarifa = parseFloat(btnPedirViaje.dataset.tarifa) || 5000;
+  if (!error) {
+    alert("¡Viaje aceptado exitosamente!");
+    cargarViajesSolicitados();
+  }
+}
 
-      const { data, error } = await supabaseClient.from('viajes').insert([{
-        pasajero_id: PASAJERO_ID_PRUEBA,
-        origen_lat: origen.lat,
-        origen_lon: origen.lon,
-        destino_lat: destino.lat,
-        destino_lon: destino.lon,
-        tarifa: tarifa,
-        estado: 'solicitado'
-      }]).select();
+// Realtime para Conductor: detecta nuevos viajes en tiempo real
+supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
+  event: 'INSERT', schema: 'public', table: 'viajes'
+}, () => {
+  if (modoActual === 'conductor') cargarViajesSolicitados();
+}).subscribe();
 
-      if (error) {
-        alert("Error al solicitar viaje.");
-        btnPedirViaje.disabled = false;
-      } else {
-        statusTextPasajero.innerText = "¡Viaje solicitado! Buscando conductor...";
-        escucharEstadoViajePasajero(data[0].id);
-      }
-    });
+// Función auxiliar Haversine
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+// -------------------------------------------------------------
+// MODO CLARO / OSCURO
+// -------------------------------------------------------------
+btnThemeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  const esOscuro = document.body.classList.contains('dark-mode');
+  themeIcon.innerText = esOscuro ? '☀️' : '????';
+});
 
-    function escucharEstadoViajePasajero(viajeId) {
-      supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
-        event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}`
-      }, (payload) => {
-        if (payload.new.estado === 'aceptado') {
-          statusTextPasajero.innerText = "¡Un conductor ha aceptado tu viaje!";
-          btnPedirViaje.innerText = "En Ruta";
-        }
-      }).subscribe();
-    }
+// -------------------------------------------------------------
+// SELECCIÓN DE ROL Y FORMULARIO DINÁMICO
+// -------------------------------------------------------------
+window.seleccionarRol = function(rol) {
+  rolSeleccionado = rol;
+  pantallaInicio.classList.add('oculto');
+  modalRegistro.classList.remove('oculto');
+  registroTitulo.innerText = `Registro - ${rol.toUpperCase()}`;
 
-    // -------------------------------------------------------------
-    // LÓGICA CONDUCTOR
-    // -------------------------------------------------------------
-    async function cargarViajesSolicitados() {
-      contenedorSolicitudes.innerHTML = "";
-      statusTextConductor.innerText = "Buscando solicitudes cercanas...";
+  camposEspecificos.innerHTML = "";
 
-      const { data, error } = await supabaseClient
-        .from('viajes')
-        .select('*')
-        .eq('estado', 'solicitado');
+  if (rol === 'conductor') {
+    camposEspecificos.innerHTML = `
+      <div class="input-group">
+        <input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Chevrolet Spark)" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="reg-placa" placeholder="Placa del Vehículo" required>
+      </div>
+    `;
+  } else if (rol === 'comercio') {
+    camposEspecificos.innerHTML = `
+      <div class="input-group">
+        <input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required>
+      </div>
+    `;
+  }
+};
 
-      if (data && data.length > 0) {
-        statusTextConductor.innerText = `${data.length} viaje(s) disponible(s):`;
-        data.forEach(viaje => renderizarTarjetaViaje(viaje));
-      } else {
-        statusTextConductor.innerText = "No hay viajes disponibles por ahora.";
-      }
-    }
+btnCancelarRegistro.addEventListener('click', () => {
+  modalRegistro.classList.add('oculto');
+  pantallaInicio.classList.remove('oculto');
+});
 
-    function renderizarTarjetaViaje(viaje) {
-      const tarjeta = document.createElement('div');
-      tarjeta.className = 'tarjeta-viaje';
-      tarjeta.innerHTML = `
-        <p><strong>Tarifa:</strong> $${viaje.tarifa}</p>
-        <button class="btn-main" onclick="aceptarViaje(${viaje.id})">Aceptar Viaje</button>
-      `;
-      contenedorSolicitudes.appendChild(tarjeta);
-    }
+// ELEMENTOS DEL PERFIL SUPERIOR
+const perfilSuperior = document.getElementById('perfil-superior');
+const fotoPerfilHeader = document.getElementById('foto-perfil-header');
 
-    async function aceptarViaje(viajeId) {
-      const { error } = await supabaseClient
-        .from('viajes')
-        .update({ estado: 'aceptado', conductor_id: CONDUCTOR_ID_PRUEBA })
-        .eq('id', viajeId);
+// CAPTURA Y PREVIEW DE FOTO EN TIEMPO REAL
+regFoto.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      fotoBase64 = evt.target.result;
 
-      if (!error) {
-        alert("¡Viaje aceptado exitosamente!");
-        cargarViajesSolicitados();
-      }
-    }
+      // 1. Mostrar en la vista previa del formulario
+      previewFoto.src = fotoBase64;
+      previewFotoContainer.classList.remove('oculto');
 
-    supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'viajes'
-    }, () => {
-      if (modoActual === 'conductor') cargarViajesSolicitados();
-    }).subscribe();
-
-    function calcularDistancia(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-    }
-
-    // -------------------------------------------------------------
-    // MODO CLARO / OSCURO
-    // -------------------------------------------------------------
-    btnThemeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      const esOscuro = document.body.classList.contains('dark-mode');
-      themeIcon.innerText = esOscuro ? '☀️' : '🌙';
-    });
-
-    // -------------------------------------------------------------
-    // SELECCIÓN DE ROL Y FORMULARIO DINÁMICO
-    // -------------------------------------------------------------
-    window.seleccionarRol = function(rol) {
-      rolSeleccionado = rol;
-      pantallaInicio.classList.add('oculto');
-      modalRegistro.classList.remove('oculto');
-      registroTitulo.innerText = `Registro - ${rol.toUpperCase()}`;
-
-      camposEspecificos.innerHTML = "";
-
-      if (rol === 'conductor') {
-        camposEspecificos.innerHTML = `
-          <div class="input-group">
-            <input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Chevrolet Spark)" required>
-          </div>
-          <div class="input-group">
-            <input type="text" id="reg-placa" placeholder="Placa del Vehículo" required>
-          </div>
-        `;
-      } else if (rol === 'comercio') {
-        camposEspecificos.innerHTML = `
-          <div class="input-group">
-            <input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required>
-          </div>
-          <div class="input-group">
-            <input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required>
-          </div>
-        `;
+      // 2. Mostrar inmediatamente en la cabecera superior
+      if (fotoPerfilHeader && perfilSuperior) {
+        fotoPerfilHeader.src = fotoBase64;
+        perfilSuperior.classList.remove('oculto');
       }
     };
+    reader.readAsDataURL(file);
+  }
+});
+// GUARDAR USUARIO Y FOTO EN SUPABASE
+// GUARDAR USUARIO Y FOTO EN SUPABASE CON TABLAS REALES
+formRegistro.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    btnCancelarRegistro.addEventListener('click', () => {
-      modalRegistro.classList.add('oculto');
-      pantallaInicio.classList.remove('oculto');
-    });
+  const btnGuardar = document.getElementById('btn-guardar-registro');
+  const regEmail = document.getElementById('reg-email');
 
-    const perfilSuperior = document.getElementById('perfil-superior');
-    const fotoPerfilHeader = document.getElementById('foto-perfil-header');
+  btnGuardar.disabled = true;
+  btnGuardar.innerText = "Guardando...";
 
-    regFoto.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          fotoBase64 = evt.target.result;
+  // Capturar valores de DNI / CE
+  const regTipoDoc = document.getElementById('reg-tipo-doc');
+  const regNumDoc = document.getElementById('reg-num-doc');
 
-          previewFoto.src = fotoBase64;
-          previewFotoContainer.classList.remove('oculto');
+  // 1. Objeto para la tabla 'usuarios'
+  const datosUsuario = {
+    nombre: regNombre.value,
+    telefono: regTelefono.value,
+    email: regEmail ? regEmail.value : '',
+    tipo_documento: regTipoDoc ? regTipoDoc.value : 'DNI',
+    numero_documento: regNumDoc ? regNumDoc.value : '',
+    tipo_usuario: rolSeleccionado,
+    foto: fotoBase64
+  };
 
-          if (fotoPerfilHeader && perfilSuperior) {
-            fotoPerfilHeader.src = fotoBase64;
-            perfilSuperior.classList.remove('oculto');
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+  // Insertar en tabla usuarios
+  const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
+    .from('usuarios')
+    .insert([datosUsuario])
+    .select();
 
-    // GUARDAR USUARIO Y FOTO EN SUPABASE CON TABLAS REALES
-    formRegistro.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  if (errorUsuario) {
+    console.error(errorUsuario);
+    alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
+    btnGuardar.disabled = false;
+    btnGuardar.innerText = "Guardar y Continuar";
+    return;
+  }
 
-      const btnGuardar = document.getElementById('btn-guardar-registro');
-      const regEmail = document.getElementById('reg-email');
+  const nuevoUsuarioId = usuarioInsertado[0].id || usuarioInsertado[0].Id;
 
-      btnGuardar.disabled = true;
-      btnGuardar.innerText = "Guardando...";
+  // 2. Si es conductor, relacionar con tablas 'conductores' y 'vehiculos'
+  if (rolSeleccionado === 'conductor') {
+    const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
+    const vehiculoPlaca = document.getElementById('reg-placa')?.value;
 
-      const regTipoDoc = document.getElementById('reg-tipo-doc');
-      const regNumDoc = document.getElementById('reg-num-doc');
+    const { data: conductorInsertado, error: errCond } = await supabaseClient
+      .from('conductores')
+      .insert([{ usuario_id: nuevoUsuarioId }])
+      .select();
 
-      const datosUsuario = {
-        nombre: regNombre.value,
-        telefono: regTelefono.value,
-        email: regEmail ? regEmail.value : '',
-        tipo_documento: regTipoDoc ? regTipoDoc.value : 'DNI',
-        numero_documento: regNumDoc ? regNumDoc.value : '',
-        tipo_usuario: rolSeleccionado,
-        foto: fotoBase64
-      };
+    if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
+      const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
+      await supabaseClient.from('vehiculos').insert([{
+        conductor_id: conductorId,
+        modelo: vehiculoModelo,
+        placa: vehiculoPlaca
+      }]);
+    }
+  }
 
-      const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
-        .from('usuarios')
-        .insert([datosUsuario])
-        .select();
+  btnGuardar.disabled = false;
+  btnGuardar.innerText = "Guardar y Continuar";
 
-      if (errorUsuario) {
-        console.error(errorUsuario);
-        alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
-        btnGuardar.disabled = false;
-        btnGuardar.innerText = "Guardar y Continuar";
-        return;
-      }
+  alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
+  modalRegistro.classList.add('oculto');
 
-      const nuevoUsuarioId = usuarioInsertado[0].id || usuarioInsertado[0].Id;
-
-      if (rolSeleccionado === 'conductor') {
-        const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
-        const vehiculoPlaca = document.getElementById('reg-placa')?.value;
-
-        const { data: conductorInsertado, error: errCond } = await supabaseClient
-          .from('conductores')
-          .insert([{ usuario_id: nuevoUsuarioId }])
-          .select();
-
-        if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
-          const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
-          await supabaseClient.from('vehiculos').insert([{
-            conductor_id: conductorId,
-            modelo: vehiculoModelo,
-            placa: vehiculoPlaca
-          }]);
-        }
-      }
-
-      btnGuardar.disabled = false;
-      btnGuardar.innerText = "Guardar y Continuar";
-
-      alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
-      modalRegistro.classList.add('oculto');
-
-      if (rolSeleccionado === 'conductor') {
-        modoActual = 'conductor';
-        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
-        uiPasajero.classList.add('oculto');
-        uiConductor.classList.remove('oculto');
-        cargarViajesSolicitados();
-      } else {
-        modoActual = 'pasajero';
-        uiPasajero.classList.remove('oculto');
-      }
-    });
+  if (rolSeleccionado === 'conductor') {
+    modoActual = 'conductor';
+    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.remove('oculto');
+    cargarViajesSolicitados();
+  } else {
+    modoActual = 'pasajero';
+    uiPasajero.classList.remove('oculto');
+  }
+});
   </script>
 </body>
 </html>
