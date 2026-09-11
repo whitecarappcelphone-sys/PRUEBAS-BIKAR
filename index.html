@@ -1180,9 +1180,7 @@
     <h3 class="panel-title">Solicitar Viaje</h3>
     
     <div class="input-group">
-      <input type="text" id="input-origen" placeholder="Tu ubicación o dirección origen" autocomplete="off">
-      <div id="sugerencias-origen" class="lista-sugerencias"></div>
-    </div>
+       </div>
 
     <div class="input-group">
       <input type="text" id="input-destino" placeholder="Escribe la dirección de destino" autocomplete="off">
@@ -1226,9 +1224,8 @@ const btnCambiarModo = document.getElementById('btn-cambiar-modo');
 const uiPasajero = document.getElementById('ui-pasajero');
 const uiConductor = document.getElementById('ui-conductor');
 
-const inputOrigen = document.getElementById('input-origen');
+
 const inputDestino = document.getElementById('input-destino');
-const sugerenciasOrigen = document.getElementById('sugerencias-origen');
 const sugerenciasDestino = document.getElementById('sugerencias-destino');
 
 const statusTextPasajero = document.getElementById('status-text-pasajero');
@@ -1257,17 +1254,32 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Geolocalización
+// Geolocalización con dirección automática en el Popup
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
+    async (pos) => {
       origen = { lat: pos.coords.latitude, lon: pos.coords.longitude };
       map.setView([origen.lat, origen.lon], 15);
-      marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
+      
+      // Crear marcador inicial con texto temporal
+      marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Obteniendo dirección...").openPopup();
+
+      // Obtener dirección real mediante Nominatim
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${origen.lat}&lon=${origen.lon}`);
+        const data = await res.json();
+        const direccionExacta = data.display_name || "Tu ubicación";
+        
+        // Actualizar el Popup con la dirección encontrada
+        marcadorOrigen.setPopupContent(`<b>Tu ubicación:</b><br>${direccionExacta}`).openPopup();
+      } catch (err) {
+        console.error("Error al obtener la dirección:", err);
+        marcadorOrigen.setPopupContent("Tu ubicación").openPopup();
+      }
     },
     () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; }
   );
 }
-
 // -------------------------------------------------------------
 // CONTROL DE CAMBIO DE MODO (Pasajero <-> Conductor)
 // -------------------------------------------------------------
@@ -1326,17 +1338,6 @@ function buscarSugerencias(texto, contenedor, alSeleccionar) {
     } catch (err) { console.error(err); }
   }, 400);
 }
-
-inputOrigen.addEventListener('input', () => {
-  buscarSugerencias(inputOrigen.value, sugerenciasOrigen, (lat, lon, nombre) => {
-    inputOrigen.value = nombre;
-    origen = { lat, lon };
-    if (marcadorOrigen) marcadorOrigen.setLatLng([lat, lon]);
-    else marcadorOrigen = L.marker([lat, lon]).addTo(map);
-    map.setView([lat, lon], 15);
-    actualizarCalculoRuta();
-  });
-});
 
 inputDestino.addEventListener('input', () => {
   buscarSugerencias(inputDestino.value, sugerenciasDestino, (lat, lon, nombre) => {
