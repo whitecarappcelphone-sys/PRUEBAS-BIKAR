@@ -687,7 +687,22 @@
   margin-bottom: 24px;
   text-align: center;
 }
-   
+    
+    .brand-tag {
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: var(--primary-color);
+    }
+
+    .inicio-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 28px 22px 22px;
+      animation: riseIn 0.7s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
     .header-inicio h2 {
       color: var(--text-color);
       font-size: 1.85rem;
@@ -712,7 +727,6 @@
       flex-direction: column;
       gap: 12px;
       width: 100%;
-      max-width: 420px;
     }
 
     .tarjeta-rol {
@@ -988,7 +1002,8 @@
     }
 
     @media (max-height: 720px) {
-      .pantalla-inicio { gap: 14px; justify-content: flex-start; padding-top: 32px; }      
+      .pantalla-inicio { gap: 14px; justify-content: flex-start; padding-top: 32px; }
+      .inicio-card { padding: 22px 18px 18px; }
       .header-inicio h2 { font-size: 1.6rem; }
       .header-inicio p { margin-bottom: 16px; }
       .tarjeta-rol { padding: 12px 16px; }
@@ -1030,7 +1045,8 @@
      
    </div>
 
-    <div class="header-inicio">
+    <div class="glass-card inicio-card">
+      <div class="header-inicio">
         <h2>Bienvenido a <span class="accent">BIKAR</span></h2>
         <p>Selecciona tu perfil para comenzar</p>
       </div>
@@ -1066,6 +1082,9 @@
         <span>GPS</span>
         <span>Seguro</span>
       </div>
+    </div>
+  </div>
+
   <!-- MODAL DE REGISTRO / FORMULARIO -->
   <div id="modal-registro" class="ui-panel oculto">
     <h3 id="registro-titulo" class="panel-title">Completar Registro</h3>
