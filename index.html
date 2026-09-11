@@ -115,10 +115,7 @@
       70%  { box-shadow: 0 0 0 9px rgba(71, 133, 167, 0); }
       100% { box-shadow: 0 0 0 0 rgba(71, 133, 167, 0); }
     }
-    @keyframes logoGlow {
-      0%, 100% { filter: drop-shadow(0 0 14px var(--glow)); }
-      50%      { filter: drop-shadow(0 0 32px var(--glow-strong)); }
-    }
+    
     @keyframes scan {
       from { transform: translateY(-10vh); opacity: 0; }
       15%  { opacity: 1; }
@@ -689,13 +686,7 @@
       gap: 8px;
       animation: riseIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
-
-    .logo-hex {
-      width: 104px;
-      height: 104px;
-      animation: logoGlow 4s ease-in-out infinite;
-    }
-
+    
     .brand-tag {
       font-size: 0.66rem;
       font-weight: 700;
@@ -1011,7 +1002,6 @@
 
     @media (max-height: 720px) {
       .pantalla-inicio { gap: 14px; justify-content: flex-start; padding-top: 32px; }
-      .logo-hex { width: 82px; height: 82px; }
       .inicio-card { padding: 22px 18px 18px; }
       .header-inicio h2 { font-size: 1.6rem; }
       .header-inicio p { margin-bottom: 16px; }
@@ -1051,23 +1041,7 @@
   <div class="fx-scan" aria-hidden="true"></div>
 
     <div class="inicio-brand" aria-hidden="true">
-      <svg class="logo-hex" viewBox="0 0 120 120" role="img">
-        <defs>
-          <linearGradient id="hexMetal" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#f8f9fa"/>
-            <stop offset="0.5" stop-color="#cccccc"/>
-            <stop offset="1" stop-color="#ffffff"/>
-          </linearGradient>
-          <linearGradient id="hexBlue" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#4785A7"/>
-            <stop offset="1" stop-color="#134989"/>
-          </linearGradient>
-        </defs>
-        <polygon points="60,6 107,33 107,87 60,114 13,87 13,33" fill="none" stroke="url(#hexMetal)" stroke-width="5" stroke-linejoin="round"/>
-        <polygon points="60,20 95,40 95,80 60,100 25,80 25,40" fill="url(#hexBlue)" opacity="0.22"/>
-        <polygon points="60,20 95,40 95,80 60,100 25,80 25,40" fill="none" stroke="#4785A7" stroke-width="1" opacity="0.7"/>
-        <text x="60" y="77" text-anchor="middle" font-size="50" font-weight="800" fill="url(#hexMetal)" font-family="Inter, system-ui, sans-serif" letter-spacing="-2">B</text>
-      </svg>
+      
       <span class="brand-tag">Red de movilidad inteligente</span>
     </div>
 
