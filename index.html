@@ -614,7 +614,16 @@
       z-index: -2;
       pointer-events: none;
       filter: brightness(0.55);
+      transition: opacity 0.6s ease-in-out; /* Fundido suave entre ambos videos */
     }
+
+    /* Estado por defecto (Modo Claro) */
+    .video-oscuro { opacity: 0; }
+    .video-claro { opacity: 1; }
+
+    /* Estado cuando se activa el Modo Oscuro */
+    body.dark-mode .video-oscuro { opacity: 1; }
+    body.dark-mode .video-claro { opacity: 0; }
 
     .inicio-features {
       position: absolute;
@@ -930,10 +939,15 @@
     <span id="theme-icon">☀️</span>
   </button>
 
-  <!-- PANTALLA DE INICIO -->
+    <!-- PANTALLA DE INICIO -->
   <div id="pantalla-inicio" class="pantalla-inicio">
-    <video class="video-fondo" autoplay loop muted playsinline>
+    <!-- Video Modo Oscuro -->
+    <video id="video-oscuro" class="video-fondo video-oscuro" autoplay loop muted playsinline>
       <source src="https://i.imgur.com/7qoNKhR.mp4" type="video/mp4">
+    </video>
+    <!-- Video Modo Claro -->
+    <video id="video-claro" class="video-fondo video-claro" autoplay loop muted playsinline>
+      <source src="https://i.imgur.com/xO5vIAY.mp4" type="video/mp4">
     </video>
 
     <div class="fx-scan" aria-hidden="true"></div>
