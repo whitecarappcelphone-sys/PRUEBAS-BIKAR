@@ -87,9 +87,7 @@
       outline-offset: 2px;
     }
 
-    /* ---------------------------------------------------------------------
-       ANIMACIONES
-       --------------------------------------------------------------------- */
+    /* ANIMACIONES */
     @keyframes panelIn {
       from { opacity: 0; transform: translate(-50%, 18px); }
       to   { opacity: 1; transform: translate(-50%, 0); }
@@ -119,7 +117,6 @@
       70%  { box-shadow: 0 0 0 9px rgba(71, 133, 167, 0); }
       100% { box-shadow: 0 0 0 0 rgba(71, 133, 167, 0); }
     }
-    
     @keyframes scan {
       from { transform: translateY(-10vh); opacity: 0; }
       15%  { opacity: 1; }
@@ -127,9 +124,7 @@
       to   { transform: translateY(110vh); opacity: 0; }
     }
 
-    /* ---------------------------------------------------------------------
-       MAPA
-       --------------------------------------------------------------------- */
+    /* MAPA */
     #map {
       width: 100%;
       height: 100vh;
@@ -143,7 +138,6 @@
       font-family: inherit;
     }
 
-    /* Mapa en tono oscuro cuando el tema es oscuro */
     body.dark-mode .leaflet-tile-pane {
       filter: invert(1) hue-rotate(195deg) brightness(0.82) contrast(0.92) saturate(0.5);
     }
@@ -205,9 +199,7 @@
       color: var(--muted-text);
     }
 
-    /* ---------------------------------------------------------------------
-       BOTÓN TEMA CLARO / OSCURO
-       --------------------------------------------------------------------- */
+    /* BOTÓN TEMA CLARO / OSCURO */
     .btn-theme-toggle {
       position: absolute;
       top: calc(16px + env(safe-area-inset-top));
@@ -236,9 +228,7 @@
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3), 0 0 0 6px rgba(71, 133, 167, 0.18);
     }
 
-    /* ---------------------------------------------------------------------
-       PERFIL SUPERIOR (AVATAR EN CABECERA)
-       --------------------------------------------------------------------- */
+    /* PERFIL SUPERIOR */
     .perfil-superior {
       position: absolute;
       top: calc(16px + env(safe-area-inset-top));
@@ -265,9 +255,7 @@
       object-fit: cover;
     }
 
-    /* ---------------------------------------------------------------------
-       SELECTOR DE MODO (píldora HUD superior)
-       --------------------------------------------------------------------- */
+    /* SELECTOR DE MODO */
     #mode-selector {
       position: absolute;
       top: calc(16px + env(safe-area-inset-top));
@@ -334,9 +322,7 @@
       animation: pulseDot 2s ease-out infinite;
     }
 
-    /* ---------------------------------------------------------------------
-       TARJETAS DE CRISTAL (paneles flotantes)
-       --------------------------------------------------------------------- */
+    /* TARJETAS DE CRISTAL */
     .glass-card,
     .ui-panel {
       position: relative;
@@ -408,9 +394,7 @@
       margin: 4px 0 14px;
     }
 
-    /* ---------------------------------------------------------------------
-       CAMPOS DE ENTRADA (icono + etiqueta + texto)
-       --------------------------------------------------------------------- */
+    /* CAMPOS DE ENTRADA */
     .input-group {
       position: relative;
       margin-bottom: 12px;
@@ -444,65 +428,18 @@
       box-shadow: 0 0 0 3px rgba(71, 133, 167, 0.22), 0 0 26px rgba(71, 133, 167, 0.18);
     }
 
-    /* Iconos por campo (SVG embebido) */
-    #reg-nombre {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
-    }
-    #reg-telefono {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E");
-    }
-    #reg-email {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E");
-    }
-    #reg-vehiculo {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2'/%3E%3Ccircle cx='7' cy='17' r='2'/%3E%3Cpath d='M9 17h6'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E");
-    }
-    #reg-placa {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 12h.01M10 12h4M18 12h.01'/%3E%3C/svg%3E");
-    }
-    #reg-comercio-nombre {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1.5-5h15L21 9'/%3E%3Cpath d='M3 9v11h18V9'/%3E%3Cpath d='M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E");
-    }
-    #reg-comercio-categoria {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%234785A7'/%3E%3C/svg%3E");
-    }
-    #input-origen {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E");
-    }
-    #input-destino {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E");
-    }
+    /* Iconos SVG */
+    #reg-nombre { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E"); }
+    #reg-telefono { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E"); }
+    #reg-email { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E"); }
+    #reg-vehiculo { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2'/%3E%3Ccircle cx='7' cy='17' r='2'/%3E%3Cpath d='M9 17h6'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E"); }
+    #reg-placa { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 12h.01M10 12h4M18 12h.01'/%3E%3C/svg%3E"); }
+    #reg-comercio-nombre { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1.5-5h15L21 9'/%3E%3Cpath d='M3 9v11h18V9'/%3E%3Cpath d='M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E"); }
+    #reg-comercio-categoria { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%234785A7'/%3E%3C/svg%3E"); }
+    #input-origen { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
+    #input-destino { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E"); }
 
-    /* Etiquetas flotantes */
-    @supports selector(:has(a)) {
-      .input-group:has(> :is(#reg-nombre, #reg-telefono, #reg-email, #reg-vehiculo, #reg-placa, #reg-comercio-nombre, #reg-comercio-categoria, #input-origen, #input-destino)) > input {
-        height: 64px;
-        padding-top: 20px;
-      }
-      .input-group:has(> :is(#reg-nombre, #reg-telefono, #reg-email, #reg-vehiculo, #reg-placa, #reg-comercio-nombre, #reg-comercio-categoria, #input-origen, #input-destino))::before {
-        position: absolute;
-        left: 50px;
-        top: 11px;
-        z-index: 1;
-        font-size: 0.66rem;
-        font-weight: 700;
-        letter-spacing: 0.10em;
-        text-transform: uppercase;
-        color: var(--primary-color);
-        pointer-events: none;
-      }
-      .input-group:has(> #reg-nombre)::before { content: "Nombre"; }
-      .input-group:has(> #reg-telefono)::before { content: "Teléfono"; }
-      .input-group:has(> #reg-email)::before { content: "Correo"; }
-      .input-group:has(> #reg-vehiculo)::before { content: "Vehículo"; }
-      .input-group:has(> #reg-placa)::before { content: "Placa"; }
-      .input-group:has(> #reg-comercio-nombre)::before { content: "Establecimiento"; }
-      .input-group:has(> #reg-comercio-categoria)::before { content: "Categoría"; }
-      .input-group:has(> #input-origen)::before { content: "Origen"; }
-      .input-group:has(> #input-destino)::before { content: "Destino"; }
-    }
-
-    /* Lista de sugerencias de direcciones */
+    /* Sugerencias de direcciones */
     .lista-sugerencias {
       position: absolute;
       top: calc(100% + 6px);
@@ -542,9 +479,7 @@
       color: var(--primary-color);
     }
 
-    /* ---------------------------------------------------------------------
-       BOTONES
-       --------------------------------------------------------------------- */
+    /* BOTONES */
     .btn-main {
       position: relative;
       width: 100%;
@@ -606,9 +541,7 @@
       transform: none;
     }
 
-    /* ---------------------------------------------------------------------
-       PANTALLA DE INICIO (SELECCIÓN DE ROL)
-       --------------------------------------------------------------------- */
+    /* PANTALLA DE INICIO */
     .pantalla-inicio {
       position: absolute;
       inset: 0;
@@ -683,10 +616,6 @@
       filter: brightness(0.55);
     }
 
-    /* ---------------------------------------------------------------------
-       INDICADORES SUPERIORES (Tiempo real · GPS · Seguro)
-       → Fila en la esquina superior izquierda, entran subiendo
-       --------------------------------------------------------------------- */
     .inicio-features {
       position: absolute;
       top: calc(24px + env(safe-area-inset-top));
@@ -721,21 +650,17 @@
       box-shadow: 0 0 8px var(--primary-color);
     }
 
-    /* ---------------------------------------------------------------------
-       TARJETAS DE ROL
-       → Columna en la esquina inferior izquierda, entran desde la izquierda
-       --------------------------------------------------------------------- */
     .roles-container {
-  position: absolute;
-  left: 16px;
-  bottom: calc(100px + env(safe-area-inset-bottom)); /* Aumentamos de 24px a 100px para subir los botones */
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* Reducimos ligeramente el espacio entre botones */
-  width: calc(100% - 32px);
-  max-width: 340px;
-}
+      position: absolute;
+      left: 16px;
+      bottom: calc(100px + env(safe-area-inset-bottom));
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: calc(100% - 32px);
+      max-width: 340px;
+    }
 
     .tarjeta-rol {
       position: relative;
@@ -746,7 +671,7 @@
       background: var(--field-bg);
       border: 1px solid var(--field-border);
       border-radius: 12px;
-      padding: 8px 12px; /* Reducido de 14px 18px a 8px 12px */
+      padding: 8px 12px;
       cursor: pointer;
       color: var(--text-color);
       text-align: left;
@@ -757,7 +682,6 @@
       animation: slideInLeft 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
     }
 
-    /* Aparición escalonada desde la izquierda */
     .tarjeta-rol:nth-child(1) { animation-delay: 0.20s; }
     .tarjeta-rol:nth-child(2) { animation-delay: 0.34s; }
     .tarjeta-rol:nth-child(3) { animation-delay: 0.48s; }
@@ -793,11 +717,11 @@
     .rol-icon {
       display: grid;
       place-items: center;
-      width: 38px; /* Reducido de 52px a 38px */
-      height: 38px; /* Reducido de 52px a 38px */
+      width: 38px;
+      height: 38px;
       flex-shrink: 0;
       border-radius: 10px;
-      font-size: 1.15rem; /* Reducido el tamaño del emojii/icono */
+      font-size: 1.15rem;
       background: linear-gradient(145deg, rgba(71, 133, 167, 0.22), rgba(19, 73, 137, 0.12));
       border: 1px solid rgba(71, 133, 167, 0.35);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
@@ -811,19 +735,18 @@
     }
 
     .rol-title {
-      font-size: 0.9rem; /* Reducido de 1.05rem */
+      font-size: 0.9rem;
       font-weight: 700;
       color: var(--text-color);
       letter-spacing: 0.01em;
     }
 
     .rol-desc {
-      font-size: 0.72rem; /* Reducido de 0.78rem */
+      font-size: 0.72rem;
       color: var(--muted-text);
     }
-    /* ---------------------------------------------------------------------
-       MODAL DE REGISTRO
-       --------------------------------------------------------------------- */
+
+    /* MODAL DE REGISTRO */
     #modal-registro {
       top: 50%;
       bottom: auto;
@@ -855,7 +778,6 @@
       color: var(--muted-text);
     }
 
-    /* Captura / subida de foto */
     .foto-group {
       margin-top: 4px;
     }
@@ -911,9 +833,7 @@
       object-fit: cover;
     }
 
-    /* ---------------------------------------------------------------------
-       PANEL CONDUCTOR · Tarjetas de solicitud
-       --------------------------------------------------------------------- */
+    /* TARJETAS DE SOLICITUD */
     #contenedor-solicitudes {
       display: flex;
       flex-direction: column;
@@ -970,43 +890,6 @@
       font-size: 0.92rem;
       border-radius: 12px;
     }
-
-    /* ---------------------------------------------------------------------
-       BARRAS DE DESPLAZAMIENTO
-       --------------------------------------------------------------------- */
-    #modal-registro::-webkit-scrollbar,
-    #contenedor-solicitudes::-webkit-scrollbar,
-    .lista-sugerencias::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    #modal-registro::-webkit-scrollbar-thumb,
-    #contenedor-solicitudes::-webkit-scrollbar-thumb,
-    .lista-sugerencias::-webkit-scrollbar-thumb {
-      background: rgba(71, 133, 167, 0.5);
-      border-radius: 6px;
-    }
-
-    @media (max-height: 720px) {
-      .inicio-features { top: calc(12px + env(safe-area-inset-top)); }
-      .roles-container { bottom: calc(12px + env(safe-area-inset-bottom)); gap: 10px; }
-      .tarjeta-rol { padding: 12px 16px; }
-      .rol-icon { width: 46px; height: 46px; font-size: 1.4rem; }
-    }
-
-    @media (max-width: 380px) {
-      .ui-panel { width: 94%; padding: 20px 16px 16px; }
-      #modal-registro { padding: 24px 16px 18px; }
-      .roles-container { left: 12px; width: calc(100% - 24px); }
-      .inicio-features { left: 12px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
   </style>
 </head>
 <body class="dark-mode">
@@ -1020,48 +903,46 @@
     <span id="theme-icon">☀️</span>
   </button>
 
- <!-- PANTALLA DE INICIO (SELECCIÓN DE ROL) -->
-<div id="pantalla-inicio" class="pantalla-inicio">
-  <video class="video-fondo" autoplay loop muted playsinline>
-    <source src="https://i.imgur.com/7qoNKhR.mp4" type="video/mp4">
-  </video>
+  <!-- PANTALLA DE INICIO -->
+  <div id="pantalla-inicio" class="pantalla-inicio">
+    <video class="video-fondo" autoplay loop muted playsinline>
+      <source src="https://i.imgur.com/7qoNKhR.mp4" type="video/mp4">
+    </video>
 
-  <div class="fx-scan" aria-hidden="true"></div>
+    <div class="fx-scan" aria-hidden="true"></div>
 
-  <!-- INDICADORES SUPERIORES · fila en la esquina superior izquierda -->
-  <div class="inicio-features" aria-hidden="true">
-    <span>Tiempo real</span>
-    <span>GPS</span>
-    <span>Seguro</span>
+    <div class="inicio-features" aria-hidden="true">
+      <span>Tiempo real</span>
+      <span>GPS</span>
+      <span>Seguro</span>
+    </div>
+
+    <div class="roles-container">
+      <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
+        <span class="rol-icon">🚶</span>
+        <span class="rol-text">
+          <span class="rol-title">Pasajero</span>
+          <span class="rol-desc">Solicita un viaje al instante</span>
+        </span>
+      </button>
+
+      <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
+        <span class="rol-icon">🚗</span>
+        <span class="rol-text">
+          <span class="rol-title">Conductor</span>
+          <span class="rol-desc">Recibe solicitudes en tiempo real</span>
+        </span>
+      </button>
+
+      <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
+        <span class="rol-icon">🏪</span>
+        <span class="rol-text">
+          <span class="rol-title">Comercio</span>
+          <span class="rol-desc">Registra tu establecimiento</span>
+        </span>
+      </button>
+    </div>
   </div>
-
-  <!-- OPCIONES DE ROL · columna en la esquina inferior izquierda (entran desde la izquierda) -->
-  <div class="roles-container">
-    <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
-      <span class="rol-icon">🚶</span>
-      <span class="rol-text">
-        <span class="rol-title">Pasajero</span>
-        <span class="rol-desc">Solicita un viaje al instante</span>
-      </span>
-    </button>
-
-    <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
-      <span class="rol-icon">🚗</span>
-      <span class="rol-text">
-        <span class="rol-title">Conductor</span>
-        <span class="rol-desc">Recibe solicitudes en tiempo real</span>
-      </span>
-    </button>
-
-    <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
-      <span class="rol-icon">🏪</span>
-      <span class="rol-text">
-        <span class="rol-title">Comercio</span>
-        <span class="rol-desc">Registra tu establecimiento</span>
-      </span>
-    </button>
-  </div>
-</div>
 
   <!-- MODAL DE REGISTRO / FORMULARIO -->
   <div id="modal-registro" class="ui-panel oculto">
@@ -1078,7 +959,7 @@
         <input type="email" id="reg-email" placeholder="Correo electrónico" required autocomplete="off">
       </div>
 
-      <!-- SELECTOR DE DOCUMENTO (DNI / CE) -->
+      <!-- SELECTOR DE DOCUMENTO -->
       <div class="input-group">
         <select id="reg-tipo-doc" required style="width: 100%; height: 54px; padding: 0 16px; background-color: var(--field-bg); border: 1px solid var(--field-border); border-radius: 14px; color: var(--text-color); font-size: 0.95rem; outline: none;">
           <option value="DNI">DNI (Documento Nacional de Identidad)</option>
@@ -1089,7 +970,6 @@
         <input type="text" id="reg-num-doc" placeholder="Número de Documento (DNI / CE)" required autocomplete="off">
       </div>
 
-      <!-- Campos dinámicos según el rol (vehículo, nombre de comercio, etc.) -->
       <div id="campos-especificos"></div>
 
       <!-- Subir Foto en tiempo real -->
@@ -1107,7 +987,7 @@
     </form>
   </div>
 
-  <!-- Selector de Modo en la parte superior -->
+  <!-- Selector de Modo -->
   <div id="mode-selector">
     <button id="btn-cambiar-modo" class="btn-secondary">Modo: 🚶 Pasajero (Cambiar a Conductor)</button>
   </div>
@@ -1115,8 +995,8 @@
   <!-- Contenedor del Mapa -->
   <div id="map"></div>
 
-  <!-- PANEL PASAJERO -->
-  <div id="ui-pasajero" class="ui-panel">
+  <!-- PANEL PASAJERO (CORREGIDO: SE AGREGA 'oculto' INICIALMENTE) -->
+  <div id="ui-pasajero" class="ui-panel oculto">
     <h3 class="panel-title">Solicitar Viaje</h3>
     
     <div class="input-group">
@@ -1145,7 +1025,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
 const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI62E0NDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
 
 let PASAJERO_ID_PRUEBA = "5";
 let CONDUCTOR_ID_PRUEBA = "10";
@@ -1161,9 +1041,9 @@ let marcadorDestino = null;
 let timerBusqueda = null;
 let rolSeleccionado = null;
 let fotoBase64 = null;
-let usuarioActual = null; // Almacena el usuario autenticado activo
+let usuarioActual = null;
 
-// Elementos DOM
+// DOM
 const btnCambiarModo = document.getElementById('btn-cambiar-modo');
 const uiPasajero = document.getElementById('ui-pasajero');
 const uiConductor = document.getElementById('ui-conductor');
@@ -1194,9 +1074,7 @@ const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
 const perfilSuperior = document.getElementById('perfil-superior');
 const fotoPerfilHeader = document.getElementById('foto-perfil-header');
 
-// -------------------------------------------------------------
-// CONTROL DE SESIÓN PERMANENTE (LOCALSTORAGE)
-// -------------------------------------------------------------
+// CONTROL DE SESIÓN PERMANENTE
 function verificarSesionGuardada() {
   const sesionGuardada = localStorage.getItem('bikar_usuario');
   if (sesionGuardada) {
@@ -1212,17 +1090,14 @@ function verificarSesionGuardada() {
 function aplicarSesionUsuario(usuario) {
   if (!usuario) return;
 
-  // Ocultar pantalla inicial y modal
   pantallaInicio.classList.add('oculto');
   modalRegistro.classList.add('oculto');
 
-  // Asignar avatar de perfil en la cabecera
   if (usuario.foto && fotoPerfilHeader && perfilSuperior) {
     fotoPerfilHeader.src = usuario.foto;
     perfilSuperior.classList.remove('oculto');
   }
 
-  // Asignar rol predeterminado
   rolSeleccionado = usuario.tipo_usuario || 'pasajero';
 
   if (rolSeleccionado === 'conductor') {
@@ -1237,9 +1112,10 @@ function aplicarSesionUsuario(usuario) {
     uiConductor.classList.add('oculto');
     uiPasajero.classList.remove('oculto');
   }
+
+  setTimeout(() => { if (map) map.invalidateSize(); }, 300);
 }
 
-// Cierre de sesión manual haciendo clic en la foto de perfil
 perfilSuperior.addEventListener('click', () => {
   if (confirm("¿Deseas cerrar sesión en BIKAR?")) {
     localStorage.removeItem('bikar_usuario');
@@ -1270,9 +1146,7 @@ if ("geolocation" in navigator) {
   );
 }
 
-// -------------------------------------------------------------
-// CONTROL DE CAMBIO DE MODO (Pasajero <-> Conductor)
-// -------------------------------------------------------------
+// CAMBIO DE MODO
 btnCambiarModo.addEventListener('click', () => {
   if (modoActual === 'pasajero') {
     modoActual = 'conductor';
@@ -1286,11 +1160,10 @@ btnCambiarModo.addEventListener('click', () => {
     uiConductor.classList.add('oculto');
     uiPasajero.classList.remove('oculto');
   }
+  setTimeout(() => { map.invalidateSize(); }, 200);
 });
 
-// -------------------------------------------------------------
 // LÓGICA PASAJERO
-// -------------------------------------------------------------
 map.on('click', (e) => {
   if (modoActual !== 'pasajero') return;
   destino = { lat: e.latlng.lat, lon: e.latlng.lng };
@@ -1404,9 +1277,7 @@ function escucharEstadoViajePasajero(viajeId) {
   }).subscribe();
 }
 
-// -------------------------------------------------------------
 // LÓGICA CONDUCTOR
-// -------------------------------------------------------------
 async function cargarViajesSolicitados() {
   contenedorSolicitudes.innerHTML = "";
   statusTextConductor.innerText = "Buscando solicitudes cercanas...";
@@ -1434,8 +1305,9 @@ function renderizarTarjetaViaje(viaje) {
   contenedorSolicitudes.appendChild(tarjeta);
 }
 
+// ACEPTAR VIAJE (CORREGIDO: ASIGNA EL ID DE CONDUCTOR)
 async function aceptarViaje(viajeId) {
-  const conductorId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+  const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
   
   const { error } = await supabaseClient
     .from('viajes')
@@ -1445,17 +1317,17 @@ async function aceptarViaje(viajeId) {
   if (!error) {
     alert("¡Viaje aceptado exitosamente!");
     cargarViajesSolicitados();
+  } else {
+    alert("Error al aceptar viaje: " + error.message);
   }
 }
 
-// Realtime para Conductor
 supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
   event: 'INSERT', schema: 'public', table: 'viajes'
 }, () => {
   if (modoActual === 'conductor') cargarViajesSolicitados();
 }).subscribe();
 
-// Función auxiliar Haversine
 function calcularDistancia(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1466,18 +1338,14 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
 }
 
-// -------------------------------------------------------------
 // MODO CLARO / OSCURO
-// -------------------------------------------------------------
 btnThemeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   const esOscuro = document.body.classList.contains('dark-mode');
   themeIcon.innerText = esOscuro ? '☀️' : '🌙';
 });
 
-// -------------------------------------------------------------
-// SELECCIÓN DE ROL Y FORMULARIO DINÁMICO
-// -------------------------------------------------------------
+// SELECCIÓN DE ROL
 window.seleccionarRol = function(rol) {
   rolSeleccionado = rol;
   pantallaInicio.classList.add('oculto');
@@ -1512,29 +1380,54 @@ btnCancelarRegistro.addEventListener('click', () => {
   pantallaInicio.classList.remove('oculto');
 });
 
-// CAPTURA Y PREVIEW DE FOTO EN TIEMPO REAL
+// CAPTURA Y COMPRESIÓN DE FOTO EN CANVAS (CORREGIDO: EVITA EXCEDER LOCALSTORAGE)
 regFoto.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = function(evt) {
-      fotoBase64 = evt.target.result;
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 400; // Ancho/alto máximo en píxeles
+        let width = img.width;
+        let height = img.height;
 
-      // 1. Mostrar en vista previa
-      previewFoto.src = fotoBase64;
-      previewFotoContainer.classList.remove('oculto');
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
 
-      // 2. Mostrar en la cabecera
-      if (fotoPerfilHeader && perfilSuperior) {
-        fotoPerfilHeader.src = fotoBase64;
-        perfilSuperior.classList.remove('oculto');
-      }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convertir a JPEG con calidad 70% (~30 KB)
+        fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+        previewFoto.src = fotoBase64;
+        previewFotoContainer.classList.remove('oculto');
+
+        if (fotoPerfilHeader && perfilSuperior) {
+          fotoPerfilHeader.src = fotoBase64;
+          perfilSuperior.classList.remove('oculto');
+        }
+      };
+      img.src = evt.target.result;
     };
     reader.readAsDataURL(file);
   }
 });
 
-// GUARDAR USUARIO, FOTO Y GUARDAR SESIÓN PERMANENTE
+// FORMULARIO DE REGISTRO
 formRegistro.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -1557,7 +1450,6 @@ formRegistro.addEventListener('submit', async (e) => {
     foto: fotoBase64
   };
 
-  // Insertar en tabla 'usuarios'
   const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
     .from('usuarios')
     .insert([datosUsuario])
@@ -1572,14 +1464,8 @@ formRegistro.addEventListener('submit', async (e) => {
   }
 
   const usuarioCreado = usuarioInsertado[0];
-  usuarioActual = usuarioCreado;
-
-  // GUARDAR SESIÓN LOCALMENTE PARA QUE NO VUELVA A PEDIR DATOS NI FOTO
-  localStorage.setItem('bikar_usuario', JSON.stringify(usuarioCreado));
-
   const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
 
-  // Si es conductor, insertar en 'conductores' y 'vehiculos'
   if (rolSeleccionado === 'conductor') {
     const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
     const vehiculoPlaca = document.getElementById('reg-placa')?.value;
@@ -1591,6 +1477,8 @@ formRegistro.addEventListener('submit', async (e) => {
 
     if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
       const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
+      usuarioCreado.conductor_id = conductorId; // Guardar ID de conductor
+      
       await supabaseClient.from('vehiculos').insert([{
         conductor_id: conductorId,
         modelo: vehiculoModelo,
@@ -1599,16 +1487,22 @@ formRegistro.addEventListener('submit', async (e) => {
     }
   }
 
+  usuarioActual = usuarioCreado;
+
+  try {
+    localStorage.setItem('bikar_usuario', JSON.stringify(usuarioCreado));
+  } catch (errStorage) {
+    console.warn("No se pudo guardar la sesión completa en el navegador:", errStorage);
+  }
+
   btnGuardar.disabled = false;
   btnGuardar.innerText = "Guardar y Continuar";
 
   alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
-  
-  // Aplicar sesión automáticamente
   aplicarSesionUsuario(usuarioCreado);
 });
 
-// VERIFICAR SESIÓN GUARDADA AL INICIAR LA APP
+// VERIFICAR SESIÓN GUARDADA AL INICIAR
 verificarSesionGuardada();
   </script>
 </body>
