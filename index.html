@@ -662,6 +662,33 @@
       max-width: 230px;
     }
 
+    .texto-subtitulo {
+  position: absolute;
+  top: calc(85px + env(safe-area-inset-top));
+  left: 16px;
+  z-index: 2;
+  color: var(--text-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+
+  /* EFECTO DE MÁQUINA DE ESCRIBIR */
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid var(--primary-color); /* Cursor que parpadea */
+  width: 0;
+  max-width: max-content;
+  animation: mecanografiar 3s steps(30, end) forwards, parpadeoCursor 0.75s step-end infinite;
+}
+    @keyframes mecanografiar {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes parpadeoCursor {
+  from, to { border-color: transparent; }
+  50%      { border-color: var(--primary-color); }
+}
     .tarjeta-rol {
       position: relative;
       display: flex;
@@ -917,9 +944,16 @@
       <span>Seguro</span>
     </div>
 
+    <div class="inicio-features" aria-hidden="true">
+  <span>Tiempo real</span>
+  <span>GPS</span>
+  <span>Seguro</span>
+</div>
+<p class="texto-subtitulo">SELECCIONA TU ROL</p>
+    
     <div class="roles-container">
       <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
-        <span class="rol-icon">🚶</span>
+        <span class="rol-icon">????</span>
         <span class="rol-text">
           <span class="rol-title">Pasajero</span>
           <span class="rol-desc">Solicita un viaje al instante</span>
@@ -927,7 +961,7 @@
       </button>
 
       <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
-        <span class="rol-icon">🚗</span>
+        <span class="rol-icon">????</span>
         <span class="rol-text">
           <span class="rol-title">Conductor</span>
           <span class="rol-desc">Recibe solicitudes en tiempo real</span>
@@ -935,7 +969,7 @@
       </button>
 
       <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
-        <span class="rol-icon">🏪</span>
+        <span class="rol-icon">????</span>
         <span class="rol-text">
           <span class="rol-title">Comercio</span>
           <span class="rol-desc">Registra tu establecimiento</span>
@@ -974,7 +1008,7 @@
 
       <!-- Subir Foto en tiempo real -->
       <div class="input-group foto-group">
-        <label for="reg-foto" class="label-foto">📸 Capturar / Subir Foto:</label>
+        <label for="reg-foto" class="label-foto">???? Capturar / Subir Foto:</label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
         <div id="preview-foto-container" class="preview-container oculto">
           <img id="preview-foto" src="" alt="Vista previa de foto">
@@ -983,13 +1017,13 @@
 
       <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top: 8px;">Volver</button>
-      <p class="form-note">🔒 Tus datos se guardan de forma segura</p>
+      <p class="form-note">???? Tus datos se guardan de forma segura</p>
     </form>
   </div>
 
   <!-- Selector de Modo -->
   <div id="mode-selector">
-    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 🚶 Pasajero (Cambiar a Conductor)</button>
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: ???? Pasajero (Cambiar a Conductor)</button>
   </div>
 
   <!-- Contenedor del Mapa -->
@@ -1102,13 +1136,13 @@ function aplicarSesionUsuario(usuario) {
 
   if (rolSeleccionado === 'conductor') {
     modoActual = 'conductor';
-    btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
     uiPasajero.classList.add('oculto');
     uiConductor.classList.remove('oculto');
     cargarViajesSolicitados();
   } else {
     modoActual = 'pasajero';
-    btnCambiarModo.innerText = "Modo: 🚶 Pasajero (Cambiar a Conductor)";
+    btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
     uiConductor.classList.add('oculto');
     uiPasajero.classList.remove('oculto');
   }
@@ -1150,13 +1184,13 @@ if ("geolocation" in navigator) {
 btnCambiarModo.addEventListener('click', () => {
   if (modoActual === 'pasajero') {
     modoActual = 'conductor';
-    btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
     uiPasajero.classList.add('oculto');
     uiConductor.classList.remove('oculto');
     cargarViajesSolicitados();
   } else {
     modoActual = 'pasajero';
-    btnCambiarModo.innerText = "Modo: 🚶 Pasajero (Cambiar a Conductor)";
+    btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
     uiConductor.classList.add('oculto');
     uiPasajero.classList.remove('oculto');
   }
@@ -1342,7 +1376,7 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 btnThemeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   const esOscuro = document.body.classList.contains('dark-mode');
-  themeIcon.innerText = esOscuro ? '☀️' : '🌙';
+  themeIcon.innerText = esOscuro ? '☀️' : '????';
 });
 
 // SELECCIÓN DE ROL
