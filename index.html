@@ -790,20 +790,27 @@
   transform: translate(-50%, -50%);
   z-index: 2600;
 
-  width: 88%;
-  max-width: 390px;
+  width: 82%;
+  max-width: 340px;
 
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(20, 20, 20, 0.48) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
-  max-height: calc(100vh - 32px);
-  max-height: calc(100dvh - 32px);
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 28px 22px 22px;
-  box-shadow: 0 0 0 200vmax var(--scrim), var(--shadow), inset 0 1px 0 var(--glass-highlight);
+
+  padding: 20px 18px 18px;
+
+  box-shadow:
+    0 0 0 200vmax rgba(0, 0, 0, 0.18),
+    0 15px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
   animation: modalIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
   scrollbar-width: thin;
   scrollbar-color: rgba(71, 133, 167, 0.5) transparent;
 }
@@ -1406,7 +1413,7 @@ btnThemeToggle.addEventListener('click', () => {
 // SELECCIÓN DE ROL
 window.seleccionarRol = function(rol) {
   rolSeleccionado = rol;
-  pantallaInicio.classList.add('oculto');
+  pantallaInicio.classList.remove('oculto');
   modalRegistro.classList.remove('oculto');
   registroTitulo.innerText = `Registro - ${rol.toUpperCase()}`;
 
