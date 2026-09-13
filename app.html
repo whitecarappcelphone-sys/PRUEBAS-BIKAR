@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#121212">
+  <title>BIKAR · Viajes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    /* ============================================================
+       BIKAR · PARTE 2/2 · MAPA + VIAJES + REALTIME (Glassmorphism)
+       Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e
+       ============================================================ */
+    :root{
+      --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#333; --primary-color:#4785A7;
+      --primary-hover:#366986; --border-color:#ccc; --deep-blue:#134989; --muted-text:#666;
+      --glass-bg:rgba(255,255,255,.72); --glass-bg-strong:rgba(255,255,255,.90);
+      --glass-border:rgba(19,73,137,.14); --glass-highlight:rgba(255,255,255,.95);
+      --field-bg:rgba(255,255,255,.80); --field-border:rgba(19,73,137,.16);
+      --glow:rgba(71,133,167,.32); --glow-strong:rgba(71,133,167,.55);
+      --shadow:0 24px 60px rgba(19,73,137,.16); --grid-line:rgba(71,133,167,.12);
+    }
+    body.dark-mode{
+      --bg-color:#121212; --card-bg:#1e1e1e; --text-color:#f8f9fa; --border-color:#444;
+      --muted-text:rgba(248,249,250,.60);
+      --glass-bg:rgba(30,30,30,.62); --glass-bg-strong:rgba(30,30,30,.86);
+      --glass-border:rgba(255,255,255,.09); --glass-highlight:rgba(255,255,255,.10);
+      --field-bg:rgba(18,18,18,.62); --field-border:rgba(255,255,255,.08);
+      --glow:rgba(71,133,167,.42); --glow-strong:rgba(71,133,167,.65);
+      --shadow:0 30px 70px rgba(0,0,0,.55); --grid-line:rgba(71,133,167,.10);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    html,body{width:100%;height:100%;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);transition:background-color .3s,color .3s;-webkit-font-smoothing:antialiased}
+    .oculto{display:none!important}
+    button:focus-visible,input:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
+
+    @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(71,133,167,.65)}70%{box-shadow:0 0 0 9px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
+
+    /* MAPA */
+    #map{width:100%;height:100vh;height:100dvh;z-index:1;background:var(--bg-color)}
+    .leaflet-container{background:var(--bg-color);font-family:inherit}
+    body.dark-mode .leaflet-tile-pane{filter:invert(1) hue-rotate(195deg) brightness(.82) contrast(.92) saturate(.5)}
+    .leaflet-top.leaflet-left{top:calc(76px + env(safe-area-inset-top))}
+    .leaflet-bar{border:none!important;border-radius:12px!important;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.25)!important}
+    .leaflet-bar a{width:36px!important;height:36px!important;line-height:36px!important;background:var(--glass-bg-strong)!important;
+      color:var(--primary-color)!important;border-bottom:1px solid var(--glass-border)!important;
+      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font-weight:600}
+    .leaflet-bar a:hover{background:var(--card-bg)!important}
+    .leaflet-control-attribution{background:var(--glass-bg)!important;color:var(--muted-text)!important;font-size:10px!important;
+      border-radius:8px 0 0 0;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    .leaflet-control-attribution a{color:var(--primary-color)!important}
+    .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--glass-bg-strong);color:var(--text-color);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+    .leaflet-popup-content-wrapper{border-radius:12px;border:1px solid var(--glass-border);font-weight:500}
+    .leaflet-container a.leaflet-popup-close-button{color:var(--muted-text)}
+
+    /* PERFIL + TEMA */
+    .perfil-superior{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;z-index:3000;width:46px;height:46px;border-radius:50%;overflow:hidden;
+      border:2px solid var(--primary-color);box-shadow:0 8px 24px rgba(0,0,0,.25);background-color:var(--card-bg);cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .perfil-superior:hover{transform:scale(1.05)}
+    #foto-perfil-header{width:100%;height:100%;object-fit:cover}
+    .btn-theme-toggle{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;background:var(--glass-bg-strong);
+      border:1px solid rgba(71,133,167,.5);color:var(--text-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+      box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 4px rgba(71,133,167,.12);transition:transform .2s,box-shadow .2s,border-color .2s}
+    .btn-theme-toggle:hover{transform:translateY(-1px) rotate(15deg);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(71,133,167,.18)}
+
+    /* SELECTOR DE MODO */
+    #mode-selector{position:absolute;top:calc(16px + env(safe-area-inset-top));left:70px;right:78px;z-index:2000;max-width:420px;animation:fadeIn .6s ease both}
+    @media (min-width:620px){#mode-selector{left:50%;right:auto;width:420px;transform:translateX(-50%)}}
+    .btn-secondary{width:100%;padding:12px 16px;background:var(--glass-bg-strong);color:var(--primary-color);border:1px solid rgba(71,133,167,.45);
+      border-radius:999px;font-weight:600;font-size:.86rem;cursor:pointer;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+      box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 var(--glass-highlight);transition:transform .2s,box-shadow .2s,border-color .2s,background .2s}
+    .btn-secondary:hover{border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.22),0 0 0 4px rgba(71,133,167,.14)}
+    .btn-secondary:active{transform:scale(.99)}
+    #btn-cambiar-modo{position:relative;padding-left:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+    #btn-cambiar-modo::before{content:"";position:absolute;left:16px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;
+      background:var(--primary-color);animation:pulseDot 2s ease-out infinite}
+
+    /* PANELES */
+    .ui-panel{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:92%;max-width:420px;
+      padding:22px 20px 20px;z-index:1000;text-align:center;
+      background:linear-gradient(180deg,var(--glass-bg-strong) 0%,var(--glass-bg) 100%);border:1px solid var(--glass-border);border-radius:24px;
+      -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+      box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);color:var(--text-color);
+      animation:panelIn .5s cubic-bezier(.2,.8,.2,1) both}
+    .ui-panel::before{content:"";position:absolute;top:0;left:14%;right:14%;height:2px;border-radius:2px;
+      background:linear-gradient(90deg,transparent,var(--primary-color),transparent);opacity:.9;pointer-events:none}
+    .panel-title{color:var(--text-color);font-size:1.35rem;font-weight:700;margin-bottom:6px}
+    .panel-title::before{content:"BIKAR";display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+      color:var(--primary-color);margin-bottom:6px}
+    .panel-subtitle,.status-text{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
+    .status-text{line-height:1.4;margin:4px 0 14px}
+
+    /* CAMPOS */
+    .input-group{position:relative;margin-bottom:12px;text-align:left}
+    .input-group>input{width:100%;height:54px;padding:0 16px 0 50px;background-color:var(--field-bg);border:1px solid var(--field-border);
+      border-radius:14px;color:var(--text-color);font-size:.95rem;outline:none;background-repeat:no-repeat;background-position:16px center;
+      background-size:20px 20px;transition:border-color .2s,box-shadow .2s,background-color .2s}
+    .input-group>input::placeholder{color:var(--muted-text)}
+    .input-group>input:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.22),0 0 26px rgba(71,133,167,.18)}
+    #input-origen{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E")}
+    #input-destino{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
+
+    /* SUGERENCIAS */
+    .lista-sugerencias{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
+      border-radius:14px;max-height:180px;overflow-y:auto;z-index:2000;box-shadow:0 16px 40px rgba(0,0,0,.35);text-align:left;
+      -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+    .lista-sugerencias:empty{display:none}
+    .sugerencia-item{padding:11px 14px;font-size:.84rem;color:var(--text-color);cursor:pointer;border-bottom:1px solid var(--glass-border);
+      transition:background .15s,color .15s}
+    .sugerencia-item:last-child{border-bottom:none}
+    .sugerencia-item:hover{background-color:rgba(71,133,167,.14);color:var(--primary-color)}
+
+    /* BOTÓN PRINCIPAL */
+    .btn-main{position:relative;width:100%;padding:15px 46px 15px 20px;border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:600;
+      cursor:pointer;overflow:hidden;background:linear-gradient(90deg,#134989 0%,#366986 45%,#4785A7 100%);
+      box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
+    .btn-main::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.20) 50%,transparent 70%);
+      transform:translateX(-100%);transition:transform .7s ease}
+    .btn-main::after{content:"→";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.15rem;line-height:1;transition:transform .25s}
+    .btn-main:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(71,133,167,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+    .btn-main:hover::before{transform:translateX(100%)}
+    .btn-main:hover::after{transform:translate(4px,-50%)}
+    .btn-main:active{transform:translateY(0);filter:brightness(.92)}
+    .btn-main:disabled{opacity:.6;cursor:progress;transform:none}
+
+    /* SOLICITUDES CONDUCTOR */
+    #contenedor-solicitudes{display:flex;flex-direction:column;gap:10px;max-height:40vh;overflow-y:auto;padding-right:2px;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent}
+    .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:16px;padding:14px 14px 14px 18px;background:var(--field-bg);
+      text-align:left;animation:riseIn .4s cubic-bezier(.2,.8,.2,1) both}
+    .tarjeta-viaje::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;border-radius:3px;
+      background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 10px var(--glow-strong)}
+    .tarjeta-viaje p{font-size:1.15rem;font-weight:700;margin-bottom:10px;color:var(--text-color)}
+    .tarjeta-viaje p strong{display:block;margin-bottom:2px;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color)}
+    .tarjeta-viaje .btn-main{padding:12px 42px 12px 16px;font-size:.92rem;border-radius:12px}
+    .comercio-info{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px dashed rgba(71,133,167,.5);
+      color:var(--muted-text);font-size:.78rem;line-height:1.45;text-align:left}
+    .comercio-info b{color:var(--primary-color)}
+  </style>
+</head>
+<body class="dark-mode">
+
+  <!-- PERFIL SUPERIOR -->
+  <div id="perfil-superior" class="perfil-superior oculto" title="Toca para cerrar sesión">
+    <img id="foto-perfil-header" src="" alt="Foto de Perfil">
+  </div>
+
+  <!-- TEMA -->
+  <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Tema" aria-label="Cambiar tema"><span id="theme-icon">☀️</span></button>
+
+  <!-- SELECTOR DE MODO -->
+  <div id="mode-selector">
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 🚶 Pasajero (Cambiar a Conductor)</button>
+  </div>
+
+  <!-- MAPA -->
+  <div id="map"></div>
+
+  <!-- PANEL PASAJERO -->
+  <div id="ui-pasajero" class="ui-panel oculto">
+    <h3 class="panel-title">Solicitar Viaje</h3>
+    <div class="input-group">
+      <input type="text" id="input-origen" placeholder="Tu ubicación o dirección origen" autocomplete="off">
+      <div id="sugerencias-origen" class="lista-sugerencias"></div>
+    </div>
+    <div class="input-group">
+      <input type="text" id="input-destino" placeholder="Escribe la dirección de destino" autocomplete="off">
+      <div id="sugerencias-destino" class="lista-sugerencias"></div>
+    </div>
+    <p id="status-text-pasajero" class="status-text">Ingresa una dirección o toca el mapa.</p>
+    <button id="btn-pedir-viaje" class="btn-main">Confirmar Puntos</button>
+  </div>
+
+  <!-- PANEL CONDUCTOR -->
+  <div id="ui-conductor" class="ui-panel oculto">
+    <h3 class="panel-title">Viajes Solicitados</h3>
+    <p id="status-text-conductor" class="status-text">Buscando solicitudes cercanas...</p>
+    <div id="contenedor-solicitudes"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* ================= SUPABASE ================= */
+    const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const LOGIN_URL = "login.html";           /* Vuelta al acceso */
+    const LLAVE_SESION = "bikar_usuario";      /* Puente entre las 2 páginas */
+    const PASAJERO_ID_PRUEBA = "5";
+    const CONDUCTOR_ID_PRUEBA = "10";
+
+    /* ================= ESTADO ================= */
+    let modoActual = 'pasajero';
+    let origen = null;
+    let destino = null;
+    let marcadorOrigen = null;
+    let marcadorDestino = null;
+    let timerBusqueda = null;
+    let usuarioActual = null;
+
+    /* ================= DOM ================= */
+    const $ = (id) => document.getElementById(id);
+    const btnCambiarModo = $('btn-cambiar-modo');
+    const uiPasajero = $('ui-pasajero');
+    const uiConductor = $('ui-conductor');
+    const inputOrigen = $('input-origen');
+    const inputDestino = $('input-destino');
+    const sugerenciasOrigen = $('sugerencias-origen');
+    const sugerenciasDestino = $('sugerencias-destino');
+    const statusTextPasajero = $('status-text-pasajero');
+    const btnPedirViaje = $('btn-pedir-viaje');
+    const statusTextConductor = $('status-text-conductor');
+    const contenedorSolicitudes = $('contenedor-solicitudes');
+    const perfilSuperior = $('perfil-superior');
+    const fotoPerfilHeader = $('foto-perfil-header');
+    const themeIcon = $('theme-icon');
+
+    /* ================= MAPA ================= */
+    const map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+
+    /* ================= GEOLOCALIZACIÓN ================= */
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        origen = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        map.setView([origen.lat, origen.lon], 15);
+        marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
+      }, () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; });
+    }
+
+    /* ================= TEMA ================= */
+    $('btn-theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      themeIcon.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+      setTimeout(() => map.invalidateSize(), 200);
+    });
+
+    /* ================= SESIÓN (desde login.html) ================= */
+    function verificarSesionGuardada() {
+      const sesionGuardada = localStorage.getItem(LLAVE_SESION);
+      if (!sesionGuardada) { window.location.href = LOGIN_URL; return; }
+      try {
+        usuarioActual = JSON.parse(sesionGuardada);
+        aplicarSesionUsuario(usuarioActual);
+      } catch (e) { console.error("Error al cargar sesión:", e); window.location.href = LOGIN_URL; }
+    }
+
+    function aplicarSesionUsuario(usuario) {
+      if (!usuario) { window.location.href = LOGIN_URL; return; }
+
+      if (usuario.foto && fotoPerfilHeader && perfilSuperior) {
+        fotoPerfilHeader.src = usuario.foto;
+        perfilSuperior.classList.remove('oculto');
+      }
+
+      if (usuario.tipo_usuario === 'conductor') {
+        modoActual = 'conductor';
+        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.remove('oculto');
+        cargarViajesSolicitados();
+      } else {
+        modoActual = 'pasajero';
+        btnCambiarModo.innerText = "Modo: 🚶 Pasajero (Cambiar a Conductor)";
+        uiConductor.classList.add('oculto');
+        uiPasajero.classList.remove('oculto');
+        if (usuario.tipo_usuario === 'comercio') {
+          uiPasajero.insertAdjacentHTML('afterbegin',
+            `<div class="comercio-info"><b>Comercio activo:</b> ${usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento'} · ${usuario.categoria || 'Categoría no registrada'}</div>`);
+        }
+      }
+
+      setTimeout(() => map.invalidateSize(), 300);
+    }
+
+    perfilSuperior.addEventListener('click', () => {
+      if (confirm("¿Deseas cerrar sesión en BIKAR?")) {
+        localStorage.removeItem(LLAVE_SESION);
+        usuarioActual = null;
+        window.location.href = LOGIN_URL;
+      }
+    });
+
+    /* ================= MODO PASAJERO / CONDUCTOR ================= */
+    btnCambiarModo.addEventListener('click', () => {
+      if (modoActual === 'pasajero') {
+        modoActual = 'conductor';
+        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.remove('oculto');
+        cargarViajesSolicitados();
+      } else {
+        modoActual = 'pasajero';
+        btnCambiarModo.innerText = "Modo: 🚶 Pasajero (Cambiar a Conductor)";
+        uiConductor.classList.add('oculto');
+        uiPasajero.classList.remove('oculto');
+      }
+      setTimeout(() => map.invalidateSize(), 200);
+    });
+
+    /* Click en el mapa = destino */
+    map.on('click', (e) => {
+      if (modoActual !== 'pasajero') return;
+      destino = { lat: e.latlng.lat, lon: e.latlng.lng };
+      if (marcadorDestino) marcadorDestino.setLatLng(e.latlng);
+      else marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
+      actualizarCalculoRuta();
+    });
+
+    /* ================= AUTOCOMPLETADO NOMINATIM ================= */
+    function buscarSugerencias(texto, contenedor, alSeleccionar) {
+      clearTimeout(timerBusqueda);
+      contenedor.innerHTML = "";
+      if (texto.trim().length < 3) return;
+      timerBusqueda = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&limit=5`);
+          const datos = await res.json();
+          contenedor.innerHTML = "";
+          datos.forEach((item) => {
+            const div = document.createElement('div');
+            div.className = 'sugerencia-item';
+            div.innerText = item.display_name;
+            div.addEventListener('click', () => {
+              alSeleccionar(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
+              contenedor.innerHTML = "";
+            });
+            contenedor.appendChild(div);
+          });
+        } catch (err) { console.error(err); }
+      }, 400);
+    }
+
+    inputOrigen.addEventListener('input', () => {
+      buscarSugerencias(inputOrigen.value, sugerenciasOrigen, (lat, lon, nombre) => {
+        inputOrigen.value = nombre;
+        origen = { lat, lon };
+        if (marcadorOrigen) marcadorOrigen.setLatLng([lat, lon]);
+        else marcadorOrigen = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 15);
+        actualizarCalculoRuta();
+      });
+    });
+
+    inputDestino.addEventListener('input', () => {
+      buscarSugerencias(inputDestino.value, sugerenciasDestino, (lat, lon, nombre) => {
+        inputDestino.value = nombre;
+        destino = { lat, lon };
+        if (marcadorDestino) marcadorDestino.setLatLng([lat, lon]);
+        else marcadorDestino = L.marker([lat, lon]).addTo(map);
+        actualizarCalculoRuta();
+      });
+    });
+
+    /* ================= RUTA / TARIFA ================= */
+    function actualizarCalculoRuta() {
+      if (!origen || !destino) return;
+      map.fitBounds(new L.featureGroup([marcadorOrigen, marcadorDestino]).getBounds().pad(0.2));
+
+      const distanciaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
+      const tarifaEstimada = Math.round(5000 + (distanciaKm * 2000));
+
+      statusTextPasajero.innerText = `Tarifa estimada: $${tarifaEstimada}`;
+      btnPedirViaje.dataset.tarifa = tarifaEstimada;
+      btnPedirViaje.innerText = "Pedir Viaje Ahora";
+    }
+
+    function calcularDistancia(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
+
+    /* ================= PEDIR VIAJE ================= */
+    btnPedirViaje.addEventListener('click', async () => {
+      if (!origen || !destino) return alert("Selecciona origen y destino.");
+
+      btnPedirViaje.disabled = true;
+      btnPedirViaje.innerText = "Solicitando...";
+
+      const tarifa = parseFloat(btnPedirViaje.dataset.tarifa) || 5000;
+      const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
+
+      const { data, error } = await supabaseClient.from('viajes').insert([{
+        pasajero_id: pasajeroId,
+        origen_lat: origen.lat, origen_lon: origen.lon,
+        destino_lat: destino.lat, destino_lon: destino.lon,
+        tarifa: tarifa, estado: 'solicitado'
+      }]).select();
+
+      if (error) {
+        alert("Error al solicitar viaje: " + error.message);
+        btnPedirViaje.disabled = false;
+        btnPedirViaje.innerText = "Pedir Viaje Ahora";
+      } else {
+        statusTextPasajero.innerText = "¡Viaje solicitado! Buscando conductor...";
+        escucharEstadoViajePasajero(data[0].id);
+      }
+    });
+
+    function escucharEstadoViajePasajero(viajeId) {
+      supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
+        event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}`
+      }, (payload) => {
+        if (payload.new.estado === 'aceptado') {
+          statusTextPasajero.innerText = "¡Un conductor ha aceptado tu viaje!";
+          btnPedirViaje.innerText = "En Ruta";
+        }
+      }).subscribe();
+    }
+
+    /* ================= CONDUCTOR ================= */
+    async function cargarViajesSolicitados() {
+      contenedorSolicitudes.innerHTML = "";
+      statusTextConductor.innerText = "Buscando solicitudes cercanas...";
+
+      const { data } = await supabaseClient.from('viajes').select('*').eq('estado', 'solicitado');
+
+      if (data && data.length > 0) {
+        statusTextConductor.innerText = `${data.length} viaje(s) disponible(s):`;
+        data.forEach(renderizarTarjetaViaje);
+      } else {
+        statusTextConductor.innerText = "No hay viajes disponibles por ahora.";
+      }
+    }
+
+    function renderizarTarjetaViaje(viaje) {
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'tarjeta-viaje';
+      tarjeta.innerHTML = `
+        <p><strong>Tarifa:</strong> $${viaje.tarifa}</p>
+        <button class="btn-main" onclick="aceptarViaje(${viaje.id})">Aceptar Viaje</button>`;
+      contenedorSolicitudes.appendChild(tarjeta);
+    }
+
+    async function aceptarViaje(viajeId) {
+      const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+      const { error } = await supabaseClient.from('viajes').update({ estado: 'aceptado', conductor_id: conductorId }).eq('id', viajeId);
+      if (!error) { alert("¡Viaje aceptado exitosamente!"); cargarViajesSolicitados(); }
+      else alert("Error al aceptar viaje: " + error.message);
+    }
+    window.aceptarViaje = aceptarViaje;
+
+    /* ================= SUPABASE REALTIME ================= */
+    supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'viajes'
+    }, () => { if (modoActual === 'conductor') cargarViajesSolicitados(); }).subscribe();
+
+    /* ================= INICIO ================= */
+    verificarSesionGuardada();
+  </script>
+</body>
+</html>
