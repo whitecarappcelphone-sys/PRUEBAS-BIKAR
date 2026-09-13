@@ -1109,6 +1109,28 @@ let usuarioActual = null;
 
 // DOM
 const btnCambiarModo = document.getElementById('btn-cambiar-modo');
+const videosFondo = document.querySelectorAll('.video-fondo');
+function reproducirVideoActivo() {
+  const videoClaro = document.querySelector('.video-claro');
+  const videoOscuro = document.querySelector('.video-oscuro');
+
+  const videoActivo = document.body.classList.contains('dark-mode')
+    ? videoOscuro
+    : videoClaro;
+
+  const videoInactivo = document.body.classList.contains('dark-mode')
+    ? videoClaro
+    : videoOscuro;
+
+  if (videoInactivo) {
+    videoInactivo.pause();
+  }
+
+  if (videoActivo) {
+    videoActivo.muted = true;
+    videoActivo.play().catch(() => {});
+  }
+}
 const uiPasajero = document.getElementById('ui-pasajero');
 const uiConductor = document.getElementById('ui-conductor');
 
@@ -1406,6 +1428,7 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 // MODO CLARO / OSCURO
 btnThemeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
+  reproducirVideoActivo();
   const esOscuro = document.body.classList.contains('dark-mode');
   themeIcon.innerText = esOscuro ? '☀️' : '????';
 });
@@ -1438,11 +1461,24 @@ window.seleccionarRol = function(rol) {
       </div>
     `;
   }
+    // Reanudar videos de fondo
+  document.querySelectorAll('.video-fondo').forEach(video => {
+    video.muted = true;
+    video.play().catch(() => {});
+  });
+  
+  reproducirVideoActivo();
 };
 
 btnCancelarRegistro.addEventListener('click', () => {
   modalRegistro.classList.add('oculto');
   pantallaInicio.classList.remove('oculto');
+
+  // Reanudar videos de fondo
+  document.querySelectorAll('.video-fondo').forEach(video => {
+    video.play().catch(() => {});
+  });
+  reproducirVideoActivo();
 });
 
 // CAPTURA Y COMPRESIÓN DE FOTO EN CANVAS (CORREGIDO: EVITA EXCEDER LOCALSTORAGE)
@@ -1566,7 +1602,17 @@ formRegistro.addEventListener('submit', async (e) => {
   alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
   aplicarSesionUsuario(usuarioCreado);
 });
-
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    document.querySelectorAll('.video-fondo').forEach(video => {
+      video.muted = true;
+      video.play().catch(() => {});
+    });
+  }
+});
+setInterval(() => {
+  reproducirVideoActivo();
+}, 3000);    
 // VERIFICAR SESIÓN GUARDADA AL INICIAR
 verificarSesionGuardada();
   </script>
