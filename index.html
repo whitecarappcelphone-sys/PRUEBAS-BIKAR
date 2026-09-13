@@ -12,9 +12,8 @@
 
   <style>
     /* =====================================================================
-       BIKAR · Interfaz de alta tecnología (glassmorphism)
-       Paleta original conservada: #4785A7 · #366986 · #134989 · #f8f9fa
-                                   #ffffff · #333333 · #121212 · #1e1e1e
+       BIKAR · Interfaz Glassmorphism Optimizada
+       Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e
        ===================================================================== */
     :root {
       --bg-color: #f8f9fa;
@@ -23,8 +22,6 @@
       --primary-color: #4785A7;
       --primary-hover: #366986;
       --border-color: #cccccc;
-
-      /* Tokens de diseño derivados de la misma paleta */
       --deep-blue: #134989;
       --muted-text: #666666;
       --glass-bg: rgba(255, 255, 255, 0.72);
@@ -37,7 +34,6 @@
       --glow-strong: rgba(71, 133, 167, 0.55);
       --shadow: 0 24px 60px rgba(19, 73, 137, 0.16);
       --grid-line: rgba(71, 133, 167, 0.12);
-      --scrim: rgba(248, 249, 250, 0.55);
     }
 
     body.dark-mode {
@@ -45,7 +41,6 @@
       --card-bg: #1e1e1e;
       --text-color: #f8f9fa;
       --border-color: #444444;
-
       --muted-text: rgba(248, 249, 250, 0.60);
       --glass-bg: rgba(30, 30, 30, 0.62);
       --glass-bg-strong: rgba(30, 30, 30, 0.86);
@@ -57,7 +52,6 @@
       --glow-strong: rgba(71, 133, 167, 0.65);
       --shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
       --grid-line: rgba(71, 133, 167, 0.10);
-      --scrim: rgba(18, 18, 18, 0.62);
     }
 
     * {
@@ -77,12 +71,9 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .oculto {
-      display: none !important;
-    }
+    .oculto { display: none !important; }
 
-    button:focus-visible,
-    input:focus-visible {
+    button:focus-visible, input:focus-visible, select:focus-visible {
       outline: 2px solid var(--primary-color);
       outline-offset: 2px;
     }
@@ -96,22 +87,10 @@
       from { opacity: 0; transform: translate(-50%, calc(-50% + 18px)) scale(0.985); }
       to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes riseIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideInLeft {
-      from { opacity: 0; transform: translateX(-64px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes orbFloat {
-      from { transform: translate(0, 0); }
-      to   { transform: translate(-40px, 50px); }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes riseIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-64px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes orbFloat { from { transform: translate(0, 0); } to { transform: translate(-40px, 50px); } }
     @keyframes pulseDot {
       0%   { box-shadow: 0 0 0 0 rgba(71, 133, 167, 0.65); }
       70%  { box-shadow: 0 0 0 9px rgba(71, 133, 167, 0); }
@@ -123,37 +102,28 @@
       85%  { opacity: 1; }
       to   { transform: translateY(110vh); opacity: 0; }
     }
+    @keyframes mecanografiar { from { width: 0; } to { width: 100%; } }
+    @keyframes parpadeoCursor { from, to { border-color: transparent; } 50% { border-color: var(--primary-color); } }
 
     /* MAPA */
     #map {
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-  z-index: 1;
-  background: var(--bg-color);
-  visibility: hidden;
-}
-
-    .leaflet-container {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 1;
       background: var(--bg-color);
-      font-family: inherit;
+      visibility: hidden;
     }
 
-    body.dark-mode .leaflet-tile-pane {
-      filter: invert(1) hue-rotate(195deg) brightness(0.82) contrast(0.92) saturate(0.5);
-    }
-
-    .leaflet-top.leaflet-left {
-      top: calc(76px + env(safe-area-inset-top));
-    }
-
+    .leaflet-container { background: var(--bg-color); font-family: inherit; }
+    body.dark-mode .leaflet-tile-pane { filter: invert(1) hue-rotate(195deg) brightness(0.82) contrast(0.92) saturate(0.5); }
+    .leaflet-top.leaflet-left { top: calc(76px + env(safe-area-inset-top)); }
     .leaflet-bar {
       border: none !important;
       border-radius: 12px !important;
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
     }
-
     .leaflet-bar a {
       width: 36px !important;
       height: 36px !important;
@@ -165,11 +135,7 @@
       backdrop-filter: blur(12px);
       font-weight: 600;
     }
-
-    .leaflet-bar a:hover {
-      background: var(--card-bg) !important;
-    }
-
+    .leaflet-bar a:hover { background: var(--card-bg) !important; }
     .leaflet-control-attribution {
       background: var(--glass-bg) !important;
       color: var(--muted-text) !important;
@@ -178,29 +144,20 @@
       -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
     }
-
-    .leaflet-control-attribution a {
-      color: var(--primary-color) !important;
-    }
-
-    .leaflet-popup-content-wrapper,
-    .leaflet-popup-tip {
+    .leaflet-control-attribution a { color: var(--primary-color) !important; }
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
       background: var(--glass-bg-strong);
       color: var(--text-color);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
-
     .leaflet-popup-content-wrapper {
       border-radius: 12px;
       border: 1px solid var(--glass-border);
       font-weight: 500;
     }
+    .leaflet-container a.leaflet-popup-close-button { color: var(--muted-text); }
 
-    .leaflet-container a.leaflet-popup-close-button {
-      color: var(--muted-text);
-    }
-
-    /* BOTÓN TEMA CLARO / OSCURO */
+    /* BOTÓN TEMA */
     .btn-theme-toggle {
       position: absolute;
       top: calc(16px + env(safe-area-inset-top));
@@ -212,7 +169,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       cursor: pointer;
       background: var(--glass-bg-strong);
       border: 1px solid rgba(71, 133, 167, 0.5);
@@ -222,7 +179,6 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(71, 133, 167, 0.12);
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
-
     .btn-theme-toggle:hover {
       transform: translateY(-1px) rotate(15deg);
       border-color: var(--primary-color);
@@ -245,16 +201,8 @@
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-
-    .perfil-superior:hover {
-      transform: scale(1.05);
-    }
-
-    #foto-perfil-header {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .perfil-superior:hover { transform: scale(1.05); }
+    #foto-perfil-header { width: 100%; height: 100%; object-fit: cover; }
 
     /* SELECTOR DE MODO */
     #mode-selector {
@@ -291,15 +239,11 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), inset 0 1px 0 var(--glass-highlight);
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
     }
-
     .btn-secondary:hover {
       border-color: var(--primary-color);
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22), 0 0 0 4px rgba(71, 133, 167, 0.14);
     }
-
-    .btn-secondary:active {
-      transform: scale(0.99);
-    }
+    .btn-secondary:active { transform: scale(0.99); }
 
     #btn-cambiar-modo {
       position: relative;
@@ -309,7 +253,6 @@
       text-overflow: ellipsis;
       text-align: left;
     }
-
     #btn-cambiar-modo::before {
       content: "";
       position: absolute;
@@ -323,10 +266,17 @@
       animation: pulseDot 2s ease-out infinite;
     }
 
-    /* TARJETAS DE CRISTAL */
-    .glass-card,
+    /* PANELES UI */
     .ui-panel {
-      position: relative;
+      position: absolute;
+      bottom: calc(24px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 420px;
+      padding: 22px 20px 20px;
+      z-index: 1000;
+      text-align: center;
       background: linear-gradient(180deg, var(--glass-bg-strong) 0%, var(--glass-bg) 100%);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
@@ -334,9 +284,8 @@
       backdrop-filter: blur(22px) saturate(160%);
       box-shadow: var(--shadow), inset 0 1px 0 var(--glass-highlight);
       color: var(--text-color);
+      animation: panelIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
-
-    .glass-card::before,
     .ui-panel::before {
       content: "";
       position: absolute;
@@ -350,19 +299,6 @@
       pointer-events: none;
     }
 
-    .ui-panel {
-      position: absolute;
-      bottom: calc(24px + env(safe-area-inset-bottom));
-      left: 50%;
-      transform: translateX(-50%);
-      width: 92%;
-      max-width: 420px;
-      padding: 22px 20px 20px;
-      z-index: 1000;
-      text-align: center;
-      animation: panelIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-    }
-
     .panel-title {
       color: var(--text-color);
       font-size: 1.35rem;
@@ -370,11 +306,6 @@
       letter-spacing: -0.01em;
       margin-bottom: 6px;
     }
-    
-    #registro-titulo {
-    color: #ffffff !important;
-}
-
     .panel-title::before {
       content: "BIKAR";
       display: block;
@@ -391,7 +322,6 @@
       font-size: 0.86rem;
       margin-bottom: 18px;
     }
-
     .status-text {
       color: var(--muted-text);
       font-size: 0.86rem;
@@ -405,8 +335,7 @@
       margin-bottom: 12px;
       text-align: left;
     }
-
-    .input-group > input {
+    .input-group > input, .input-group > select {
       width: 100%;
       height: 54px;
       padding: 0 16px 0 50px;
@@ -423,20 +352,19 @@
       appearance: none;
       transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
-
-    .input-group > input::placeholder {
-      color: var(--muted-text);
-    }
-
-    .input-group > input:focus {
+    .input-group > select { padding-left: 16px; cursor: pointer; }
+    .input-group > input::placeholder { color: var(--muted-text); }
+    .input-group > input:focus, .input-group > select:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(71, 133, 167, 0.22), 0 0 26px rgba(71, 133, 167, 0.18);
     }
 
-    /* Iconos SVG */
+    /* Iconos SVG para inputs */
     #reg-nombre { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E"); }
     #reg-telefono { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E"); }
     #reg-email { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E"); }
+    #reg-password, #reg-password-confirm, #login-password { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E"); }
+    #reg-num-doc, #login-dni { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='M15 8h2m-2 4h2M7 16h10'/%3E%3C/svg%3E"); }
     #reg-vehiculo { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2'/%3E%3Ccircle cx='7' cy='17' r='2'/%3E%3Cpath d='M9 17h6'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E"); }
     #reg-placa { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 12h.01M10 12h4M18 12h.01'/%3E%3C/svg%3E"); }
     #reg-comercio-nombre { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1.5-5h15L21 9'/%3E%3Cpath d='M3 9v11h18V9'/%3E%3Cpath d='M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E"); }
@@ -444,7 +372,7 @@
     #input-origen { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
     #input-destino { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E"); }
 
-    /* Sugerencias de direcciones */
+    /* SUGERENCIAS */
     .lista-sugerencias {
       position: absolute;
       top: calc(100% + 6px);
@@ -461,11 +389,7 @@
       -webkit-backdrop-filter: blur(18px);
       backdrop-filter: blur(18px);
     }
-
-    .lista-sugerencias:empty {
-      display: none;
-    }
-
+    .lista-sugerencias:empty { display: none; }
     .sugerencia-item {
       padding: 11px 14px;
       font-size: 0.84rem;
@@ -474,17 +398,13 @@
       border-bottom: 1px solid var(--glass-border);
       transition: background 0.15s, color 0.15s;
     }
-
-    .sugerencia-item:last-child {
-      border-bottom: none;
-    }
-
+    .sugerencia-item:last-child { border-bottom: none; }
     .sugerencia-item:hover {
       background-color: rgba(71, 133, 167, 0.14);
       color: var(--primary-color);
     }
 
-    /* BOTONES */
+    /* BOTONES PRINCIPALES */
     .btn-main {
       position: relative;
       width: 100%;
@@ -501,7 +421,6 @@
       box-shadow: 0 10px 26px rgba(71, 133, 167, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
       transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
     }
-
     .btn-main::before {
       content: "";
       position: absolute;
@@ -510,7 +429,6 @@
       transform: translateX(-100%);
       transition: transform 0.7s ease;
     }
-
     .btn-main::after {
       content: "→";
       position: absolute;
@@ -521,30 +439,14 @@
       line-height: 1;
       transition: transform 0.25s;
     }
-
     .btn-main:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 32px rgba(71, 133, 167, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
-
-    .btn-main:hover::before {
-      transform: translateX(100%);
-    }
-
-    .btn-main:hover::after {
-      transform: translate(4px, -50%);
-    }
-
-    .btn-main:active {
-      transform: translateY(0);
-      filter: brightness(0.92);
-    }
-
-    .btn-main:disabled {
-      opacity: 0.6;
-      cursor: progress;
-      transform: none;
-    }
+    .btn-main:hover::before { transform: translateX(100%); }
+    .btn-main:hover::after { transform: translate(4px, -50%); }
+    .btn-main:active { transform: translateY(0); filter: brightness(0.92); }
+    .btn-main:disabled { opacity: 0.6; cursor: progress; transform: none; }
 
     /* PANTALLA DE INICIO */
     .pantalla-inicio {
@@ -567,7 +469,6 @@
         rgba(18, 18, 18, 0.45);
       animation: fadeIn 0.6s ease both;
     }
-
     .pantalla-inicio::before {
       content: "";
       position: absolute;
@@ -580,7 +481,6 @@
       -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
       mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
     }
-
     .pantalla-inicio::after {
       content: "";
       position: absolute;
@@ -619,14 +519,10 @@
       z-index: -2;
       pointer-events: none;
       filter: brightness(0.55);
-      transition: opacity 0.6s ease-in-out; /* Fundido suave entre ambos videos */
+      transition: opacity 0.6s ease-in-out;
     }
-
-    /* Estado por defecto (Modo Claro) */
     .video-oscuro { opacity: 0; }
     .video-claro { opacity: 1; }
-
-    /* Estado cuando se activa el Modo Oscuro */
     body.dark-mode .video-oscuro { opacity: 1; }
     body.dark-mode .video-claro { opacity: 0; }
 
@@ -643,7 +539,6 @@
       animation: riseIn 0.7s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
       text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
     }
-
     .inicio-features span {
       display: inline-flex;
       align-items: center;
@@ -654,7 +549,6 @@
       text-transform: uppercase;
       color: #ffffff !important;
     }
-
     .inicio-features span::before {
       content: "";
       width: 6px;
@@ -662,6 +556,23 @@
       border-radius: 50%;
       background: var(--primary-color);
       box-shadow: 0 0 8px var(--primary-color);
+    }
+
+    .texto-subtitulo {
+      position: absolute;
+      top: calc(85px + env(safe-area-inset-top));
+      left: 16px;
+      z-index: 2;
+      color: #ffffff !important;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid var(--primary-color);
+      width: 0;
+      max-width: max-content;
+      animation: mecanografiar 3s steps(30, end) forwards, parpadeoCursor 0.75s step-end infinite;
     }
 
     .roles-container {
@@ -673,36 +584,9 @@
       flex-direction: column;
       gap: 10px;
       width: calc(100% - 32px);
-      max-width: 230px;
+      max-width: 250px;
     }
 
-    .texto-subtitulo {
-  position: absolute;
-  top: calc(85px + env(safe-area-inset-top));
-  left: 16px;
-  z-index: 2;
-  color: #ffffff !important;
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
-
-  /* EFECTO DE MÁQUINA DE ESCRIBIR */
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 2px solid var(--primary-color); /* Cursor que parpadea */
-  width: 0;
-  max-width: max-content;
-  animation: mecanografiar 3s steps(30, end) forwards, parpadeoCursor 0.75s step-end infinite;
-}
-    @keyframes mecanografiar {
-  from { width: 0; }
-  to   { width: 100%; }
-}
-
-@keyframes parpadeoCursor {
-  from, to { border-color: transparent; }
-  50%      { border-color: var(--primary-color); }
-}
     .tarjeta-rol {
       position: relative;
       display: flex;
@@ -712,7 +596,7 @@
       background: var(--field-bg);
       border: 1px solid var(--field-border);
       border-radius: 12px;
-      padding: 8px 12px;
+      padding: 10px 14px;
       cursor: pointer;
       color: var(--text-color);
       text-align: left;
@@ -722,11 +606,9 @@
       transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
       animation: slideInLeft 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
     }
-
     .tarjeta-rol:nth-child(1) { animation-delay: 0.20s; }
     .tarjeta-rol:nth-child(2) { animation-delay: 0.34s; }
     .tarjeta-rol:nth-child(3) { animation-delay: 0.48s; }
-
     .tarjeta-rol::after {
       content: "";
       margin-left: auto;
@@ -739,110 +621,73 @@
       opacity: 0.85;
       transition: transform 0.25s;
     }
-
-    .tarjeta-rol:hover,
-    .tarjeta-rol:focus-visible {
+    .tarjeta-rol:hover, .tarjeta-rol:focus-visible {
       transform: translateY(-2px);
       border-color: var(--primary-color);
       box-shadow: 0 12px 30px var(--glow), inset 0 0 0 1px rgba(71, 133, 167, 0.25);
     }
-
-    .tarjeta-rol:hover::after {
-      transform: translateX(4px) rotate(45deg);
-    }
-
-    .tarjeta-rol:active {
-      transform: translateY(0) scale(0.99);
-    }
+    .tarjeta-rol:hover::after { transform: translateX(4px) rotate(45deg); }
+    .tarjeta-rol:active { transform: translateY(0) scale(0.99); }
 
     .rol-icon {
       display: grid;
       place-items: center;
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       flex-shrink: 0;
       border-radius: 10px;
-      font-size: 1.15rem;
       background: linear-gradient(145deg, rgba(71, 133, 167, 0.22), rgba(19, 73, 137, 0.12));
       border: 1px solid rgba(71, 133, 167, 0.35);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      color: var(--primary-color);
     }
+    .rol-icon svg { width: 22px; height: 22px; stroke: var(--primary-color); fill: none; }
 
-    .rol-text {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      min-width: 0;
-    }
-
-    .rol-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-color);
-      letter-spacing: 0.01em;
-    }
-
-    .rol-desc {
-      font-size: 0.72rem;
-      color: var(--muted-text);
-    }
+    .rol-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .rol-title { font-size: 0.9rem; font-weight: 700; color: var(--text-color); letter-spacing: 0.01em; }
+    .rol-desc { font-size: 0.72rem; color: var(--muted-text); }
 
     /* MODAL DE REGISTRO */
-   #modal-registro {
-  top: 50%;
-  bottom: auto;
-  transform: translate(-50%, -50%);
-  z-index: 2600;
-
-  width: 82%;
-  max-width: 340px;
-
-  background: rgba(20, 20, 20, 0.48) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  max-height: calc(100vh - 40px);
-  max-height: calc(100dvh - 40px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-
-  padding: 20px 18px 18px;
-
-  box-shadow:
-    0 0 0 200vmax rgba(0, 0, 0, 0.18),
-    0 15px 40px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-
-  animation: modalIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-
-  scrollbar-width: thin;
-  scrollbar-color: rgba(71, 133, 167, 0.5) transparent;
-}
-
-    #form-registro {
-      text-align: left;
+    #modal-registro, #modal-login, #modal-opciones-rol {
+      top: 50%;
+      bottom: auto;
+      transform: translate(-50%, -50%);
+      z-index: 2600;
+      width: 88%;
+      max-width: 360px;
+      background: rgba(20, 20, 20, 0.58) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      max-height: calc(100vh - 40px);
+      max-height: calc(100dvh - 40px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 22px 20px 20px;
+      box-shadow: 0 0 0 200vmax rgba(0, 0, 0, 0.25), 0 15px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      animation: modalIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(71, 133, 167, 0.5) transparent;
     }
 
-    #form-registro .btn-main {
-      margin-top: 6px;
-    }
-
+    #form-registro, #form-login { text-align: left; }
+    #form-registro .btn-main, #form-login .btn-main { margin-top: 6px; }
     .form-note {
       margin-top: 14px;
       text-align: center;
-      font-size: 0.74rem;
+      font-size: 0.76rem;
       color: var(--muted-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .foto-group {
-      margin-top: 4px;
-    }
-
+    .foto-group { position: relative; margin-top: 4px; }
     .label-foto {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px;
+      gap: 10px;
+      padding: 14px 16px;
       border-radius: 14px;
       border: 1px dashed rgba(71, 133, 167, 0.55);
       background: var(--field-bg);
@@ -853,13 +698,10 @@
       text-align: left;
       transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-
-    .foto-group:hover .label-foto,
-    .foto-group:focus-within .label-foto {
+    .foto-group:hover .label-foto, .foto-group:focus-within .label-foto {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(71, 133, 167, 0.18), 0 0 26px rgba(71, 133, 167, 0.15);
     }
-
     #reg-foto {
       position: absolute;
       inset: 0;
@@ -869,7 +711,6 @@
       cursor: pointer;
       z-index: 2;
     }
-
     .preview-container {
       position: relative;
       margin-top: 12px;
@@ -881,15 +722,9 @@
       box-shadow: 0 0 0 3px rgba(71, 133, 167, 0.15), 0 10px 30px rgba(0, 0, 0, 0.25);
       animation: fadeIn 0.4s ease both;
     }
+    #preview-foto { display: block; width: 100%; height: 100%; object-fit: cover; }
 
-    #preview-foto {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* TARJETAS DE SOLICITUD */
+    /* SOLICITUDES CONDUCTOR */
     #contenedor-solicitudes {
       display: flex;
       flex-direction: column;
@@ -900,7 +735,6 @@
       scrollbar-width: thin;
       scrollbar-color: rgba(71, 133, 167, 0.5) transparent;
     }
-
     .tarjeta-viaje {
       position: relative;
       border: 1px solid var(--field-border);
@@ -910,7 +744,6 @@
       text-align: left;
       animation: riseIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
-
     .tarjeta-viaje::before {
       content: "";
       position: absolute;
@@ -922,15 +755,13 @@
       background: linear-gradient(180deg, var(--primary-color), #134989);
       box-shadow: 0 0 10px var(--glow-strong);
     }
-
     .tarjeta-viaje p {
-      font-size: 1.35rem;
+      font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: -0.01em;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       color: var(--text-color);
     }
-
     .tarjeta-viaje p strong {
       display: block;
       margin-bottom: 2px;
@@ -940,39 +771,26 @@
       text-transform: uppercase;
       color: var(--primary-color);
     }
-
-    .tarjeta-viaje .btn-main {
-      padding: 12px 42px 12px 16px;
-      font-size: 0.92rem;
-      border-radius: 12px;
-    }
-    .panel-subtitle {
-    color: #ffffff !important;
-}
-    
-    .form-note {
-    color: #ffffff !important;
-}
+    .tarjeta-viaje .btn-main { padding: 12px 42px 12px 16px; font-size: 0.92rem; border-radius: 12px; }
   </style>
 </head>
 <body class="dark-mode">
+
   <!-- PERFIL SUPERIOR (AVATAR DEL USUARIO) -->
   <div id="perfil-superior" class="perfil-superior oculto" title="Toca para cerrar sesión">
     <img id="foto-perfil-header" src="" alt="Foto de Perfil">
   </div>
 
   <!-- BOTÓN MODO CLARO / OSCURO -->
-  <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Modo">
+  <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Tema" aria-label="Cambiar tema">
     <span id="theme-icon">☀️</span>
   </button>
 
-    <!-- PANTALLA DE INICIO -->
+  <!-- PANTALLA DE INICIO -->
   <div id="pantalla-inicio" class="pantalla-inicio">
-    <!-- Video Modo Oscuro -->
     <video id="video-oscuro" class="video-fondo video-oscuro" autoplay loop muted playsinline>
       <source src="https://i.imgur.com/7qoNKhR.mp4" type="video/mp4">
     </video>
-    <!-- Video Modo Claro -->
     <video id="video-claro" class="video-fondo video-claro" autoplay loop muted playsinline>
       <source src="https://i.imgur.com/xO5vIAY.mp4" type="video/mp4">
     </video>
@@ -985,32 +803,46 @@
       <span>Seguro</span>
     </div>
 
-    <div class="inicio-features" aria-hidden="true">
-  <span>Tiempo real</span>
-  <span>GPS</span>
-  <span>Seguro</span>
-</div>
-<p class="texto-subtitulo">SELECCIONA TU ROL</p>
+    <p class="texto-subtitulo">SELECCIONA TU ROL</p>
     
     <div class="roles-container">
-      <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
-        <span class="rol-icon">????</span>
+      <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')" aria-label="Ingresar como Pasajero">
+        <span class="rol-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </span>
         <span class="rol-text">
           <span class="rol-title">Pasajero</span>
           <span class="rol-desc">Solicita un viaje al instante</span>
         </span>
       </button>
 
-      <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
-        <span class="rol-icon">????</span>
+      <button class="tarjeta-rol" onclick="seleccionarRol('conductor')" aria-label="Ingresar como Conductor">
+        <span class="rol-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+            <circle cx="7" cy="17" r="2"/>
+            <path d="M9 17h6"/>
+            <circle cx="17" cy="17" r="2"/>
+          </svg>
+        </span>
         <span class="rol-text">
           <span class="rol-title">Conductor</span>
           <span class="rol-desc">Recibe solicitudes en tiempo real</span>
         </span>
       </button>
 
-      <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
-        <span class="rol-icon">????</span>
+      <button class="tarjeta-rol" onclick="seleccionarRol('comercio')" aria-label="Ingresar como Comercio">
+        <span class="rol-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l1.5-5h15L21 9"/>
+            <path d="M3 9v11h18V9"/>
+            <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>
+            <path d="M9 20v-6h6v6"/>
+          </svg>
+        </span>
         <span class="rol-text">
           <span class="rol-title">Comercio</span>
           <span class="rol-desc">Registra tu establecimiento</span>
@@ -1019,24 +851,53 @@
     </div>
   </div>
 
-  <!-- MODAL DE REGISTRO / FORMULARIO -->
+  <!-- MODAL OPCIONES DEL ROL -->
+  <div id="modal-opciones-rol" class="ui-panel oculto">
+    <h3 id="opciones-rol-titulo" class="panel-title">BIKAR</h3>
+    <p class="panel-subtitle">¿Qué deseas hacer?</p>
+    <button type="button" id="btn-iniciar-sesion" class="btn-main">Iniciar sesión</button>
+    <button type="button" id="btn-crear-cuenta" class="btn-secondary" style="margin-top: 8px;">Crear cuenta</button>
+    <button type="button" id="btn-cerrar-opciones" class="btn-secondary" style="margin-top: 8px;">Volver</button>
+  </div>
+  
+  <!-- MODAL DE INICIO DE SESIÓN -->
+  <div id="modal-login" class="ui-panel oculto">
+    <h3 id="login-titulo" class="panel-title">Iniciar sesión</h3>
+    <p class="panel-subtitle">Ingresa tus datos para continuar</p>
+    <form id="form-login">
+      <div class="input-group">
+        <input type="text" id="login-dni" placeholder="Número de Documento (DNI / CE)" required autocomplete="username">
+      </div>
+      <div class="input-group">
+        <input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password">
+      </div>
+      <button type="submit" id="btn-login" class="btn-main">Iniciar sesión</button>
+      <button type="button" id="btn-cancelar-login" class="btn-secondary" style="margin-top: 8px;">Volver</button>
+    </form>
+  </div>
+  
+  <!-- MODAL DE REGISTRO -->
   <div id="modal-registro" class="ui-panel oculto">
     <h3 id="registro-titulo" class="panel-title">Completar Registro</h3>
     <p class="panel-subtitle">Completa tus datos para continuar</p>
     <form id="form-registro">
       <div class="input-group">
-        <input type="text" id="reg-nombre" placeholder="Nombre completo" required autocomplete="off">
+        <input type="text" id="reg-nombre" placeholder="Nombre completo" required autocomplete="name">
       </div>
       <div class="input-group">
-        <input type="tel" id="reg-telefono" placeholder="Teléfono / WhatsApp" required autocomplete="off">
+        <input type="password" id="reg-password" placeholder="Crear contraseña" required autocomplete="new-password">
       </div>
       <div class="input-group">
-        <input type="email" id="reg-email" placeholder="Correo electrónico" required autocomplete="off">
+        <input type="password" id="reg-password-confirm" placeholder="Confirmar contraseña" required autocomplete="new-password">
       </div>
-
-      <!-- SELECTOR DE DOCUMENTO -->
       <div class="input-group">
-        <select id="reg-tipo-doc" required style="width: 100%; height: 54px; padding: 0 16px; background-color: var(--field-bg); border: 1px solid var(--field-border); border-radius: 14px; color: var(--text-color); font-size: 0.95rem; outline: none;">
+        <input type="tel" id="reg-telefono" placeholder="Teléfono / WhatsApp" required autocomplete="tel">
+      </div>
+      <div class="input-group">
+        <input type="email" id="reg-email" placeholder="Correo electrónico" required autocomplete="email">
+      </div>
+      <div class="input-group">
+        <select id="reg-tipo-doc" required>
           <option value="DNI">DNI (Documento Nacional de Identidad)</option>
           <option value="CE">CE (Carnet de Extranjería)</option>
         </select>
@@ -1044,12 +905,17 @@
       <div class="input-group">
         <input type="text" id="reg-num-doc" placeholder="Número de Documento (DNI / CE)" required autocomplete="off">
       </div>
-
       <div id="campos-especificos"></div>
 
-      <!-- Subir Foto en tiempo real -->
+      <!-- Subir Foto -->
       <div class="input-group foto-group">
-        <label for="reg-foto" class="label-foto">???? Capturar / Subir Foto:</label>
+        <label for="reg-foto" class="label-foto">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Capturar / Subir Foto
+        </label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
         <div id="preview-foto-container" class="preview-container oculto">
           <img id="preview-foto" src="" alt="Vista previa de foto">
@@ -1058,32 +924,35 @@
 
       <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top: 8px;">Volver</button>
-      <p class="form-note">???? Tus datos se guardan de forma segura</p>
+      <p class="form-note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Tus datos se guardan de forma segura
+      </p>
     </form>
   </div>
 
   <!-- Selector de Modo -->
   <div id="mode-selector">
-    <button id="btn-cambiar-modo" class="btn-secondary">Modo: ???? Pasajero (Cambiar a Conductor)</button>
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 👤 Pasajero (Cambiar a Conductor)</button>
   </div>
 
-  <!-- Contenedor del Mapa -->
+  <!-- Mapa -->
   <div id="map"></div>
 
-  <!-- PANEL PASAJERO (CORREGIDO: SE AGREGA 'oculto' INICIALMENTE) -->
+  <!-- PANEL PASAJERO -->
   <div id="ui-pasajero" class="ui-panel oculto">
     <h3 class="panel-title">Solicitar Viaje</h3>
-    
     <div class="input-group">
       <input type="text" id="input-origen" placeholder="Tu ubicación o dirección origen" autocomplete="off">
       <div id="sugerencias-origen" class="lista-sugerencias"></div>
     </div>
-
     <div class="input-group">
       <input type="text" id="input-destino" placeholder="Escribe la dirección de destino" autocomplete="off">
       <div id="sugerencias-destino" class="lista-sugerencias"></div>
     </div>
-
     <p id="status-text-pasajero" class="status-text">Ingresa una dirección o toca el mapa.</p>
     <button id="btn-pedir-viaje" class="btn-main">Confirmar Puntos</button>
   </div>
@@ -1099,533 +968,622 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+    const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
 
-let PASAJERO_ID_PRUEBA = "5";
-let CONDUCTOR_ID_PRUEBA = "10";
+    const PASAJERO_ID_PRUEBA = "5";
+    const CONDUCTOR_ID_PRUEBA = "10";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Variables de Estado
+    let modoActual = 'pasajero';
+    let origen = null;
+    let destino = null;
+    let marcadorOrigen = null;
+    let marcadorDestino = null;
+    let timerBusqueda = null;
+    let rolSeleccionado = null;
+    let fotoBase64 = null;
+    let usuarioActual = null;
 
-// Variables de Estado
-let modoActual = 'pasajero';
-let origen = null;
-let destino = null;
-let marcadorOrigen = null;
-let marcadorDestino = null;
-let timerBusqueda = null;
-let rolSeleccionado = null;
-let fotoBase64 = null;
-let usuarioActual = null;
+    // Elementos DOM
+    const btnCambiarModo = document.getElementById('btn-cambiar-modo');
+    const uiPasajero = document.getElementById('ui-pasajero');
+    const uiConductor = document.getElementById('ui-conductor');
+    const inputOrigen = document.getElementById('input-origen');
+    const inputDestino = document.getElementById('input-destino');
+    const sugerenciasOrigen = document.getElementById('sugerencias-origen');
+    const sugerenciasDestino = document.getElementById('sugerencias-destino');
+    const statusTextPasajero = document.getElementById('status-text-pasajero');
+    const btnPedirViaje = document.getElementById('btn-pedir-viaje');
+    const statusTextConductor = document.getElementById('status-text-conductor');
+    const contenedorSolicitudes = document.getElementById('contenedor-solicitudes');
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const pantallaInicio = document.getElementById('pantalla-inicio');
+    const modalOpcionesRol = document.getElementById('modal-opciones-rol');
+    const modalRegistro = document.getElementById('modal-registro');
+    const modalLogin = document.getElementById('modal-login');
+    const registroTitulo = document.getElementById('registro-titulo');
+    const loginTitulo = document.getElementById('login-titulo');
+    const formRegistro = document.getElementById('form-registro');
+    const formLogin = document.getElementById('form-login');
+    const loginDni = document.getElementById('login-dni');
+    const loginPassword = document.getElementById('login-password');
+    const btnLogin = document.getElementById('btn-login');
+    const btnCancelarLogin = document.getElementById('btn-cancelar-login');
+    const btnCerrarOpciones = document.getElementById('btn-cerrar-opciones');
+    const regNombre = document.getElementById('reg-nombre');
+    const regTelefono = document.getElementById('reg-telefono');
+    const camposEspecificos = document.getElementById('campos-especificos');
+    const regFoto = document.getElementById('reg-foto');
+    const previewFotoContainer = document.getElementById('preview-foto-container');
+    const previewFoto = document.getElementById('preview-foto');
+    const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
+    const perfilSuperior = document.getElementById('perfil-superior');
+    const fotoPerfilHeader = document.getElementById('foto-perfil-header');
 
-// DOM
-const btnCambiarModo = document.getElementById('btn-cambiar-modo');
-const videosFondo = document.querySelectorAll('.video-fondo');
-function reproducirVideoActivo() {
-  const videoClaro = document.querySelector('.video-claro');
-  const videoOscuro = document.querySelector('.video-oscuro');
+    // Reproducir Video Activo
+    function reproducirVideoActivo() {
+      const videoClaro = document.querySelector('.video-claro');
+      const videoOscuro = document.querySelector('.video-oscuro');
+      const isDark = document.body.classList.contains('dark-mode');
+      const videoActivo = isDark ? videoOscuro : videoClaro;
+      const videoInactivo = isDark ? videoClaro : videoOscuro;
 
-  const videoActivo = document.body.classList.contains('dark-mode')
-    ? videoOscuro
-    : videoClaro;
-
-  const videoInactivo = document.body.classList.contains('dark-mode')
-    ? videoClaro
-    : videoOscuro;
-
-  if (videoInactivo) {
-    videoInactivo.pause();
-  }
-
-  if (videoActivo) {
-    videoActivo.muted = true;
-    videoActivo.play().catch(() => {});
-  }
-}
-const uiPasajero = document.getElementById('ui-pasajero');
-const uiConductor = document.getElementById('ui-conductor');
-
-const inputOrigen = document.getElementById('input-origen');
-const inputDestino = document.getElementById('input-destino');
-const sugerenciasOrigen = document.getElementById('sugerencias-origen');
-const sugerenciasDestino = document.getElementById('sugerencias-destino');
-
-const statusTextPasajero = document.getElementById('status-text-pasajero');
-const btnPedirViaje = document.getElementById('btn-pedir-viaje');
-
-const statusTextConductor = document.getElementById('status-text-conductor');
-const contenedorSolicitudes = document.getElementById('contenedor-solicitudes');
-const btnThemeToggle = document.getElementById('btn-theme-toggle');
-const themeIcon = document.getElementById('theme-icon');
-const pantallaInicio = document.getElementById('pantalla-inicio');
-const modalRegistro = document.getElementById('modal-registro');
-const registroTitulo = document.getElementById('registro-titulo');
-const formRegistro = document.getElementById('form-registro');
-const regNombre = document.getElementById('reg-nombre');
-const regTelefono = document.getElementById('reg-telefono');
-const camposEspecificos = document.getElementById('campos-especificos');
-const regFoto = document.getElementById('reg-foto');
-const previewFotoContainer = document.getElementById('preview-foto-container');
-const previewFoto = document.getElementById('preview-foto');
-const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
-const perfilSuperior = document.getElementById('perfil-superior');
-const fotoPerfilHeader = document.getElementById('foto-perfil-header');
-
-// CONTROL DE SESIÓN PERMANENTE
-function verificarSesionGuardada() {
-  const sesionGuardada = localStorage.getItem('bikar_usuario');
-  if (sesionGuardada) {
-    try {
-      usuarioActual = JSON.parse(sesionGuardada);
-      aplicarSesionUsuario(usuarioActual);
-    } catch (e) {
-      console.error("Error al cargar sesión:", e);
+      if (videoInactivo) videoInactivo.pause();
+      if (videoActivo) {
+        videoActivo.muted = true;
+        videoActivo.play().catch(() => {});
+      }
     }
-  }
-}
 
-function aplicarSesionUsuario(usuario) {
-  if (!usuario) return;
+    // Inicializar Tema y Video
+    reproducirVideoActivo();
 
-  pantallaInicio.classList.add('oculto');
-  modalRegistro.classList.add('oculto');
-  document.getElementById('map').style.visibility = 'visible';
-  
-  if (usuario.foto && fotoPerfilHeader && perfilSuperior) {
-    fotoPerfilHeader.src = usuario.foto;
-    perfilSuperior.classList.remove('oculto');
-  }
-
-  rolSeleccionado = usuario.tipo_usuario || 'pasajero';
-
-  if (rolSeleccionado === 'conductor') {
-    modoActual = 'conductor';
-    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
-    uiPasajero.classList.add('oculto');
-    uiConductor.classList.remove('oculto');
-    cargarViajesSolicitados();
-  } else {
-    modoActual = 'pasajero';
-    btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
-    uiConductor.classList.add('oculto');
-    uiPasajero.classList.remove('oculto');
-  }
-
-  setTimeout(() => { if (map) map.invalidateSize(); }, 300);
-}
-
-perfilSuperior.addEventListener('click', () => {
-  if (confirm("¿Deseas cerrar sesión en BIKAR?")) {
-    localStorage.removeItem('bikar_usuario');
-    usuarioActual = null;
-    perfilSuperior.classList.add('oculto');
-    uiPasajero.classList.add('oculto');
-    uiConductor.classList.add('oculto');
-    pantallaInicio.classList.remove('oculto');
-  }
-});
-
-// Inicialización del Mapa
-const map = L.map('map').setView([0, 0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '© OpenStreetMap'
-}).addTo(map);
-
-// Geolocalización
-if ("geolocation" in navigator) {
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      origen = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      map.setView([origen.lat, origen.lon], 15);
-      marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
-    },
-    () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; }
-  );
-}
-
-// CAMBIO DE MODO
-btnCambiarModo.addEventListener('click', () => {
-  if (modoActual === 'pasajero') {
-    modoActual = 'conductor';
-    btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
-    uiPasajero.classList.add('oculto');
-    uiConductor.classList.remove('oculto');
-    cargarViajesSolicitados();
-  } else {
-    modoActual = 'pasajero';
-    btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
-    uiConductor.classList.add('oculto');
-    uiPasajero.classList.remove('oculto');
-  }
-  setTimeout(() => { map.invalidateSize(); }, 200);
-});
-
-// LÓGICA PASAJERO
-map.on('click', (e) => {
-  if (modoActual !== 'pasajero') return;
-  destino = { lat: e.latlng.lat, lon: e.latlng.lng };
-
-  if (marcadorDestino) {
-    marcadorDestino.setLatLng(e.latlng);
-  } else {
-    marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
-  }
-
-  actualizarCalculoRuta();
-});
-
-function buscarSugerencias(texto, contenedor, alSeleccionar) {
-  clearTimeout(timerBusqueda);
-  contenedor.innerHTML = "";
-  if (texto.trim().length < 3) return;
-
-  timerBusqueda = setTimeout(async () => {
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&limit=5`);
-      const datos = await res.json();
-      contenedor.innerHTML = "";
-
-      datos.forEach((item) => {
-        const div = document.createElement('div');
-        div.className = 'sugerencia-item';
-        div.innerText = item.display_name;
-        div.addEventListener('click', () => {
-          alSeleccionar(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
-          contenedor.innerHTML = "";
-        });
-        contenedor.appendChild(div);
-      });
-    } catch (err) { console.error(err); }
-  }, 400);
-}
-
-inputOrigen.addEventListener('input', () => {
-  buscarSugerencias(inputOrigen.value, sugerenciasOrigen, (lat, lon, nombre) => {
-    inputOrigen.value = nombre;
-    origen = { lat, lon };
-    if (marcadorOrigen) marcadorOrigen.setLatLng([lat, lon]);
-    else marcadorOrigen = L.marker([lat, lon]).addTo(map);
-    map.setView([lat, lon], 15);
-    actualizarCalculoRuta();
-  });
-});
-
-inputDestino.addEventListener('input', () => {
-  buscarSugerencias(inputDestino.value, sugerenciasDestino, (lat, lon, nombre) => {
-    inputDestino.value = nombre;
-    destino = { lat, lon };
-    if (marcadorDestino) marcadorDestino.setLatLng([lat, lon]);
-    else marcadorDestino = L.marker([lat, lon]).addTo(map);
-    actualizarCalculoRuta();
-  });
-});
-
-function actualizarCalculoRuta() {
-  if (origen && destino) {
-    const grupo = new L.featureGroup([marcadorOrigen, marcadorDestino]);
-    map.fitBounds(grupo.getBounds().pad(0.2));
-
-    const distanciaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
-    const tarifaEstimada = Math.round(5000 + (distanciaKm * 2000));
-    
-    statusTextPasajero.innerText = `Tarifa estimada: $${tarifaEstimada}`;
-    btnPedirViaje.dataset.tarifa = tarifaEstimada;
-    btnPedirViaje.innerText = "Pedir Viaje Ahora";
-  }
-}
-
-btnPedirViaje.addEventListener('click', async () => {
-  if (!origen || !destino) return alert("Selecciona origen y destino.");
-
-  btnPedirViaje.disabled = true;
-  btnPedirViaje.innerText = "Solicitando...";
-
-  const tarifa = parseFloat(btnPedirViaje.dataset.tarifa) || 5000;
-  const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
-
-  const { data, error } = await supabaseClient.from('viajes').insert([{
-    pasajero_id: pasajeroId,
-    origen_lat: origen.lat,
-    origen_lon: origen.lon,
-    destino_lat: destino.lat,
-    destino_lon: destino.lon,
-    tarifa: tarifa,
-    estado: 'solicitado'
-  }]).select();
-
-  if (error) {
-    alert("Error al solicitar viaje: " + error.message);
-    btnPedirViaje.disabled = false;
-    btnPedirViaje.innerText = "Pedir Viaje Ahora";
-  } else {
-    statusTextPasajero.innerText = "¡Viaje solicitado! Buscando conductor...";
-    escucharEstadoViajePasajero(data[0].id);
-  }
-});
-
-function escucharEstadoViajePasajero(viajeId) {
-  supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
-    event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}`
-  }, (payload) => {
-    if (payload.new.estado === 'aceptado') {
-      statusTextPasajero.innerText = "¡Un conductor ha aceptado tu viaje!";
-      btnPedirViaje.innerText = "En Ruta";
+    // Verificación de Sesión Guardada
+    function verificarSesionGuardada() {
+      const sesionGuardada = localStorage.getItem('bikar_usuario');
+      if (sesionGuardada) {
+        try {
+          usuarioActual = JSON.parse(sesionGuardada);
+          aplicarSesionUsuario(usuarioActual);
+        } catch (e) {
+          console.error("Error al cargar sesión:", e);
+        }
+      }
     }
-  }).subscribe();
-}
 
-// LÓGICA CONDUCTOR
-async function cargarViajesSolicitados() {
-  contenedorSolicitudes.innerHTML = "";
-  statusTextConductor.innerText = "Buscando solicitudes cercanas...";
+    function aplicarSesionUsuario(usuario) {
+      if (!usuario) return;
 
-  const { data, error } = await supabaseClient
-    .from('viajes')
-    .select('*')
-    .eq('estado', 'solicitado');
-
-  if (data && data.length > 0) {
-    statusTextConductor.innerText = `${data.length} viaje(s) disponible(s):`;
-    data.forEach(viaje => renderizarTarjetaViaje(viaje));
-  } else {
-    statusTextConductor.innerText = "No hay viajes disponibles por ahora.";
-  }
-}
-
-function renderizarTarjetaViaje(viaje) {
-  const tarjeta = document.createElement('div');
-  tarjeta.className = 'tarjeta-viaje';
-  tarjeta.innerHTML = `
-    <p><strong>Tarifa:</strong> $${viaje.tarifa}</p>
-    <button class="btn-main" onclick="aceptarViaje(${viaje.id})">Aceptar Viaje</button>
-  `;
-  contenedorSolicitudes.appendChild(tarjeta);
-}
-
-// ACEPTAR VIAJE (CORREGIDO: ASIGNA EL ID DE CONDUCTOR)
-async function aceptarViaje(viajeId) {
-  const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
-  
-  const { error } = await supabaseClient
-    .from('viajes')
-    .update({ estado: 'aceptado', conductor_id: conductorId })
-    .eq('id', viajeId);
-
-  if (!error) {
-    alert("¡Viaje aceptado exitosamente!");
-    cargarViajesSolicitados();
-  } else {
-    alert("Error al aceptar viaje: " + error.message);
-  }
-}
-
-supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
-  event: 'INSERT', schema: 'public', table: 'viajes'
-}, () => {
-  if (modoActual === 'conductor') cargarViajesSolicitados();
-}).subscribe();
-
-function calcularDistancia(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-}
-
-// MODO CLARO / OSCURO
-btnThemeToggle.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-  reproducirVideoActivo();
-  const esOscuro = document.body.classList.contains('dark-mode');
-  themeIcon.innerText = esOscuro ? '☀️' : '????';
-});
-
-// SELECCIÓN DE ROL
-window.seleccionarRol = function(rol) {
-  rolSeleccionado = rol;
-  pantallaInicio.classList.remove('oculto');
-  modalRegistro.classList.remove('oculto');
-  registroTitulo.innerText = `Registro - ${rol.toUpperCase()}`;
-
-  camposEspecificos.innerHTML = "";
-
-  if (rol === 'conductor') {
-    camposEspecificos.innerHTML = `
-      <div class="input-group">
-        <input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Chevrolet Spark)" required>
-      </div>
-      <div class="input-group">
-        <input type="text" id="reg-placa" placeholder="Placa del Vehículo" required>
-      </div>
-    `;
-  } else if (rol === 'comercio') {
-    camposEspecificos.innerHTML = `
-      <div class="input-group">
-        <input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required>
-      </div>
-      <div class="input-group">
-        <input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required>
-      </div>
-    `;
-  }
-    // Reanudar videos de fondo
-  document.querySelectorAll('.video-fondo').forEach(video => {
-    video.muted = true;
-    video.play().catch(() => {});
-  });
-  
-  reproducirVideoActivo();
-};
-
-btnCancelarRegistro.addEventListener('click', () => {
-  modalRegistro.classList.add('oculto');
-  pantallaInicio.classList.remove('oculto');
-
-  // Reanudar videos de fondo
-  document.querySelectorAll('.video-fondo').forEach(video => {
-    video.play().catch(() => {});
-  });
-  reproducirVideoActivo();
-});
-
-// CAPTURA Y COMPRESIÓN DE FOTO EN CANVAS (CORREGIDO: EVITA EXCEDER LOCALSTORAGE)
-regFoto.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const MAX_SIZE = 400; // Ancho/alto máximo en píxeles
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_SIZE) {
-            height *= MAX_SIZE / width;
-            width = MAX_SIZE;
-          }
-        } else {
-          if (height > MAX_SIZE) {
-            width *= MAX_SIZE / height;
-            height = MAX_SIZE;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Convertir a JPEG con calidad 70% (~30 KB)
-        fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-        previewFoto.src = fotoBase64;
-        previewFotoContainer.classList.remove('oculto');
-
-        if (fotoPerfilHeader && perfilSuperior) {
-          fotoPerfilHeader.src = fotoBase64;
-          perfilSuperior.classList.remove('oculto');
-        }
-      };
-      img.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// FORMULARIO DE REGISTRO
-formRegistro.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const btnGuardar = document.getElementById('btn-guardar-registro');
-  const regEmail = document.getElementById('reg-email');
-
-  btnGuardar.disabled = true;
-  btnGuardar.innerText = "Guardando...";
-
-  const regTipoDoc = document.getElementById('reg-tipo-doc');
-  const regNumDoc = document.getElementById('reg-num-doc');
-
-  const datosUsuario = {
-    nombre: regNombre.value,
-    telefono: regTelefono.value,
-    email: regEmail ? regEmail.value : '',
-    tipo_documento: regTipoDoc ? regTipoDoc.value : 'DNI',
-    numero_documento: regNumDoc ? regNumDoc.value : '',
-    tipo_usuario: rolSeleccionado,
-    foto: fotoBase64
-  };
-
-  const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
-    .from('usuarios')
-    .insert([datosUsuario])
-    .select();
-
-  if (errorUsuario) {
-    console.error(errorUsuario);
-    alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
-    btnGuardar.disabled = false;
-    btnGuardar.innerText = "Guardar y Continuar";
-    return;
-  }
-
-  const usuarioCreado = usuarioInsertado[0];
-  const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
-
-  if (rolSeleccionado === 'conductor') {
-    const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
-    const vehiculoPlaca = document.getElementById('reg-placa')?.value;
-
-    const { data: conductorInsertado, error: errCond } = await supabaseClient
-      .from('conductores')
-      .insert([{ usuario_id: nuevoUsuarioId }])
-      .select();
-
-    if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
-      const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
-      usuarioCreado.conductor_id = conductorId; // Guardar ID de conductor
+      pantallaInicio.classList.add('oculto');
+      modalRegistro.classList.add('oculto');
+      modalLogin.classList.add('oculto');
+      modalOpcionesRol.classList.add('oculto');
+      document.getElementById('map').style.visibility = 'visible';
       
-      await supabaseClient.from('vehiculos').insert([{
-        conductor_id: conductorId,
-        modelo: vehiculoModelo,
-        placa: vehiculoPlaca
-      }]);
+      if (usuario.foto && fotoPerfilHeader && perfilSuperior) {
+        fotoPerfilHeader.src = usuario.foto;
+        perfilSuperior.classList.remove('oculto');
+      }
+
+      rolSeleccionado = usuario.tipo_usuario || 'pasajero';
+
+      if (rolSeleccionado === 'conductor') {
+        modoActual = 'conductor';
+        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.remove('oculto');
+        cargarViajesSolicitados();
+      } else {
+        modoActual = 'pasajero';
+        btnCambiarModo.innerText = "Modo: 👤 Pasajero (Cambiar a Conductor)";
+        uiConductor.classList.add('oculto');
+        uiPasajero.classList.remove('oculto');
+      }
+
+      setTimeout(() => { if (map) map.invalidateSize(); }, 300);
     }
-  }
 
-  usuarioActual = usuarioCreado;
-
-  try {
-    localStorage.setItem('bikar_usuario', JSON.stringify(usuarioCreado));
-  } catch (errStorage) {
-    console.warn("No se pudo guardar la sesión completa en el navegador:", errStorage);
-  }
-
-  btnGuardar.disabled = false;
-  btnGuardar.innerText = "Guardar y Continuar";
-
-  alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
-  aplicarSesionUsuario(usuarioCreado);
-});
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    document.querySelectorAll('.video-fondo').forEach(video => {
-      video.muted = true;
-      video.play().catch(() => {});
+    perfilSuperior.addEventListener('click', () => {
+      if (confirm("¿Deseas cerrar sesión en BIKAR?")) {
+        localStorage.removeItem('bikar_usuario');
+        usuarioActual = null;
+        perfilSuperior.classList.add('oculto');
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.add('oculto');
+        pantallaInicio.classList.remove('oculto');
+        reproducirVideoActivo();
+      }
     });
-  }
-});
-setInterval(() => {
-  reproducirVideoActivo();
-}, 3000);    
-// VERIFICAR SESIÓN GUARDADA AL INICIAR
-verificarSesionGuardada();
+
+    // Mapa Leaflet
+    const map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Geolocalización
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          origen = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          map.setView([origen.lat, origen.lon], 15);
+          marcadorOrigen = L.marker([origen.lat, origen.lon]).addTo(map).bindPopup("Tu ubicación").openPopup();
+        },
+        () => { statusTextPasajero.innerText = "GPS desactivado o sin permisos."; }
+      );
+    }
+
+    // Alternar Modo Pasajero / Conductor
+    btnCambiarModo.addEventListener('click', () => {
+      if (modoActual === 'pasajero') {
+        modoActual = 'conductor';
+        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.remove('oculto');
+        cargarViajesSolicitados();
+      } else {
+        modoActual = 'pasajero';
+        btnCambiarModo.innerText = "Modo: 👤 Pasajero (Cambiar a Conductor)";
+        uiConductor.classList.add('oculto');
+        uiPasajero.classList.remove('oculto');
+      }
+      setTimeout(() => { map.invalidateSize(); }, 200);
+    });
+
+    // Lógica Pasajero - Click en Mapa
+    map.on('click', (e) => {
+      if (modoActual !== 'pasajero') return;
+      destino = { lat: e.latlng.lat, lon: e.latlng.lng };
+
+      if (marcadorDestino) marcadorDestino.setLatLng(e.latlng);
+      else marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
+
+      actualizarCalculoRuta();
+    });
+
+    // Autocompletado Nominatim
+    function buscarSugerencias(texto, contenedor, alSeleccionar) {
+      clearTimeout(timerBusqueda);
+      contenedor.innerHTML = "";
+      if (texto.trim().length < 3) return;
+
+      timerBusqueda = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}&limit=5`);
+          const datos = await res.json();
+          contenedor.innerHTML = "";
+
+          datos.forEach((item) => {
+            const div = document.createElement('div');
+            div.className = 'sugerencia-item';
+            div.innerText = item.display_name;
+            div.addEventListener('click', () => {
+              alSeleccionar(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
+              contenedor.innerHTML = "";
+            });
+            contenedor.appendChild(div);
+          });
+        } catch (err) { console.error(err); }
+      }, 400);
+    }
+
+    inputOrigen.addEventListener('input', () => {
+      buscarSugerencias(inputOrigen.value, sugerenciasOrigen, (lat, lon, nombre) => {
+        inputOrigen.value = nombre;
+        origen = { lat, lon };
+        if (marcadorOrigen) marcadorOrigen.setLatLng([lat, lon]);
+        else marcadorOrigen = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 15);
+        actualizarCalculoRuta();
+      });
+    });
+
+    inputDestino.addEventListener('input', () => {
+      buscarSugerencias(inputDestino.value, sugerenciasDestino, (lat, lon, nombre) => {
+        inputDestino.value = nombre;
+        destino = { lat, lon };
+        if (marcadorDestino) marcadorDestino.setLatLng([lat, lon]);
+        else marcadorDestino = L.marker([lat, lon]).addTo(map);
+        actualizarCalculoRuta();
+      });
+    });
+
+    function actualizarCalculoRuta() {
+      if (origen && destino) {
+        const grupo = new L.featureGroup([marcadorOrigen, marcadorDestino]);
+        map.fitBounds(grupo.getBounds().pad(0.2));
+
+        const distanciaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
+        const tarifaEstimada = Math.round(5000 + (distanciaKm * 2000));
+        
+        statusTextPasajero.innerText = `Tarifa estimada: $${tarifaEstimada}`;
+        btnPedirViaje.dataset.tarifa = tarifaEstimada;
+        btnPedirViaje.innerText = "Pedir Viaje Ahora";
+      }
+    }
+
+    btnPedirViaje.addEventListener('click', async () => {
+      if (!origen || !destino) return alert("Selecciona origen y destino.");
+
+      btnPedirViaje.disabled = true;
+      btnPedirViaje.innerText = "Solicitando...";
+
+      const tarifa = parseFloat(btnPedirViaje.dataset.tarifa) || 5000;
+      const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
+
+      const { data, error } = await supabaseClient.from('viajes').insert([{
+        pasajero_id: pasajeroId,
+        origen_lat: origen.lat,
+        origen_lon: origen.lon,
+        destino_lat: destino.lat,
+        destino_lon: destino.lon,
+        tarifa: tarifa,
+        estado: 'solicitado'
+      }]).select();
+
+      if (error) {
+        alert("Error al solicitar viaje: " + error.message);
+        btnPedirViaje.disabled = false;
+        btnPedirViaje.innerText = "Pedir Viaje Ahora";
+      } else {
+        statusTextPasajero.innerText = "¡Viaje solicitado! Buscando conductor...";
+        escucharEstadoViajePasajero(data[0].id);
+      }
+    });
+
+    function escucharEstadoViajePasajero(viajeId) {
+      supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
+        event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}`
+      }, (payload) => {
+        if (payload.new.estado === 'aceptado') {
+          statusTextPasajero.innerText = "¡Un conductor ha aceptado tu viaje!";
+          btnPedirViaje.innerText = "En Ruta";
+        }
+      }).subscribe();
+    }
+
+    // Lógica Conductor
+    async function cargarViajesSolicitados() {
+      contenedorSolicitudes.innerHTML = "";
+      statusTextConductor.innerText = "Buscando solicitudes cercanas...";
+
+      const { data } = await supabaseClient
+        .from('viajes')
+        .select('*')
+        .eq('estado', 'solicitado');
+
+      if (data && data.length > 0) {
+        statusTextConductor.innerText = `${data.length} viaje(s) disponible(s):`;
+        data.forEach(viaje => renderizarTarjetaViaje(viaje));
+      } else {
+        statusTextConductor.innerText = "No hay viajes disponibles por ahora.";
+      }
+    }
+
+    function renderizarTarjetaViaje(viaje) {
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'tarjeta-viaje';
+      tarjeta.innerHTML = `
+        <p><strong>Tarifa:</strong> $${viaje.tarifa}</p>
+        <button class="btn-main" onclick="aceptarViaje(${viaje.id})">Aceptar Viaje</button>
+      `;
+      contenedorSolicitudes.appendChild(tarjeta);
+    }
+
+    async function aceptarViaje(viajeId) {
+      const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+      
+      const { error } = await supabaseClient
+        .from('viajes')
+        .update({ estado: 'aceptado', conductor_id: conductorId })
+        .eq('id', viajeId);
+
+      if (!error) {
+        alert("¡Viaje aceptado exitosamente!");
+        cargarViajesSolicitados();
+      } else {
+        alert("Error al aceptar viaje: " + error.message);
+      }
+    }
+
+    supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'viajes'
+    }, () => {
+      if (modoActual === 'conductor') cargarViajesSolicitados();
+    }).subscribe();
+
+    function calcularDistancia(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    }
+
+    // Modo Claro / Oscuro
+    btnThemeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      reproducirVideoActivo();
+      const esOscuro = document.body.classList.contains('dark-mode');
+      themeIcon.innerText = esOscuro ? '☀️' : '🌙';
+    });
+
+    // Selección de Rol
+    window.seleccionarRol = function(rol) {
+      rolSeleccionado = rol;
+      document.getElementById('opciones-rol-titulo').innerText = rol.toUpperCase();
+      pantallaInicio.classList.remove('oculto');
+      modalRegistro.classList.add('oculto');
+      modalLogin.classList.add('oculto');
+      modalOpcionesRol.classList.remove('oculto');
+      reproducirVideoActivo();
+    };
+
+    btnCerrarOpciones.addEventListener('click', () => {
+      modalOpcionesRol.classList.add('oculto');
+    });
+
+    document.getElementById('btn-crear-cuenta').addEventListener('click', () => {
+      modalOpcionesRol.classList.add('oculto');
+      modalRegistro.classList.remove('oculto');
+      registroTitulo.innerText = `Registro - ${rolSeleccionado.toUpperCase()}`;
+      camposEspecificos.innerHTML = "";
+
+      if (rolSeleccionado === 'conductor') {
+        camposEspecificos.innerHTML = `
+          <div class="input-group">
+            <input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Chevrolet Spark)" required>
+          </div>
+          <div class="input-group">
+            <input type="text" id="reg-placa" placeholder="Placa del Vehículo" required>
+          </div>
+        `;
+      } else if (rolSeleccionado === 'comercio') {
+        camposEspecificos.innerHTML = `
+          <div class="input-group">
+            <input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required>
+          </div>
+          <div class="input-group">
+            <input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required>
+          </div>
+        `;
+      }
+    });
+
+    document.getElementById('btn-iniciar-sesion').addEventListener('click', () => {
+      modalOpcionesRol.classList.add('oculto');
+      modalLogin.classList.remove('oculto');
+      loginTitulo.innerText = `Iniciar sesión - ${rolSeleccionado.toUpperCase()}`;
+      loginDni.value = '';
+      loginPassword.value = '';
+    });
+
+    btnCancelarLogin.addEventListener('click', () => {
+      modalLogin.classList.add('oculto');
+      modalOpcionesRol.classList.remove('oculto');
+    });
+
+    // Formulario Inicio de Sesión
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const dni = loginDni.value.trim();
+      const pwd = loginPassword.value;
+
+      btnLogin.disabled = true;
+      btnLogin.innerText = "Ingresando...";
+
+      try {
+        const { data: usuarios, error: errUsuario } = await supabaseClient
+          .from('usuarios')
+          .select('*')
+          .or(`numero_documento.eq.${dni},email.eq.${dni}`)
+          .limit(1);
+
+        if (errUsuario || !usuarios || usuarios.length === 0) {
+          alert("No se encontró usuario con ese documento o correo.");
+          btnLogin.disabled = false;
+          btnLogin.innerText = "Iniciar sesión";
+          return;
+        }
+
+        const usuario = usuarios[0];
+
+        if (usuario.email) {
+          const { error: errAuth } = await supabaseClient.auth.signInWithPassword({
+            email: usuario.email,
+            password: pwd
+          });
+          if (errAuth) {
+            alert("Contraseña incorrecta o error de acceso: " + errAuth.message);
+            btnLogin.disabled = false;
+            btnLogin.innerText = "Iniciar sesión";
+            return;
+          }
+        }
+
+        if (usuario.tipo_usuario === 'conductor' && !usuario.conductor_id) {
+          const { data: cond } = await supabaseClient
+            .from('conductores')
+            .select('id')
+            .eq('usuario_id', usuario.id || usuario.Id)
+            .limit(1);
+          if (cond && cond.length > 0) {
+            usuario.conductor_id = cond[0].id;
+          }
+        }
+
+        usuarioActual = usuario;
+        try { localStorage.setItem('bikar_usuario', JSON.stringify(usuario)); } catch (e) {}
+
+        modalLogin.classList.add('oculto');
+        aplicarSesionUsuario(usuario);
+        alert(`¡Bienvenido de nuevo, ${usuario.nombre || 'Usuario'}!`);
+      } catch (err) {
+        alert("Error al iniciar sesión: " + err.message);
+      } finally {
+        btnLogin.disabled = false;
+        btnLogin.innerText = "Iniciar sesión";
+      }
+    });
+
+    btnCancelarRegistro.addEventListener('click', () => {
+      modalRegistro.classList.add('oculto');
+      pantallaInicio.classList.remove('oculto');
+      reproducirVideoActivo();
+    });
+
+    // Captura y compresión de foto en Canvas
+    regFoto.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 400;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+              }
+            } else {
+              if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+            previewFoto.src = fotoBase64;
+            previewFotoContainer.classList.remove('oculto');
+
+            if (fotoPerfilHeader && perfilSuperior) {
+              fotoPerfilHeader.src = fotoBase64;
+              perfilSuperior.classList.remove('oculto');
+            }
+          };
+          img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Formulario Registro
+    formRegistro.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btnGuardar = document.getElementById('btn-guardar-registro');
+      const regEmail = document.getElementById('reg-email');
+      const regPassword = document.getElementById('reg-password');
+      const regPasswordConfirm = document.getElementById('reg-password-confirm');
+      const regTipoDoc = document.getElementById('reg-tipo-doc');
+      const regNumDoc = document.getElementById('reg-num-doc');
+
+      if (regPassword.value !== regPasswordConfirm.value) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      btnGuardar.disabled = true;
+      btnGuardar.innerText = "Guardando...";
+
+      const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+        email: regEmail.value.trim(),
+        password: regPassword.value
+      });
+
+      if (authError) {
+        console.error(authError);
+        alert("Error al crear la cuenta: " + authError.message);
+        btnGuardar.disabled = false;
+        btnGuardar.innerText = "Guardar y Continuar";
+        return;
+      }
+
+      const datosUsuario = {
+        nombre: regNombre.value,
+        auth_user_id: authData.user.id,
+        telefono: regTelefono.value,
+        email: regEmail ? regEmail.value : '',
+        tipo_documento: regTipoDoc ? regTipoDoc.value : 'DNI',
+        numero_documento: regNumDoc ? regNumDoc.value : '',
+        tipo_usuario: rolSeleccionado,
+        foto: fotoBase64
+      };
+
+      const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
+        .from('usuarios')
+        .insert([datosUsuario])
+        .select();
+
+      if (errorUsuario) {
+        console.error(errorUsuario);
+        alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
+        btnGuardar.disabled = false;
+        btnGuardar.innerText = "Guardar y Continuar";
+        return;
+      }
+
+      const usuarioCreado = usuarioInsertado[0];
+      const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
+
+      if (rolSeleccionado === 'conductor') {
+        const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
+        const vehiculoPlaca = document.getElementById('reg-placa')?.value;
+
+        const { data: conductorInsertado, error: errCond } = await supabaseClient
+          .from('conductores')
+          .insert([{ usuario_id: nuevoUsuarioId }])
+          .select();
+
+        if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
+          const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
+          usuarioCreado.conductor_id = conductorId;
+          
+          await supabaseClient.from('vehiculos').insert([{
+            conductor_id: conductorId,
+            modelo: vehiculoModelo,
+            placa: vehiculoPlaca
+          }]);
+        }
+      }
+
+      usuarioActual = usuarioCreado;
+
+      try {
+        localStorage.setItem('bikar_usuario', JSON.stringify(usuarioCreado));
+      } catch (errStorage) {
+        console.warn("No se pudo guardar la sesión completa en el navegador:", errStorage);
+      }
+
+      btnGuardar.disabled = false;
+      btnGuardar.innerText = "Guardar y Continuar";
+
+      alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
+      aplicarSesionUsuario(usuarioCreado);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) reproducirVideoActivo();
+    });
+
+    // Iniciar verificación de sesión
+    verificarSesionGuardada();
   </script>
 </body>
 </html>
