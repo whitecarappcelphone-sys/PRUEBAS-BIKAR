@@ -936,7 +936,7 @@
 
   <!-- Selector de Modo -->
   <div id="mode-selector">
-    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 👤 Pasajero (Cambiar a Conductor)</button>
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: ???? Pasajero (Cambiar a Conductor)</button>
   </div>
 
   <!-- Mapa -->
@@ -1012,6 +1012,77 @@
     const loginPassword = document.getElementById('login-password');
     const btnLogin = document.getElementById('btn-login');
     const btnCancelarLogin = document.getElementById('btn-cancelar-login');
+    formLogin.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const btnLogin = document.getElementById('btn-login');
+
+  btnLogin.disabled = true;
+  btnLogin.innerText = "Verificando...";
+
+  const dni = loginDni.value.trim();
+  const password = loginPassword.value;
+
+  try {
+    // Buscar el usuario por número de documento
+    const { data: usuario, error: errorUsuario } = await supabaseClient
+      .from('usuarios')
+      .select('*')
+      .eq('numero_documento', dni)
+      .eq('tipo_usuario', rolSeleccionado)
+      .maybeSingle();
+
+    if (errorUsuario) {
+      console.error(errorUsuario);
+      alert("Error al buscar el usuario: " + errorUsuario.message);
+      return;
+    }
+
+    if (!usuario) {
+      alert("No existe una cuenta con ese documento para este rol.");
+      return;
+    }
+
+    if (!usuario.email) {
+      alert("Esta cuenta no tiene un correo asociado.");
+      return;
+    }
+
+    // Comprobar contraseña mediante Supabase Auth
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.signInWithPassword({
+        email: usuario.email,
+        password: password
+      });
+
+    if (authError) {
+  console.error("ERROR LOGIN SUPABASE:", authError);
+  alert("ERROR REAL DE SUPABASE:nn" + authError.message);
+  return;
+}
+
+    // Login correcto
+    usuarioActual = usuario;
+
+    localStorage.setItem(
+      'bikar_usuario',
+      JSON.stringify(usuario)
+    );
+
+    modalLogin.classList.add('oculto');
+
+    aplicarSesionUsuario(usuario);
+
+    alert("¡Inicio de sesión exitoso!");
+
+  } catch (error) {
+    console.error(error);
+    alert("Ocurrió un error al iniciar sesión.");
+  } finally {
+    btnLogin.disabled = false;
+    btnLogin.innerText = "Iniciar sesión";
+  }
+});
     const btnCerrarOpciones = document.getElementById('btn-cerrar-opciones');
     const regNombre = document.getElementById('reg-nombre');
     const regTelefono = document.getElementById('reg-telefono');
@@ -1072,13 +1143,13 @@
 
       if (rolSeleccionado === 'conductor') {
         modoActual = 'conductor';
-        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+        btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
         uiPasajero.classList.add('oculto');
         uiConductor.classList.remove('oculto');
         cargarViajesSolicitados();
       } else {
         modoActual = 'pasajero';
-        btnCambiarModo.innerText = "Modo: 👤 Pasajero (Cambiar a Conductor)";
+        btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
       }
@@ -1121,13 +1192,13 @@
     btnCambiarModo.addEventListener('click', () => {
       if (modoActual === 'pasajero') {
         modoActual = 'conductor';
-        btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+        btnCambiarModo.innerText = "Modo: ???? Conductor (Cambiar a Pasajero)";
         uiPasajero.classList.add('oculto');
         uiConductor.classList.remove('oculto');
         cargarViajesSolicitados();
       } else {
         modoActual = 'pasajero';
-        btnCambiarModo.innerText = "Modo: 👤 Pasajero (Cambiar a Conductor)";
+        btnCambiarModo.innerText = "Modo: ???? Pasajero (Cambiar a Conductor)";
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
       }
@@ -1311,7 +1382,7 @@
       document.body.classList.toggle('dark-mode');
       reproducirVideoActivo();
       const esOscuro = document.body.classList.contains('dark-mode');
-      themeIcon.innerText = esOscuro ? '☀️' : '🌙';
+      themeIcon.innerText = esOscuro ? '☀️' : '????';
     });
 
     // Selección de Rol
