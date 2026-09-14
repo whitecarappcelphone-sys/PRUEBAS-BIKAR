@@ -40,12 +40,13 @@
     @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(71,133,167,.65)}70%{box-shadow:0 0 0 9px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
     @keyframes modalIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-    @keyframes slideInFromRight{from{opacity:0;transform:translateX(120%)}to{opacity:1;transform:translateX(0)}}
-    @keyframes slideOutToRight{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(120%)}}
+    @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+    @keyframes serviceCardIn{from{opacity:0;transform:translateX(24px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+    @keyframes cardPop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-    @keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-    @keyframes cardExpand{from{opacity:0;max-height:0;transform:translateY(10px) scale(.98);padding-top:0;padding-bottom:0;margin-bottom:0}to{opacity:1;max-height:400px;transform:translateY(0) scale(1)}}
-    @keyframes pingSoft{0%{transform:scale(1);opacity:.8}70%{transform:scale(1.6);opacity:0}100%{transform:scale(1.6);opacity:0}}
+    @keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+    @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(71,133,167,.45)}70%{box-shadow:0 0 0 14px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
 
     /* MAPA */
     #map{width:100%;height:100vh;height:100dvh;z-index:1;background:var(--bg-color)}
@@ -72,18 +73,25 @@
       background:var(--field-bg);color:var(--primary-color);font-size:1.2rem;line-height:1;cursor:pointer;transition:background .2s,transform .2s}
     .popup-origen-change:hover{background:rgba(71,133,167,.14);transform:translate(1px,-50%)}
 
-    /* PERFIL Y TEMA */
+    /* RUTA */
+    .ruta-linea{stroke:var(--primary-color);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none;
+      filter:drop-shadow(0 4px 10px rgba(71,133,167,.45))}
+    body.dark-mode .ruta-linea{stroke:#6aa6c9}
+
+    /* PERFIL */
     .perfil-superior{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;z-index:3000;width:46px;height:46px;border-radius:50%;overflow:hidden;
       border:2px solid var(--primary-color);box-shadow:0 8px 24px rgba(0,0,0,.25);background-color:var(--card-bg);cursor:pointer;transition:transform .2s,box-shadow .2s}
     .perfil-superior:hover{transform:scale(1.05)}
     #foto-perfil-header{width:100%;height:100%;object-fit:cover}
+
+    /* BOTÓN TEMA (sol/luna) */
     .btn-theme-toggle{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--glass-bg-strong);
-      border:1px solid rgba(71,133,167,.5);color:var(--primary-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-      box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 4px rgba(71,133,167,.12);transition:transform .2s,box-shadow .2s,border-color .2s,color .2s}
-    .btn-theme-toggle:hover{transform:translateY(-1px) rotate(12deg);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(71,133,167,.18)}
-    .btn-theme-toggle svg{width:22px;height:22px;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
-    body.dark-mode .btn-theme-toggle{color:#ffd166}
+      border:1px solid rgba(71,133,167,.5);color:var(--text-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+      box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 4px rgba(71,133,167,.12);transition:transform .2s,box-shadow .2s,border-color .2s}
+    .btn-theme-toggle:hover{transform:translateY(-1px);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(71,133,167,.18)}
+    .btn-theme-toggle svg{width:20px;height:20px;transition:transform .4s ease}
+    .btn-theme-toggle:hover svg{transform:rotate(-20deg) scale(1.08)}
 
     /* SELECTOR DE MODO */
     #mode-selector{position:absolute;top:calc(16px + env(safe-area-inset-top));left:70px;right:78px;z-index:2000;max-width:420px;animation:fadeIn .6s ease both}
@@ -99,12 +107,17 @@
 
     /* PANELES */
     .ui-panel{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:92%;max-width:420px;
+      max-height:calc(92vh - 86px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       padding:22px 20px 20px;z-index:1000;text-align:center;
       background:linear-gradient(180deg,var(--glass-bg-strong) 0%,var(--glass-bg) 100%);border:1px solid var(--glass-border);border-radius:24px;
       -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
       box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);color:var(--text-color);
       animation:panelIn .5s cubic-bezier(.2,.8,.2,1) both;
-      transition:max-height .45s cubic-bezier(.2,.8,.2,1),padding .35s ease}
+      overflow-y:auto;overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.35) transparent}
+    .ui-panel::-webkit-scrollbar{width:6px}
+    .ui-panel::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
     .ui-panel::before{content:"";position:absolute;top:0;left:14%;right:14%;height:2px;border-radius:2px;
       background:linear-gradient(90deg,transparent,var(--primary-color),transparent);opacity:.9;pointer-events:none}
     .panel-title{color:var(--text-color);font-size:1.35rem;font-weight:700;margin-bottom:6px}
@@ -123,7 +136,7 @@
     #input-destino,#input-origen-modal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
     #input-origen-modal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E")}
 
-    /* SUGERENCIAS DE DIRECCIONES */
+    /* SUGERENCIAS */
     .lista-sugerencias{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
       border-radius:14px;max-height:210px;overflow-y:auto;z-index:2000;box-shadow:0 16px 40px rgba(0,0,0,.35);text-align:left;
       -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -141,14 +154,14 @@
       box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
     .btn-main::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.20) 50%,transparent 70%);
       transform:translateX(-100%);transition:transform .7s ease}
-    .btn-main::after{content:">";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.15rem;line-height:1;transition:transform .25s}
+    .btn-main::after{content:"›";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.4rem;line-height:1;transition:transform .25s;font-weight:300}
     .btn-main:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(71,133,167,.45),inset 0 1px 0 rgba(255,255,255,.25)}
     .btn-main:hover::before{transform:translateX(100%)}
     .btn-main:hover::after{transform:translate(4px,-50%)}
     .btn-main:active{transform:translateY(0);filter:brightness(.92)}
     .btn-main:disabled{opacity:.6;cursor:progress;transform:none}
 
-    /* MODAL PEQUEÑO PARA CAMBIAR EL ORIGEN */
+    /* MODAL ORIGEN */
     .modal-origen{position:fixed;inset:0;z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:calc(78px + env(safe-area-inset-top)) 16px 24px;
       background:rgba(8,22,34,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:fadeIn .2s ease both}
     .modal-origen-dialog{position:relative;width:min(100%,380px);padding:18px;background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));
@@ -162,129 +175,167 @@
     .btn-modal-secundario{padding:9px 13px;border:1px solid var(--field-border);border-radius:10px;background:var(--field-bg);color:var(--muted-text);font-size:.78rem;font-weight:600;cursor:pointer}
     .btn-modal-secundario:hover{border-color:var(--primary-color);color:var(--primary-color)}
 
-    /* ================= MODAL TIPO DE SERVICIO (SLIDE DESDE LA DERECHA) ================= */
-    .modal-servicio{position:fixed;inset:0;z-index:5500;display:flex;align-items:flex-end;justify-content:flex-end;pointer-events:none;overflow:hidden}
-    .modal-servicio.activo{pointer-events:auto}
-    .modal-servicio-fondo{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,22,34,0) 0%,rgba(8,22,34,.25) 40%,rgba(8,22,34,.55) 100%);
-      -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;transition:opacity .35s ease;pointer-events:none}
-    .modal-servicio.activo .modal-servicio-fondo{opacity:1;pointer-events:auto}
-    .modal-servicio-dialog{position:relative;width:min(100%,400px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);margin:16px;padding:22px 20px 20px;
-      background:linear-gradient(180deg,var(--glass-bg-strong) 0%,var(--glass-bg) 100%);
-      border:1px solid var(--glass-border);border-radius:24px;box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);
-      -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
-      transform:translateX(120%);transition:transform .5s cubic-bezier(.2,.8,.2,1);
-      display:flex;flex-direction:column;overflow:hidden}
-    .modal-servicio-cuerpo{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-      padding-right:4px;margin-right:-4px;scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.45) transparent}
-    .modal-servicio-cuerpo::-webkit-scrollbar{width:5px}
-    .modal-servicio-cuerpo::-webkit-scrollbar-thumb{background:rgba(71,133,167,.45);border-radius:999px}
-    .modal-servicio.activo .modal-servicio-dialog{transform:translateX(0);animation:slideInFromRight .55s cubic-bezier(.2,.8,.2,1) both}
-    .modal-servicio.cerrando .modal-servicio-dialog{animation:slideOutToRight .4s cubic-bezier(.4,0,.6,1) both}
-    .modal-servicio.cerrando .modal-servicio-fondo{opacity:0}
-    .modal-servicio::before{content:"";position:absolute;top:0;left:14%;right:14%;height:2px;border-radius:2px;
-      background:linear-gradient(90deg,transparent,var(--primary-color),transparent);opacity:.9;pointer-events:none}
+    /* ================================================
+       PANEL DE SERVICIOS (slide derecha → izquierda)
+       ================================================ */
+    #panel-servicios{position:fixed;top:0;right:0;bottom:0;width:min(440px,94vw);max-width:100vw;z-index:4500;
+      background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));
+      border-left:1px solid var(--glass-border);
+      -webkit-backdrop-filter:blur(26px) saturate(160%);backdrop-filter:blur(26px) saturate(160%);
+      box-shadow:-20px 0 60px rgba(0,0,0,.25);
+      display:flex;flex-direction:column;
+      transform:translateX(100%);transition:transform .42s cubic-bezier(.2,.8,.2,1),opacity .3s;
+      padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));
+      color:var(--text-color);
+      overflow:hidden;
+      -webkit-overflow-scrolling:touch}
+    #panel-servicios.visible{transform:translateX(0);animation:slideInRight .42s cubic-bezier(.2,.8,.2,1) both}
+    #panel-servicios.cerrando{transform:translateX(100%);opacity:0}
+    @media (max-width:480px){
+      #panel-servicios{width:100vw;border-left:none;border-radius:24px 24px 0 0;bottom:auto;max-height:92vh;
+        top:auto;bottom:0;transform:translateY(100%);border-top:1px solid var(--glass-border);
+        padding-left:18px;padding-right:18px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+      #panel-servicios.visible{transform:translateY(0);animation:slideUpMobile .42s cubic-bezier(.2,.8,.2,1) both}
+    }
+    @keyframes slideUpMobile{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 
-    .servicio-cabecera{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
-    .servicio-eyebrow{display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--primary-color);margin-bottom:4px}
-    .servicio-titulo{color:var(--text-color);font-size:1.25rem;font-weight:700;line-height:1.2}
-    .servicio-cerrar{width:32px;height:32px;flex-shrink:0;border:1px solid var(--field-border);border-radius:10px;background:var(--field-bg);
-      color:var(--muted-text);cursor:pointer;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .2s}
-    .servicio-cerrar:hover{color:var(--primary-color);border-color:var(--primary-color);transform:rotate(90deg)}
+    #backdrop-servicios{position:fixed;inset:0;z-index:4400;background:rgba(8,22,34,.35);
+      -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s}
+    #backdrop-servicios.visible{opacity:1;pointer-events:auto}
 
-    .servicio-resumen{display:flex;gap:10px;padding:12px;border-radius:14px;background:var(--field-bg);border:1px solid var(--field-border);margin-bottom:16px}
-    .servicio-resumen-punto{flex:1;min-width:0;text-align:left}
-    .servicio-resumen-label{display:block;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-color);margin-bottom:3px}
-    .servicio-resumen-texto{display:block;font-size:.78rem;font-weight:600;color:var(--text-color);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .servicio-resumen-sep{width:1px;background:var(--field-border);margin:4px 0}
+    .servicios-cabecera{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+    .servicios-titulo{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
+    .servicios-titulo::before{content:"ELIGE TU VIAJE";display:block;font-size:.62rem;font-weight:800;letter-spacing:.28em;
+      color:var(--primary-color);margin-bottom:6px}
+    .btn-cerrar-servicios{width:34px;height:34px;border-radius:12px;border:1px solid var(--field-border);
+      background:var(--field-bg);color:var(--muted-text);cursor:pointer;display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;transition:all .2s;flex-shrink:0}
+    .btn-cerrar-servicios:hover{color:var(--primary-color);border-color:var(--primary-color);transform:rotate(90deg)}
 
-    .servicio-lista-titulo{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-text);margin-bottom:10px;text-align:left}
-    .servicio-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-    .servicio-opcion{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;background:var(--field-bg);
-      border:1.5px solid var(--field-border);cursor:pointer;text-align:left;transition:all .25s cubic-bezier(.2,.8,.2,1);overflow:hidden}
-    .servicio-opcion:hover{border-color:rgba(71,133,167,.55);transform:translateY(-1px);box-shadow:0 8px 20px rgba(71,133,167,.18)}
-    .servicio-opcion.seleccionada{border-color:var(--primary-color);background:linear-gradient(135deg,rgba(71,133,167,.12),rgba(19,73,137,.06));
-      box-shadow:0 10px 24px rgba(71,133,167,.25),0 0 0 3px rgba(71,133,167,.12)}
-    .servicio-opcion.seleccionada::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 12px var(--glow-strong)}
+    .servicios-resumen{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0 18px;padding:14px;
+      background:var(--field-bg);border:1px solid var(--field-border);border-radius:16px}
+    .servicios-ruta{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;line-height:1.35}
+    .servicios-ruta .punto{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff}
+    .servicios-ruta .punto.origen{background:var(--primary-color)}
+    .servicios-ruta .punto.destino{background:var(--deep-blue)}
+    .servicios-ruta .texto{flex:1;color:var(--text-color);font-weight:600;padding-top:2px;word-break:break-word}
+    .servicios-meta{display:flex;gap:16px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--field-border)}
+    .servicios-meta > div{flex:1}
+    .servicios-meta-label{display:block;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);margin-bottom:2px}
+    .servicios-meta-valor{font-size:.92rem;font-weight:700}
 
-    .servicio-icono{width:54px;height:54px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.08));
-      display:flex;align-items:center;justify-content:center;color:var(--primary-color);border:1px solid rgba(71,133,167,.25)}
-    .servicio-icono svg{width:32px;height:32px;animation:iconFloat 3s ease-in-out infinite}
-    .servicio-opcion.seleccionada .servicio-icono{background:linear-gradient(135deg,var(--primary-color),#134989);color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.45)}
+    .servicios-lista{display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;padding:4px 6px 4px 2px;flex:1;min-height:0;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.4) transparent;
+      -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+    .servicios-lista::-webkit-scrollbar{width:6px}
+    .servicios-lista::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .servicios-lista::-webkit-scrollbar-track{background:transparent}
 
-    .servicio-info{flex:1;min-width:0}
-    .servicio-nombre{display:block;font-size:.95rem;font-weight:700;color:var(--text-color);line-height:1.2}
-    .servicio-descripcion{display:block;margin-top:3px;font-size:.74rem;color:var(--muted-text);line-height:1.35}
-    .servicio-meta{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-    .servicio-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(71,133,167,.12);
-      color:var(--primary-color);font-size:.68rem;font-weight:600;border:1px solid rgba(71,133,167,.22)}
-    .servicio-chip-punto{width:6px;height:6px;border-radius:50%;background:#22c55e;position:relative}
-    .servicio-chip-punto::after{content:"";position:absolute;inset:0;border-radius:50%;background:#22c55e;animation:pingSoft 1.8s ease-out infinite}
+    .servicio-card{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--field-border);
+      border-radius:18px;background:var(--field-bg);cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);
+      animation:serviceCardIn .45s cubic-bezier(.2,.8,.2,1) both;opacity:0}
+    .servicio-card:nth-child(1){animation-delay:.08s}
+    .servicio-card:nth-child(2){animation-delay:.16s}
+    .servicio-card:nth-child(3){animation-delay:.24s}
+    .servicio-card:nth-child(4){animation-delay:.32s}
+    .servicio-card:nth-child(5){animation-delay:.40s}
+    .servicio-card::after{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+      background:linear-gradient(120deg,transparent 40%,rgba(71,133,167,.12) 50%,transparent 60%);
+      opacity:0;transition:opacity .4s}
+    .servicio-card:hover{border-color:var(--primary-color);transform:translateX(-3px);
+      box-shadow:0 10px 28px rgba(71,133,167,.22),0 0 0 3px rgba(71,133,167,.08)}
+    .servicio-card:hover::after{opacity:1}
+    .servicio-card.seleccionado{border-color:var(--primary-color);
+      background:linear-gradient(135deg,rgba(71,133,167,.10),rgba(19,73,137,.06));
+      box-shadow:0 8px 24px rgba(71,133,167,.25),0 0 0 3px rgba(71,133,167,.18)}
+    .servicio-card.seleccionado::before{content:"✓";position:absolute;top:10px;right:12px;width:22px;height:22px;
+      border-radius:50%;background:var(--primary-color);color:#fff;font-size:.75rem;font-weight:800;
+      display:flex;align-items:center;justify-content:center;animation:checkPop .3s ease both}
 
-    .servicio-tarifa{text-align:right;flex-shrink:0}
-    .servicio-tarifa-label{display:block;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-text);margin-bottom:2px}
-    .servicio-tarifa-valor{display:block;font-size:1.15rem;font-weight:800;color:var(--text-color);line-height:1}
-    .servicio-opcion.seleccionada .servicio-tarifa-valor{color:var(--primary-color)}
+    .servicio-icono{flex-shrink:0;width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;
+      box-shadow:0 6px 16px rgba(71,133,167,.35)}
+    .servicio-icono svg{width:28px;height:28px}
+    .servicio-info{flex:1;min-width:0;text-align:left}
+    .servicio-nombre{font-size:.98rem;font-weight:700;color:var(--text-color);margin-bottom:2px}
+    .servicio-desc{font-size:.72rem;color:var(--muted-text);line-height:1.3}
+    .servicio-tiempo{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:.70rem;font-weight:700;color:var(--primary-color)}
+    .servicio-precio{flex-shrink:0;text-align:right}
+    .servicio-precio-valor{font-size:1.05rem;font-weight:800;color:var(--text-color)}
+    .servicio-precio-etiqueta{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary-color)}
 
-    .servicio-vacio{padding:18px 14px;border-radius:14px;background:var(--field-bg);border:1px dashed rgba(71,133,167,.4);
-      color:var(--muted-text);font-size:.82rem;line-height:1.5;text-align:center}
-    .servicio-vacio b{color:var(--primary-color)}
-    .servicio-cargando{display:flex;gap:8px;padding:12px;border-radius:14px;background:var(--field-bg);border:1px solid var(--field-border);align-items:center}
-    .servicio-cargando-barra{flex:1;height:10px;border-radius:999px;background:linear-gradient(90deg,transparent,rgba(71,133,167,.3),transparent);
-      background-size:200% 100%;animation:shimmer 1.4s linear infinite}
-    .servicio-cargando-texto{font-size:.75rem;color:var(--muted-text);font-weight:600}
+    .servicios-footer{margin-top:16px;padding-top:16px;border-top:1px solid var(--glass-border)}
+    .servicios-footer .btn-main{padding:16px}
+    .servicios-leyenda{text-align:center;font-size:.72rem;color:var(--muted-text);margin-top:10px;line-height:1.35}
 
-    .servicio-acciones{display:flex;gap:8px;margin-top:14px;padding-top:14px;position:relative;flex-shrink:0;
-      background:linear-gradient(180deg,transparent 0%,var(--glass-bg) 45%)}
-    .servicio-acciones::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
-      background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
-    .servicio-btn-cancelar{flex:0 0 auto;padding:14px 18px;border:1px solid var(--field-border);border-radius:14px;background:var(--field-bg);
-      color:var(--muted-text);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
-    .servicio-btn-cancelar:hover{border-color:var(--primary-color);color:var(--primary-color)}
-    .servicio-btn-confirmar{flex:1;padding:14px 20px;border:none;border-radius:14px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;
-      background:linear-gradient(90deg,#134989 0%,#366986 45%,#4785A7 100%);
-      box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:all .2s;position:relative;overflow:hidden}
-    .servicio-btn-confirmar:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(71,133,167,.45)}
-    .servicio-btn-confirmar:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    /* CONDUCTOR - tarjetas animadas */
+    #ui-conductor{display:flex;flex-direction:column}
+    #ui-conductor .panel-title, #ui-conductor .status-text{text-align:center}
+    #contenedor-solicitudes{display:flex;flex-direction:column;gap:12px;
+      padding:2px 4px 2px 0;
+      transition:opacity .3s ease;
+      -webkit-overflow-scrolling:touch}
+    .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:18px;padding:16px 16px 16px 20px;background:var(--field-bg);
+      text-align:left;animation:cardPop .5s cubic-bezier(.2,.8,.2,1) both;overflow:hidden;
+      transition:transform .25s,box-shadow .25s,border-color .25s}
+    .tarjeta-viaje::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:4px;border-radius:4px;
+      background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 12px var(--glow-strong)}
+    .tarjeta-viaje::after{content:"";position:absolute;top:0;right:0;width:90px;height:90px;border-radius:50%;
+      background:radial-gradient(circle,rgba(71,133,167,.10),transparent 70%);pointer-events:none}
+    .tarjeta-viaje:hover{transform:translateY(-2px);border-color:var(--primary-color);
+      box-shadow:0 14px 32px rgba(71,133,167,.22),0 0 0 2px rgba(71,133,167,.10)}
+    .tarjeta-viaje:nth-child(1){animation-delay:.05s}
+    .tarjeta-viaje:nth-child(2){animation-delay:.12s}
+    .tarjeta-viaje:nth-child(3){animation-delay:.19s}
+    .tarjeta-viaje:nth-child(4){animation-delay:.26s}
+    .tarjeta-viaje:nth-child(5){animation-delay:.33s}
 
-    /* ================= SOLICITUDES CONDUCTOR ================= */
-    #contenedor-solicitudes{display:flex;flex-direction:column;gap:10px;max-height:55vh;overflow-y:auto;padding-right:4px;
-      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent;
-      transition:max-height .4s ease}
-    #contenedor-solicitudes::-webkit-scrollbar{width:5px}
-    #contenedor-solicitudes::-webkit-scrollbar-thumb{background:rgba(71,133,167,.45);border-radius:999px}
+    .viaje-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .viaje-tipo-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
+      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.12));
+      border:1px solid rgba(71,133,167,.35);font-size:.68rem;font-weight:700;letter-spacing:.06em;color:var(--primary-color);text-transform:uppercase}
+    .viaje-tipo-badge svg{width:12px;height:12px}
+    .viaje-precio-badge{font-size:1.15rem;font-weight:800;color:var(--text-color);letter-spacing:-.02em}
+    .viaje-precio-badge small{font-size:.62rem;font-weight:700;color:var(--primary-color);letter-spacing:.08em;display:block;text-align:right}
 
-    #ui-conductor.expandido{max-height:85vh;overflow-y:auto}
+    .viaje-ruta{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+    .viaje-punto{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;line-height:1.3}
+    .viaje-punto-dot{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:.65rem;font-weight:800;color:#fff;margin-top:1px}
+    .viaje-punto-dot.origen{background:var(--primary-color)}
+    .viaje-punto-dot.destino{background:var(--deep-blue)}
+    .viaje-punto-text{flex:1;font-weight:600;color:var(--text-color);padding-top:2px}
+    .viaje-punto-sub{display:block;font-size:.68rem;font-weight:500;color:var(--muted-text);margin-top:2px}
+    .viaje-linea-conector{width:2px;height:10px;background:linear-gradient(180deg,var(--primary-color),var(--deep-blue));margin-left:10px;border-radius:1px;opacity:.5}
 
-    .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:16px;padding:14px 14px 14px 18px;background:var(--field-bg);
-      text-align:left;overflow:hidden;
-      animation:cardExpand .55s cubic-bezier(.2,.8,.2,1) both, riseIn .5s cubic-bezier(.2,.8,.2,1) both;
-      transform-origin:top center}
-    .tarjeta-viaje::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;border-radius:3px;
-      background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 10px var(--glow-strong)}
-    .tarjeta-viaje::after{content:"";position:absolute;top:-50%;right:-50%;width:200%;height:200%;pointer-events:none;opacity:.6;
-      background:radial-gradient(circle at top right,rgba(71,133,167,.08) 0%,transparent 55%)}
-    .tarjeta-viaje-cabecera{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;position:relative;z-index:1}
-    .tarjeta-viaje-tipo{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
-      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.08));
-      border:1px solid rgba(71,133,167,.3);color:var(--primary-color);font-size:.7rem;font-weight:700;letter-spacing:.04em}
-    .tarjeta-viaje-tipo svg{width:14px;height:14px}
-    .tarjeta-viaje-tarifa{font-size:1.05rem;font-weight:800;color:var(--text-color)}
-    .tarjeta-viaje-tarifa small{display:block;font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-text);margin-bottom:1px}
-    .tarjeta-viaje p{font-size:.88rem;font-weight:600;margin-bottom:10px;color:var(--text-color);line-height:1.35;position:relative;z-index:1}
-    .tarjeta-viaje p strong{display:block;margin-bottom:2px;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color)}
-    .tarjeta-viaje .btn-main{padding:12px 42px 12px 16px;font-size:.92rem;border-radius:12px;position:relative;z-index:1}
+    .viaje-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .viaje-distancia{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--muted-text)}
+    .viaje-distancia svg{width:14px;height:14px;color:var(--primary-color)}
+    .viaje-cta{position:relative}
+    .viaje-cta .btn-main{padding:11px 42px 11px 16px;font-size:.84rem;border-radius:12px;min-width:140px}
+
     .comercio-info{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px dashed rgba(71,133,167,.5);
       color:var(--muted-text);font-size:.78rem;line-height:1.45;text-align:left}
     .comercio-info b{color:var(--primary-color)}
 
-    .badge-live{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
-      background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.35);color:#22c55e;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .badge-live-punto{width:7px;height:7px;border-radius:50%;background:#22c55e;position:relative}
-    .badge-live-punto::after{content:"";position:absolute;inset:0;border-radius:50%;background:#22c55e;animation:pingSoft 1.8s ease-out infinite}
-    .badge-tipo-conductor{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
-      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.08));
-      border:1px solid rgba(71,133,167,.4);color:var(--primary-color);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .badge-tipo-conductor svg{width:12px;height:12px}
+    /* Skeleton mientras carga */
+    .skeleton{background:linear-gradient(90deg,var(--field-border) 0%,var(--glass-highlight) 50%,var(--field-border) 100%);
+      background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+
+    .loading-pulse{display:inline-flex;align-items:center;gap:4px}
+    .loading-pulse span{width:6px;height:6px;border-radius:50%;background:var(--primary-color);animation:pulseDot 1.4s ease-out infinite}
+    .loading-pulse span:nth-child(2){animation-delay:.2s}
+    .loading-pulse span:nth-child(3){animation-delay:.4s}
+
+    /* Toast */
+    #toast{position:fixed;top:calc(80px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-20px);z-index:6000;
+      padding:12px 20px;border-radius:14px;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
+      -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 12px 32px rgba(0,0,0,.25);
+      font-size:.88rem;font-weight:600;color:var(--text-color);opacity:0;pointer-events:none;transition:all .3s;
+      display:flex;align-items:center;gap:10px}
+    #toast.visible{opacity:1;transform:translate(-50%,0)}
+    #toast .toast-icon{width:24px;height:24px;border-radius:50%;background:var(--primary-color);color:#fff;
+      display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800}
   </style>
 </head>
 <body class="dark-mode">
@@ -294,15 +345,16 @@
   </div>
 
   <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
-    <!-- Icono LUNA (tema oscuro activo -> clic para pasar a claro) -->
-    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-    <!-- Icono SOL (tema claro activo -> clic para pasar a oscuro) -->
-    <svg id="icon-sun" class="oculto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="4"/>
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-    </svg>
+    <!-- Icono luna (modo oscuro activo por defecto; se cambia dinámicamente) -->
+    <span id="theme-icon">
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg id="icon-sun" class="oculto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </span>
   </button>
 
   <div id="mode-selector">
@@ -322,14 +374,8 @@
   </div>
 
   <div id="ui-conductor" class="ui-panel oculto">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap">
-      <h3 class="panel-title" style="margin-bottom:0;text-align:left;flex:1">Viajes Solicitados</h3>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <span id="chip-tipo-conductor" class="badge-tipo-conductor oculto"></span>
-        <span class="badge-live"><span class="badge-live-punto"></span>En vivo</span>
-      </div>
-    </div>
-    <p id="status-text-conductor" class="status-text" style="text-align:left">Buscando solicitudes cercanas...</p>
+    <h3 class="panel-title">Viajes Solicitados</h3>
+    <p id="status-text-conductor" class="status-text">Buscando solicitudes cercanas...</p>
     <div id="contenedor-solicitudes"></div>
   </div>
 
@@ -337,7 +383,7 @@
     <div class="modal-origen-dialog">
       <div class="modal-origen-cabecera">
         <h2 id="modal-origen-titulo" class="modal-origen-titulo">Cambiar punto de partida</h2>
-        <button id="btn-cerrar-modal-origen" class="modal-origen-cerrar" type="button" aria-label="Cerrar">x</button>
+        <button id="btn-cerrar-modal-origen" class="modal-origen-cerrar" type="button" aria-label="Cerrar">×</button>
       </div>
       <p class="modal-origen-ayuda">Escribe una dirección real y elige una sugerencia para mover tu punto de partida.</p>
       <div class="input-group">
@@ -350,46 +396,50 @@
     </div>
   </div>
 
-  <!-- MODAL TIPO DE SERVICIO (pasajero) -->
-  <div id="modal-servicio" class="modal-servicio oculto" role="dialog" aria-modal="true" aria-labelledby="servicio-titulo-texto">
-    <div class="modal-servicio-fondo" id="modal-servicio-fondo"></div>
-    <div class="modal-servicio-dialog">
-      <div class="servicio-cabecera">
+  <!-- Backdrop para panel de servicios -->
+  <div id="backdrop-servicios"></div>
+
+  <!-- Panel lateral deslizante de servicios -->
+  <aside id="panel-servicios" aria-hidden="true">
+    <div class="servicios-cabecera">
+      <div>
+        <h2 class="servicios-titulo">Servicios disponibles</h2>
+      </div>
+      <button id="btn-cerrar-servicios" class="btn-cerrar-servicios" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="servicios-resumen">
+      <div class="servicios-ruta">
+        <div class="punto origen">O</div>
+        <div class="texto" id="resumen-origen">Ubicación actual</div>
+      </div>
+      <div class="servicios-ruta">
+        <div class="punto destino">D</div>
+        <div class="texto" id="resumen-destino">Seleccionando destino...</div>
+      </div>
+      <div class="servicios-meta">
         <div>
-          <span class="servicio-eyebrow">BIKAR · Confirmar viaje</span>
-          <h2 id="servicio-titulo-texto" class="servicio-titulo">Elige tu tipo de servicio</h2>
+          <span class="servicios-meta-label">Distancia</span>
+          <span class="servicios-meta-valor" id="resumen-distancia">— km</span>
         </div>
-        <button id="btn-cerrar-servicio" class="servicio-cerrar" type="button" aria-label="Cerrar">✕</button>
-      </div>
-
-      <div class="modal-servicio-cuerpo">
-        <div class="servicio-resumen">
-          <div class="servicio-resumen-punto">
-            <span class="servicio-resumen-label">Origen</span>
-            <span class="servicio-resumen-texto" id="servicio-resumen-origen">—</span>
-          </div>
-          <div class="servicio-resumen-sep"></div>
-          <div class="servicio-resumen-punto">
-            <span class="servicio-resumen-label">Destino</span>
-            <span class="servicio-resumen-texto" id="servicio-resumen-destino">—</span>
-          </div>
+        <div>
+          <span class="servicios-meta-label">Duración</span>
+          <span class="servicios-meta-valor" id="resumen-duracion">— min</span>
         </div>
-
-        <p class="servicio-lista-titulo">Servicios disponibles</p>
-        <div id="servicio-lista" class="servicio-lista">
-          <div class="servicio-cargando">
-            <span class="servicio-cargando-texto">Buscando conductores...</span>
-            <span class="servicio-cargando-barra"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="servicio-acciones">
-        <button id="btn-cancelar-servicio" class="servicio-btn-cancelar" type="button">Cancelar</button>
-        <button id="btn-confirmar-servicio" class="servicio-btn-confirmar" type="button" disabled>Solicitar viaje</button>
       </div>
     </div>
-  </div>
+
+    <div id="servicios-lista" class="servicios-lista">
+      <!-- Las tarjetas de servicio se inyectan aquí -->
+    </div>
+
+    <div class="servicios-footer">
+      <button id="btn-confirmar-servicio" class="btn-main" disabled>Selecciona un servicio</button>
+      <p class="servicios-leyenda">Los conductores asociados a este tipo de servicio recibirán tu solicitud al instante.</p>
+    </div>
+  </aside>
+
+  <div id="toast"><span class="toast-icon">✓</span><span id="toast-text"></span></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -412,15 +462,13 @@
     let marcadorOrigen = null;
     let marcadorDestino = null;
     let popupOrigenDireccion = null;
+    let rutaPolilinea = null;
     let usuarioActual = null;
+    let distanciaKm = 0;
+    let tarifaBase = 0;
+    let servicioSeleccionado = null;
     const timersBusqueda = { origen: null, destino: null };
     const controladoresBusqueda = { origen: null, destino: null };
-
-    /* Estado modal servicio */
-    let serviciosDisponibles = [];
-    let servicioSeleccionado = null;
-    let tarifaBaseCalculada = 0;
-    let distanciaCalculadaKm = 0;
 
     /* ================= DOM ================= */
     const $ = (id) => document.getElementById(id);
@@ -437,32 +485,39 @@
     const contenedorSolicitudes = $('contenedor-solicitudes');
     const perfilSuperior = $('perfil-superior');
     const fotoPerfilHeader = $('foto-perfil-header');
-    const iconMoon = $('icon-moon');
-    const iconSun = $('icon-sun');
     const modalOrigen = $('modal-origen');
-    const modalServicio = $('modal-servicio');
-    const modalServicioFondo = $('modal-servicio-fondo');
-    const servicioLista = $('servicio-lista');
-    const servicioResumenOrigen = $('servicio-resumen-origen');
-    const servicioResumenDestino = $('servicio-resumen-desten');
-    const btnConfirmarServicio = $('btn-confirmar-servicio');
-    const btnCancelarServicio = $('btn-cancelar-servicio');
-    const btnCerrarServicio = $('btn-cerrar-servicio');
 
-    /* ================= ICONOS POR TIPO DE SERVICIO ================= */
+    const panelServicios = $('panel-servicios');
+    const backdropServicios = $('backdrop-servicios');
+    const btnCerrarServicios = $('btn-cerrar-servicios');
+    const serviciosLista = $('servicios-lista');
+    const btnConfirmarServicio = $('btn-confirmar-servicio');
+    const resumenOrigen = $('resumen-origen');
+    const resumenDestino = $('resumen-destino');
+    const resumenDistancia = $('resumen-distancia');
+    const resumenDuracion = $('resumen-duracion');
+    const toast = $('toast');
+    const toastText = $('toast-text');
+
+    /* ================= ICONOS SVG (tipo de servicio) ================= */
     const ICONOS_SERVICIO = {
-      moto: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3"/><circle cx="18.5" cy="17" r="3"/><path d="M15 6h4l1 5"/><path d="M4 17h1.5l2-5h6l3-6"/></svg>',
-      auto: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-6a2 2 0 0 1 2-1.4h10a2 2 0 0 1 2 1.4l2 6"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a2 2 0 1 1-4 0H9a2 2 0 1 1-4 0H4a1 1 0 0 1-1-1z"/><circle cx="7" cy="15" r=".5" fill="currentColor"/><circle cx="17" cy="15" r=".5" fill="currentColor"/></svg>',
-      taxi: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l1 2H8z"/><path d="M3 13l2-6a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 6"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a2 2 0 1 1-4 0H9a2 2 0 1 1-4 0H4a1 1 0 0 1-1-1z"/></svg>',
-      suv:  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14l1.5-5.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 14"/><path d="M3 14h18v3a1 1 0 0 1-1 1h-1.1a2 2 0 1 1-3.8 0H8.9a2 2 0 1 1-3.8 0H4a1 1 0 0 1-1-1z"/><path d="M7 7V5h10v2"/></svg>',
-      premium: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>',
-      default: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+      economico: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>`,
+      premium: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/><path d="m8 6 2-3h4l2 3"/></svg>`,
+      xl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="2"/><path d="M3 11h18"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>`,
+      moto: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>`,
+      envio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+      confort: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+      default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`
     };
 
-    const TIPOS_POR_DEFECTO = [
-      { tipo: 'moto',    nombre: 'BIKAR Moto',    descripcion: 'Rápido y económico. Ideal para trayectos cortos.', multiplicador: 1.0 },
-      { tipo: 'auto',    nombre: 'BIKAR Auto',    descripcion: 'Comodidad para viajes del día a día.',             multiplicador: 1.5 },
-      { tipo: 'premium', nombre: 'BIKAR Premium', descripcion: 'Vehículos de gama alta con conductor profesional.',multiplicador: 2.2 }
+    /* Catálogo base de tipos de servicio. Se complementa con los que vengan de la base de datos. */
+    const CATALOGO_SERVICIOS = [
+      { clave: 'economico', nombre: 'Económico', desc: 'Viaje rápido y al mejor precio', multiplicador: 1.0, espera: '3 min', icono: 'economico' },
+      { clave: 'confort', nombre: 'Confort', desc: 'Autos cómodos, conductores top', multiplicador: 1.35, espera: '5 min', icono: 'confort' },
+      { clave: 'premium', nombre: 'Premium', desc: 'Vehículos de alta gama', multiplicador: 1.8, espera: '7 min', icono: 'premium' },
+      { clave: 'xl', nombre: 'XL / Grupos', desc: 'Hasta 6 pasajeros', multiplicador: 2.0, espera: '8 min', icono: 'xl' },
+      { clave: 'moto', nombre: 'Moto', desc: 'Ideal para trayectos cortos', multiplicador: 0.75, espera: '2 min', icono: 'moto' },
+      { clave: 'envio', nombre: 'Envíos', desc: 'Envía paquetes y documentos', multiplicador: 0.9, espera: '4 min', icono: 'envio' }
     ];
 
     /* ================= MAPA ================= */
@@ -480,30 +535,18 @@
     function crearContenidoPopupOrigen() {
       const contenedor = document.createElement('div');
       contenedor.className = 'popup-origen';
-
       const etiqueta = document.createElement('span');
       etiqueta.className = 'popup-origen-label';
       etiqueta.textContent = 'Punto de partida';
-
       popupOrigenDireccion = document.createElement('strong');
       popupOrigenDireccion.className = 'popup-origen-address';
       popupOrigenDireccion.textContent = origenNombre;
-
       const boton = document.createElement('button');
-      boton.type = 'button';
-      boton.className = 'popup-origen-change';
-      boton.title = 'Cambiar punto de partida';
-      boton.setAttribute('aria-label', 'Cambiar punto de partida');
-      boton.textContent = '>';
-      boton.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        abrirModalOrigen();
-      });
-
-      contenedor.appendChild(etiqueta);
-      contenedor.appendChild(popupOrigenDireccion);
-      contenedor.appendChild(boton);
+      boton.type = 'button'; boton.className = 'popup-origen-change';
+      boton.title = 'Cambiar punto de partida'; boton.setAttribute('aria-label', 'Cambiar punto de partida');
+      boton.textContent = '›';
+      boton.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); abrirModalOrigen(); });
+      contenedor.appendChild(etiqueta); contenedor.appendChild(popupOrigenDireccion); contenedor.appendChild(boton);
       return contenedor;
     }
 
@@ -516,12 +559,35 @@
         marcadorOrigen = L.marker([lat, lon]).addTo(map);
         marcadorOrigen.bindPopup(crearContenidoPopupOrigen(), OPCIONES_POPUP_ORIGEN);
         marcadorOrigen.on('popupclose', () => {
-          setTimeout(() => {
-            if (marcadorOrigen && map.hasLayer(marcadorOrigen) && !marcadorOrigen.isPopupOpen()) marcadorOrigen.openPopup();
-          }, 0);
+          setTimeout(() => { if (marcadorOrigen && map.hasLayer(marcadorOrigen) && !marcadorOrigen.isPopupOpen()) marcadorOrigen.openPopup(); }, 0);
         });
       }
       marcadorOrigen.openPopup();
+    }
+
+    function dibujarRuta() {
+      if (rutaPolilinea) { map.removeLayer(rutaPolilinea); rutaPolilinea = null; }
+      if (!origen || !destino) return;
+      const rutaSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;width:0;height:0">
+        <defs><linearGradient id="gradRuta" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4785A7"/><stop offset="100%" stop-color="#134989"/>
+        </linearGradient></defs></svg>`;
+      if (!document.getElementById('defs-ruta')) {
+        const div = document.createElement('div');
+        div.id = 'defs-ruta'; div.innerHTML = rutaSVG; div.style.position = 'absolute'; div.style.width = 0; div.style.height = 0;
+        document.body.appendChild(div);
+      }
+      // Dibujo directo como polyline con estilo
+      rutaPolilinea = L.polyline([[origen.lat, origen.lon], [destino.lat, destino.lon]], {
+        color: '#4785A7', weight: 5, opacity: 0.9, lineCap: 'round', lineJoin: 'round',
+        dashArray: '1 12', className: ''
+      }).addTo(map);
+      // Simulación de animación sutil: pintamos gradualmente con una línea sólida superpuesta
+      setTimeout(() => {
+        if (rutaPolilinea && map.hasLayer(rutaPolilinea)) {
+          rutaPolilinea.setStyle({ dashArray: null, weight: 5, color: '#4785A7', opacity: 0.95 });
+        }
+      }, 300);
     }
 
     /* ================= GEOLOCALIZACION ================= */
@@ -531,7 +597,6 @@
         origen = coordenadasActuales;
         map.setView([origen.lat, origen.lon], 15);
         actualizarMarcadorOrigen(origen.lat, origen.lon, 'Buscando dirección...');
-
         const nombreActual = await consultarDireccionCorta(origen.lat, origen.lon);
         if (origen && origen.lat === coordenadasActuales.lat && origen.lon === coordenadasActuales.lon) {
           actualizarMarcadorOrigen(origen.lat, origen.lon, nombreActual || 'Ubicación actual');
@@ -541,16 +606,20 @@
       }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 120000 });
     }
 
-    /* ================= TEMA ================= */
+    /* ================= TEMA (sol/luna) ================= */
+    const iconMoon = $('icon-moon');
+    const iconSun = $('icon-sun');
+
     function actualizarIconoTema() {
       const esOscuro = document.body.classList.contains('dark-mode');
-      // Oscuro -> mostramos luna (clic para ir a claro). Claro -> mostramos sol (clic para ir a oscuro).
+      // Si está en modo oscuro, el botón debe mostrar el sol para "cambiar a claro".
+      // Si está en modo claro, debe mostrar la luna para "cambiar a oscuro".
       if (esOscuro) {
-        iconMoon.classList.remove('oculto');
-        iconSun.classList.add('oculto');
-      } else {
         iconMoon.classList.add('oculto');
         iconSun.classList.remove('oculto');
+      } else {
+        iconSun.classList.add('oculto');
+        iconMoon.classList.remove('oculto');
       }
     }
     actualizarIconoTema();
@@ -560,6 +629,16 @@
       actualizarIconoTema();
       setTimeout(() => map.invalidateSize(), 200);
     });
+
+    /* ================= TOAST ================= */
+    let toastTimer;
+    function mostrarToast(mensaje, icono = '✓') {
+      toastText.textContent = mensaje;
+      toast.querySelector('.toast-icon').textContent = icono;
+      toast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
+    }
 
     /* ================= SESION ================= */
     function verificarSesionGuardada() {
@@ -576,25 +655,15 @@
 
     function aplicarSesionUsuario(usuario) {
       if (!usuario) { window.location.href = LOGIN_URL; return; }
-
       if (usuario.foto && fotoPerfilHeader && perfilSuperior) {
         fotoPerfilHeader.src = usuario.foto;
         perfilSuperior.classList.remove('oculto');
       }
-
       if (usuario.tipo_usuario === 'conductor') {
         modoActual = 'conductor';
         btnCambiarModo.textContent = 'Modo: Conductor (Cambiar a Pasajero)';
         uiPasajero.classList.add('oculto');
         uiConductor.classList.remove('oculto');
-        // Mostrar el chip con el tipo de servicio activo del conductor
-        const chipTipo = $('chip-tipo-conductor');
-        const tipoC = obtenerTipoServicioConductor();
-        if (chipTipo && tipoC) {
-          const tipoBonito = tipoC.replace(/\b\w/g, l => l.toUpperCase());
-          chipTipo.innerHTML = `${iconoPorTipoServicio(tipoC)}<span>${escapeHtml(tipoBonito)}</span>`;
-          chipTipo.classList.remove('oculto');
-        }
         cargarViajesSolicitados();
       } else {
         modoActual = 'pasajero';
@@ -602,11 +671,13 @@
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
         if (usuario.tipo_usuario === 'comercio') {
-          uiPasajero.insertAdjacentHTML('afterbegin',
-            `<div class="comercio-info"><b>Comercio activo:</b> ${usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento'} · ${usuario.categoria || 'Categoría no registrada'}</div>`);
+          const existente = uiPasajero.querySelector('.comercio-info');
+          if (!existente) {
+            uiPasajero.insertAdjacentHTML('afterbegin',
+              `<div class="comercio-info"><b>Comercio activo:</b> ${usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento'} · ${usuario.categoria || 'Categoría no registrada'}</div>`);
+          }
         }
       }
-
       setTimeout(() => map.invalidateSize(), 300);
     }
 
@@ -625,35 +696,24 @@
         btnCambiarModo.textContent = 'Modo: Conductor (Cambiar a Pasajero)';
         uiPasajero.classList.add('oculto');
         uiConductor.classList.remove('oculto');
-        // Actualizar chip con el tipo de servicio del conductor
-        const chipTipo = $('chip-tipo-conductor');
-        const tipoC = obtenerTipoServicioConductor();
-        if (chipTipo && tipoC) {
-          const tipoBonito = tipoC.replace(/\b\w/g, l => l.toUpperCase());
-          chipTipo.innerHTML = `${iconoPorTipoServicio(tipoC)}<span>${escapeHtml(tipoBonito)}</span>`;
-          chipTipo.classList.remove('oculto');
-        }
         cargarViajesSolicitados();
+        cerrarPanelServicios();
       } else {
         modoActual = 'pasajero';
         btnCambiarModo.textContent = 'Modo: Pasajero (Cambiar a Conductor)';
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
-        const chipTipo = $('chip-tipo-conductor');
-        if (chipTipo) chipTipo.classList.add('oculto');
       }
       setTimeout(() => map.invalidateSize(), 200);
     });
 
-    /* Click en el mapa = destino */
-    map.on('click', async (e) => {
+    map.on('click', (e) => {
       if (modoActual !== 'pasajero') return;
       destino = { lat: e.latlng.lat, lon: e.latlng.lng };
-      destinoNombre = 'Ubicación en el mapa';
       if (marcadorDestino) marcadorDestino.setLatLng(e.latlng);
       else marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
-      const dir = await consultarDireccionCorta(destino.lat, destino.lon);
-      if (dir) destinoNombre = dir;
+      destinoNombre = 'Destino en el mapa';
+      inputDestino.value = '';
       actualizarCalculoRuta();
     });
 
@@ -683,8 +743,7 @@
     async function consultarDireccionCorta(lat, lon) {
       try {
         const parametros = new URLSearchParams({
-          format: 'jsonv2', lat: String(lat), lon: String(lon),
-          zoom: '18', addressdetails: '1', 'accept-language': 'es'
+          format: 'jsonv2', lat: String(lat), lon: String(lon), zoom: '18', addressdetails: '1', 'accept-language': 'es'
         });
         const respuesta = await fetch(`https://nominatim.openstreetmap.org/reverse?${parametros.toString()}`);
         if (!respuesta.ok) throw new Error('No se pudo obtener la dirección actual');
@@ -712,24 +771,18 @@
       return [
         direccion.neighbourhood || direccion.suburb || direccion.city_district,
         direccion.city || direccion.town || direccion.village || direccion.municipality,
-        direccion.state, direccion.postcode
+        direccion.state,
+        direccion.postcode
       ].filter(Boolean).join(', ');
     }
 
     function renderizarSugerencia(item, contenedor, alSeleccionar) {
       const boton = document.createElement('button');
-      boton.type = 'button';
-      boton.className = 'sugerencia-item';
-      boton.title = item.display_name || '';
-
-      const principal = document.createElement('span');
-      principal.className = 'sugerencia-principal';
+      boton.type = 'button'; boton.className = 'sugerencia-item'; boton.title = item.display_name || '';
+      const principal = document.createElement('span'); principal.className = 'sugerencia-principal';
       principal.textContent = obtenerTextoPrincipal(item);
-
-      const detalle = document.createElement('span');
-      detalle.className = 'sugerencia-detalle';
+      const detalle = document.createElement('span'); detalle.className = 'sugerencia-detalle';
       detalle.textContent = obtenerTextoDetalle(item) || (item.display_name || '').split(',').slice(1, 3).join(',').trim();
-
       boton.appendChild(principal);
       if (detalle.textContent) boton.appendChild(detalle);
       boton.addEventListener('click', () => alSeleccionar(item));
@@ -740,10 +793,8 @@
       clearTimeout(timersBusqueda[tipo]);
       if (controladoresBusqueda[tipo]) controladoresBusqueda[tipo].abort();
       contenedor.innerHTML = '';
-
       const consulta = texto.trim();
       if (consulta.length < 3) return;
-
       timersBusqueda[tipo] = setTimeout(async () => {
         const controlador = new AbortController();
         controladoresBusqueda[tipo] = controlador;
@@ -753,15 +804,13 @@
             dedupe: '1', limit: '8', 'accept-language': 'es'
           });
           if (origen && Number.isFinite(origen.lat) && Number.isFinite(origen.lon)) parametros.set('viewbox', crearViewbox(origen.lat, origen.lon));
-
           const respuesta = await fetch(`https://nominatim.openstreetmap.org/search?${parametros.toString()}`, { signal: controlador.signal });
           if (!respuesta.ok) throw new Error('No se pudieron consultar direcciones');
           const datos = await respuesta.json();
           if (controlador.signal.aborted) return;
-
           contenedor.innerHTML = '';
           datos.filter((item) => item && item.lat && item.lon && item.display_name)
-               .forEach((item) => renderizarSugerencia(item, contenedor, alSeleccionar));
+            .forEach((item) => renderizarSugerencia(item, contenedor, alSeleccionar));
         } catch (error) {
           if (error.name !== 'AbortError') console.error('Error al buscar dirección:', error);
         }
@@ -771,35 +820,33 @@
     /* ================= CAMBIO DE ORIGEN ================= */
     function abrirModalOrigen() {
       modalOrigen.classList.remove('oculto');
-      inputOrigenModal.value = '';
-      sugerenciasOrigen.innerHTML = '';
+      inputOrigenModal.value = ''; sugerenciasOrigen.innerHTML = '';
       setTimeout(() => inputOrigenModal.focus(), 50);
     }
-
     function cerrarModalOrigen() {
       modalOrigen.classList.add('oculto');
-      inputOrigenModal.value = '';
-      sugerenciasOrigen.innerHTML = '';
+      inputOrigenModal.value = ''; sugerenciasOrigen.innerHTML = '';
       if (marcadorOrigen) marcadorOrigen.openPopup();
     }
-
     $('btn-cerrar-modal-origen').addEventListener('click', cerrarModalOrigen);
     $('btn-cancelar-modal-origen').addEventListener('click', cerrarModalOrigen);
-    modalOrigen.addEventListener('click', (event) => {
-      if (event.target === modalOrigen) cerrarModalOrigen();
-    });
+    modalOrigen.addEventListener('click', (event) => { if (event.target === modalOrigen) cerrarModalOrigen(); });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !modalOrigen.classList.contains('oculto')) cerrarModalOrigen();
+      if (event.key === 'Escape') {
+        if (!modalOrigen.classList.contains('oculto')) cerrarModalOrigen();
+        else if (panelServicios.classList.contains('visible')) cerrarPanelServicios();
+      }
     });
 
     inputOrigenModal.addEventListener('input', () => {
       buscarSugerencias(inputOrigenModal.value, sugerenciasOrigen, (item) => {
         inputOrigenModal.value = item.display_name;
         origen = { lat: parseFloat(item.lat), lon: parseFloat(item.lon) };
-        actualizarMarcadorOrigen(origen.lat, origen.lon, formatearDireccionCorta(item) || item.display_name);
+        const nombre = formatearDireccionCorta(item) || item.display_name;
+        actualizarMarcadorOrigen(origen.lat, origen.lon, nombre);
         map.setView([origen.lat, origen.lon], 16);
         cerrarModalOrigen();
-        actualizarCalculoRuta();
+        if (destino) actualizarCalculoRuta();
       }, 'origen');
     });
 
@@ -810,265 +857,223 @@
         destinoNombre = formatearDireccionCorta(item) || item.display_name;
         if (marcadorDestino) marcadorDestino.setLatLng([destino.lat, destino.lon]);
         else marcadorDestino = L.marker([destino.lat, destino.lon]).addTo(map);
-        sugerenciasDestino.innerHTML = '';
         actualizarCalculoRuta();
       }, 'destino');
     });
 
-    /* ================= RUTA / TARIFA ================= */
+    /* ================= RUTA / TARIFA / PANEL SERVICIOS ================= */
+    function actualizarCalculoRuta() {
+      if (!origen || !destino || !marcadorOrigen || !marcadorDestino) return;
+      dibujarRuta();
+      map.fitBounds(new L.featureGroup([marcadorOrigen, marcadorDestino]).getBounds().pad(0.25));
+      distanciaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
+      tarifaBase = Math.round(5000 + (distanciaKm * 2000));
+      statusTextPasajero.textContent = `Distancia: ${distanciaKm.toFixed(1)} km · Tarifa desde $${Math.round(tarifaBase * 0.75).toLocaleString('es-CO')}`;
+      btnPedirViaje.textContent = 'Ver servicios disponibles';
+      btnPedirViaje.disabled = false;
+    }
+
     function calcularDistancia(lat1, lon1, lat2, lon2) {
       const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat / 2) ** 2 +
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) ** 2;
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     }
 
-    async function actualizarCalculoRuta() {
-      if (!origen || !destino || !marcadorOrigen || !marcadorDestino) return;
-      map.fitBounds(new L.featureGroup([marcadorOrigen, marcadorDestino]).getBounds().pad(0.2));
+    /* ================= PANEL DE SERVICIOS ================= */
+    async function abrirPanelServicios() {
+      if (!origen || !destino) { alert('Selecciona origen y destino.'); return; }
 
-      distanciaCalculadaKm = calcularDistancia(origen.lat, origen.lon, destino.lat, destino.lon);
-      tarifaBaseCalculada = Math.round(5000 + (distanciaCalculadaKm * 2000));
+      // Actualizar resumen
+      resumenOrigen.textContent = origenNombre || 'Ubicación actual';
+      resumenDestino.textContent = destinoNombre || 'Destino seleccionado';
+      resumenDistancia.textContent = `${distanciaKm.toFixed(1)} km`;
+      const duracionMin = Math.max(3, Math.round(distanciaKm * 2.4));
+      resumenDuracion.textContent = `${duracionMin} min`;
 
-      statusTextPasajero.textContent = `Tarifa estimada: $${tarifaBaseCalculada} · ${distanciaCalculadaKm.toFixed(1)} km`;
-      btnPedirViaje.dataset.tarifa = tarifaBaseCalculada;
-      btnPedirViaje.textContent = 'Pedir Viaje Ahora';
+      // Cargar servicios disponibles
+      await cargarServiciosDisponibles();
 
-      // Al tener origen + destino, abrimos el modal de tipo de servicio
-      await abrirModalServicio();
+      panelServicios.classList.remove('oculto');
+      backdropServicios.classList.remove('oculto');
+      // Forzar reflow para animación
+      void panelServicios.offsetWidth;
+      panelServicios.classList.add('visible');
+      backdropServicios.classList.add('visible');
+      panelServicios.setAttribute('aria-hidden', 'false');
     }
 
-    /* ================= MODAL TIPO DE SERVICIO ================= */
-    async function abrirModalServicio() {
-      servicioSeleccionado = null;
-      serviciosDisponibles = [];
-      btnConfirmarServicio.disabled = true;
-      btnConfirmarServicio.textContent = 'Solicitar viaje';
-
-      servicioResumenOrigen.textContent = origenNombre || '—';
-      servicioResumenDestino.textContent = destinoNombre || '—';
-
-      // Estado de carga
-      servicioLista.innerHTML = `
-        <div class="servicio-cargando">
-          <span class="servicio-cargando-texto">Buscando conductores cerca...</span>
-          <span class="servicio-cargando-barra"></span>
-        </div>`;
-
-      modalServicio.classList.remove('oculto', 'cerrando');
-      // Forzar reflow para reiniciar animación
-      void modalServicio.offsetWidth;
-      modalServicio.classList.add('activo');
-
-      try {
-        const tipos = await obtenerTiposServicioDisponibles();
-        serviciosDisponibles = tipos;
-        renderizarServicios(tipos);
-      } catch (e) {
-        console.error('Error cargando tipos de servicio:', e);
-        serviciosDisponibles = TIPOS_POR_DEFECTO;
-        renderizarServicios(TIPOS_POR_DEFECTO);
-      }
-    }
-
-    function cerrarModalServicio() {
-      modalServicio.classList.add('cerrando');
+    function cerrarPanelServicios() {
+      panelServicios.classList.remove('visible');
+      backdropServicios.classList.remove('visible');
+      panelServicios.classList.add('cerrando');
       setTimeout(() => {
-        modalServicio.classList.add('oculto');
-        modalServicio.classList.remove('activo', 'cerrando');
-      }, 380);
+        panelServicios.classList.add('oculto');
+        panelServicios.classList.remove('cerrando');
+        panelServicios.setAttribute('aria-hidden', 'true');
+        backdropServicios.classList.add('oculto');
+      }, 420);
+      servicioSeleccionado = null;
+      btnConfirmarServicio.disabled = true;
+      btnConfirmarServicio.textContent = 'Selecciona un servicio';
     }
 
-    btnCerrarServicio.addEventListener('click', cerrarModalServicio);
-    btnCancelarServicio.addEventListener('click', cerrarModalServicio);
-    modalServicioFondo.addEventListener('click', cerrarModalServicio);
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && modalServicio.classList.contains('activo') && !modalServicio.classList.contains('oculto')) {
-        cerrarModalServicio();
-      }
-    });
+    btnCerrarServicios.addEventListener('click', cerrarPanelServicios);
+    backdropServicios.addEventListener('click', cerrarPanelServicios);
 
-    btnConfirmarServicio.addEventListener('click', () => {
-      if (!servicioSeleccionado) return;
-      cerrarModalServicio();
-      // Pequeño delay para que la animación de salida termine antes de pedir el viaje
-      setTimeout(() => solicitarViajeConServicio(servicioSeleccionado), 380);
-    });
+    /* Normaliza cualquier etiqueta de servicio a una clave canónica del catálogo */
+    function normalizarClaveServicio(raw) {
+      if (!raw) return 'economico';
+      const c = String(raw).toLowerCase().trim()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // quitar tildes
 
-    async function obtenerTiposServicioDisponibles() {
-      // Intentamos distintas tablas/campos donde puede estar el tipo de servicio del conductor inscrito.
-      const candidatos = [
-        { tabla: 'conductores',  campo: 'tipo_servicio' },
-        { tabla: 'usuarios',     campo: 'tipo_servicio' },
-        { tabla: 'tipo_servicio', campo: 'nombre' },
-        { tabla: 'tipos_servicio', campo: 'nombre' }
-      ];
+      // Premium / lujo / ejecutivo
+      if (/premium|lujo|ejecutiv|vip|black|lujoso/.test(c)) return 'premium';
+      // XL / grupos / van / furgon / camioneta / familiar
+      if (/xl|grupo|van|furgon|camioneta|familiar|grande|6 pasajeros/.test(c)) return 'xl';
+      // Moto / moto
+      if (/\bmoto\b|motocicleta|moto envio/.test(c)) return 'moto';
+      // Envíos / delivery / paquetes / domicilios / mensajería
+      if (/envio|delivery|paquete|domicilio|mensajer|diligenci|cargo|carga|reparto/.test(c)) return 'envio';
+      // Confort / confort
+      if (/confort|comfort|comodo|taxi ejecutivo|confortable/.test(c)) return 'confort';
+      // Económico (taxi, auto, carro, coche, particular, estandar, básico, normal, etc.)
+      if (/econom|taxi|\bauto\b|\bcarro\b|\bcoche\b|particular|estandar|basico|normal|lite|urbano|sencillo|estandard|vehiculo|servicio normal/.test(c)) return 'economico';
+      return 'economico'; // fallback seguro
+    }
 
-      for (const c of candidatos) {
-        try {
-          const { data, error } = await supabaseClient.from(c.tabla).select('*').limit(50);
-          if (error || !data || data.length === 0) continue;
+    function etiquetaServicioCanonica(clave) {
+      const mapa = {
+        economico: 'Económico',
+        confort: 'Confort',
+        premium: 'Premium',
+        xl: 'XL / Grupos',
+        moto: 'Moto',
+        envio: 'Envíos / Delivery'
+      };
+      return mapa[clave] || clave;
+    }
 
-          const tiposMap = new Map();
-          data.forEach((row) => {
-            const tipo = (row[c.campo] || row.tipo_servicio || row.nombre || '').toString().trim();
-            if (!tipo) return;
-            if (!tiposMap.has(tipo.toLowerCase())) tiposMap.set(tipo.toLowerCase(), row);
+    function iconoParaServicio(clave) {
+      const claveNormalizada = normalizarClaveServicio(clave);
+      return ICONOS_SERVICIO[claveNormalizada] || ICONOS_SERVICIO.default;
+    }
+
+    async function cargarServiciosDisponibles() {
+      serviciosLista.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted-text);font-size:.85rem">
+        <div class="loading-pulse" style="justify-content:center;margin-bottom:8px"><span></span><span></span><span></span></div>
+        Consultando servicios cercanos…</div>`;
+
+      // Intentar obtener tipos de servicio activos de la base de datos (conductores en línea)
+      let serviciosActivos = [];
+      try {
+        const { data: conductores, error } = await supabaseClient
+          .from('usuarios')
+          .select('tipo_servicio')
+          .eq('tipo_usuario', 'conductor')
+          .eq('activo', true);
+        if (!error && conductores) {
+          // Normalizar claves (taxi→economico, delivery→envio, etc.) y eliminar duplicados
+          const clavesNormalizadas = [
+            ...new Set(
+              conductores.map(c => c.tipo_servicio).filter(Boolean).map(normalizarClaveServicio)
+            )
+          ];
+          serviciosActivos = clavesNormalizadas.map((clave) => {
+            const catalogo = CATALOGO_SERVICIOS.find(s => s.clave === clave);
+            return catalogo || { clave, nombre: etiquetaServicioCanonica(clave), desc: 'Conductores disponibles', multiplicador: 1.0, espera: '5 min', icono: clave };
           });
-
-          if (tiposMap.size === 0) continue;
-
-          const resultado = [];
-          tiposMap.forEach((row, key) => {
-            const nombre = row.nombre_completo || row.nombre || row.tipo_servicio || key;
-            const descripcion = row.descripcion || obtenerDescripcionPorTipo(key);
-            const multiplicador = obtenerMultiplicadorPorTipo(key);
-            const iconoKey = mapearIcono(key);
-            resultado.push({
-              tipo: key,
-              nombre: String(nombre).replace(/\b\w/g, l => l.toUpperCase()),
-              descripcion: descripcion,
-              multiplicador: multiplicador,
-              icono: ICONOS_SERVICIO[iconoKey] || ICONOS_SERVICIO.default,
-              conductorId: row.id || row.conductor_id || null,
-              conductorNombre: row.nombre || row.nombre_completo || null
-            });
-          });
-
-          return resultado;
-        } catch (_) { /* probar siguiente */ }
+        }
+      } catch (e) {
+        console.warn('No se pudieron consultar conductores activos, usando catálogo:', e);
       }
 
-      return TIPOS_POR_DEFECTO.map(t => ({
-        ...t,
-        icono: ICONOS_SERVICIO[t.tipo] || ICONOS_SERVICIO.default
-      }));
-    }
-
-    function mapearIcono(tipoStr) {
-      const t = (tipoStr || '').toString().toLowerCase();
-      if (/moto|bici/.test(t)) return 'moto';
-      if (/taxi/.test(t)) return 'taxi';
-      if (/suv|van|camioneta/.test(t)) return 'suv';
-      if (/premium|vip|lujo|black/.test(t)) return 'premium';
-      if (/auto|coche|carro|car|confort|comfort/.test(t)) return 'auto';
-      return 'default';
-    }
-
-    function obtenerMultiplicadorPorTipo(tipoStr) {
-      const t = (tipoStr || '').toString().toLowerCase();
-      if (/moto|bici/.test(t)) return 1.0;
-      if (/premium|vip|lujo|black/.test(t)) return 2.2;
-      if (/suv|van|camioneta|xl/.test(t)) return 1.9;
-      if (/taxi/.test(t)) return 1.3;
-      return 1.5; // auto/confort
-    }
-
-    function obtenerDescripcionPorTipo(tipoStr) {
-      const t = (tipoStr || '').toString().toLowerCase();
-      if (/moto|bici/.test(t)) return 'Rápido y económico. Ideal para trayectos cortos.';
-      if (/premium|vip|lujo|black/.test(t)) return 'Vehículos de gama alta con conductor profesional.';
-      if (/suv|van|camioneta|xl/.test(t)) return 'Más espacio y comodidad para grupos.';
-      if (/taxi/.test(t)) return 'Servicio tradicional de taxi.';
-      return 'Comodidad para viajes del día a día.';
-    }
-
-    function renderizarServicios(lista) {
-      servicioLista.innerHTML = '';
-
-      if (!lista || lista.length === 0) {
-        servicioLista.innerHTML = `
-          <div class="servicio-vacio">
-            <b>No hay conductores disponibles</b><br>
-            En este momento no encontramos conductores conectados. Intenta nuevamente en unos segundos.
-          </div>`;
-        return;
+      // Fallback: mostrar catálogo completo si no hay datos
+      if (!serviciosActivos || serviciosActivos.length === 0) {
+        serviciosActivos = CATALOGO_SERVICIOS;
       }
 
-      lista.forEach((servicio, index) => {
-        const tarifaFinal = Math.round(tarifaBaseCalculada * (servicio.multiplicador || 1));
+      // Renderizar
+      serviciosLista.innerHTML = '';
+      servicioSeleccionado = null;
+      btnConfirmarServicio.disabled = true;
+      btnConfirmarServicio.textContent = 'Selecciona un servicio';
+
+      serviciosActivos.forEach((servicio) => {
+        const tarifa = Math.round(tarifaBase * servicio.multiplicador);
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'servicio-opcion';
-        card.style.animationDelay = `${index * 60}ms`;
-        card.dataset.tipo = servicio.tipo;
+        card.className = 'servicio-card';
+        card.dataset.clave = servicio.clave;
         card.innerHTML = `
-          <div class="servicio-icono">${servicio.icono || ICONOS_SERVICIO.default}</div>
+          <div class="servicio-icono">${iconoParaServicio(servicio.icono || servicio.clave)}</div>
           <div class="servicio-info">
-            <span class="servicio-nombre">${escapeHtml(servicio.nombre)}</span>
-            <span class="servicio-descripcion">${escapeHtml(servicio.descripcion || '')}</span>
-            <div class="servicio-meta">
-              <span class="servicio-chip"><span class="servicio-chip-punto"></span>Disponible</span>
-              ${servicio.conductorNombre ? `<span class="servicio-chip">${escapeHtml(servicio.conductorNombre)}</span>` : ''}
+            <div class="servicio-nombre">${servicio.nombre}</div>
+            <div class="servicio-desc">${servicio.desc}</div>
+            <div class="servicio-tiempo">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              ${servicio.espera} de espera
             </div>
           </div>
-          <div class="servicio-tarifa">
-            <span class="servicio-tarifa-label">Tarifa</span>
-            <span class="servicio-tarifa-valor">$${tarifaFinal}</span>
+          <div class="servicio-precio">
+            <div class="servicio-precio-valor">$${tarifa.toLocaleString('es-CO')}</div>
+            <div class="servicio-precio-etiqueta">Tarifa</div>
           </div>`;
-
         card.addEventListener('click', () => {
-          document.querySelectorAll('.servicio-opcion').forEach(el => el.classList.remove('seleccionada'));
-          card.classList.add('seleccionada');
-          servicioSeleccionado = { ...servicio, tarifaFinal };
+          serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
+          card.classList.add('seleccionado');
+          servicioSeleccionado = { ...servicio, tarifa };
           btnConfirmarServicio.disabled = false;
-          btnConfirmarServicio.textContent = `Solicitar ${servicio.nombre} · $${tarifaFinal}`;
+          btnConfirmarServicio.textContent = `Confirmar ${servicio.nombre} · $${tarifa.toLocaleString('es-CO')}`;
         });
-
-        servicioLista.appendChild(card);
+        serviciosLista.appendChild(card);
       });
     }
 
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, (s) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      })[s]);
-    }
+    btnConfirmarServicio.addEventListener('click', async () => {
+      if (!servicioSeleccionado) return;
+      btnConfirmarServicio.disabled = true;
+      btnConfirmarServicio.textContent = 'Solicitando...';
+      await solicitarViaje(servicioSeleccionado);
+    });
 
-    async function solicitarViajeConServicio(servicio) {
-      if (!origen || !destino) return alert('Selecciona origen y destino.');
+    /* ================= PEDIR VIAJE ================= */
+    btnPedirViaje.addEventListener('click', async () => {
+      if (!origen || !destino) { alert('Selecciona origen y destino.'); return; }
+      abrirPanelServicios();
+    });
 
-      btnPedirViaje.disabled = true;
-      btnPedirViaje.textContent = 'Solicitando...';
-
+    async function solicitarViaje(servicio) {
       const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
-      const payload = {
+      const { data, error } = await supabaseClient.from('viajes').insert([{
         pasajero_id: pasajeroId,
         origen_lat: origen.lat, origen_lon: origen.lon,
         destino_lat: destino.lat, destino_lon: destino.lon,
-        tarifa: servicio.tarifaFinal,
-        estado: 'solicitado',
-        tipo_servicio: servicio.tipo
-      };
-      if (servicio.conductorId) payload.conductor_sugerido_id = servicio.conductorId;
-
-      const { data, error } = await supabaseClient.from('viajes').insert([payload]).select();
+        origen_nombre: origenNombre,
+        destino_nombre: destinoNombre,
+        tipo_servicio: servicio.clave,
+        nombre_servicio: servicio.nombre,
+        tarifa: servicio.tarifa,
+        distancia_km: Math.round(distanciaKm * 10) / 10,
+        estado: 'solicitado'
+      }]).select();
 
       if (error) {
         alert('Error al solicitar viaje: ' + error.message);
-        btnPedirViaje.disabled = false;
-        btnPedirViaje.textContent = 'Pedir Viaje Ahora';
+        btnConfirmarServicio.disabled = false;
+        btnConfirmarServicio.textContent = `Confirmar ${servicio.nombre} · $${servicio.tarifa.toLocaleString('es-CO')}`;
       } else {
-        statusTextPasajero.textContent = `¡${servicio.nombre} solicitado! Buscando conductor...`;
-        btnPedirViaje.textContent = 'En Ruta';
+        mostrarToast(`Viaje ${servicio.nombre} solicitado`, '✓');
+        cerrarPanelServicios();
+        statusTextPasajero.textContent = `¡Viaje ${servicio.nombre} solicitado! Buscando conductor…`;
+        btnPedirViaje.disabled = true;
+        btnPedirViaje.textContent = 'Buscando conductor...';
         escucharEstadoViajePasajero(data[0].id);
       }
     }
-
-    /* Botón "Pedir Viaje Ahora" del panel: si no hay servicio seleccionado, abre el modal */
-    btnPedirViaje.addEventListener('click', async () => {
-      if (!origen || !destino) return alert('Selecciona origen y destino.');
-
-      // Si todavía no eligió un servicio desde el modal, lo abrimos.
-      if (!servicioSeleccionado) {
-        await abrirModalServicio();
-        return;
-      }
-      await solicitarViajeConServicio(servicioSeleccionado);
-    });
 
     function escucharEstadoViajePasajero(viajeId) {
       supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
@@ -1077,125 +1082,122 @@
         if (payload.new.estado === 'aceptado') {
           statusTextPasajero.textContent = '¡Un conductor ha aceptado tu viaje!';
           btnPedirViaje.textContent = 'En Ruta';
+          mostrarToast('¡Conductor en camino!', '🚗');
         }
       }).subscribe();
     }
 
     /* ================= CONDUCTOR ================= */
-    function obtenerTipoServicioConductor() {
-      // El tipo de servicio puede venir en distintos campos según la tabla de usuarios.
+    function obtenerClaveServicioConductor() {
       if (!usuarioActual) return null;
-      const candidatos = [
-        usuarioActual.tipo_servicio,
-        usuarioActual.tipoServicio,
-        usuarioActual.tipo_vehiculo,
-        usuarioActual.tipoVehiculo,
-        usuarioActual.categoria_servicio,
-        usuarioActual.servicio,
-        usuarioActual.modalidad
-      ];
-      for (const c of candidatos) {
-        const valor = (c || '').toString().trim();
-        if (valor) return valor.toLowerCase();
-      }
-      return null;
-    }
-
-    function normalizarTipoViaje(tipo) {
-      return (tipo || '').toString().trim().toLowerCase();
+      const raw = usuarioActual.tipo_servicio || usuarioActual.servicio || usuarioActual.tipo ||
+                  usuarioActual.tipo_vehiculo || usuarioActual.categoria_servicio || null;
+      if (!raw) return null;
+      return normalizarClaveServicio(raw);
     }
 
     async function cargarViajesSolicitados() {
       contenedorSolicitudes.innerHTML = '';
-      uiConductor.classList.remove('expandido');
+      const claveConductor = obtenerClaveServicioConductor();
+      const etiquetaConductor = claveConductor ? etiquetaServicioCanonica(claveConductor) : null;
 
-      const tipoConductor = obtenerTipoServicioConductor();
-      const tipoConductorBonito = tipoConductor
-        ? tipoConductor.replace(/\b\w/g, l => l.toUpperCase())
-        : null;
-
-      statusTextConductor.innerHTML = tipoConductorBonito
-        ? `Buscando solicitudes de <b style="color:var(--primary-color)">${escapeHtml(tipoConductorBonito)}</b>...`
+      statusTextConductor.innerHTML = etiquetaConductor
+        ? `Mostrando viajes de <b style="color:var(--primary-color)">${etiquetaConductor}</b>...`
         : 'Buscando solicitudes cercanas...';
 
-      let data = [];
-      try {
-        // Primero intentamos filtrar por tipo_servicio si existe la columna.
-        if (tipoConductor) {
-          const { data: filtrados, error } = await supabaseClient
-            .from('viajes').select('*')
-            .eq('estado', 'solicitado')
-            .ilike('tipo_servicio', tipoConductor);
-          if (error) {
-            // Si la columna no existe o el filtro falla, hacemos fallback sin filtro.
-            const { data: todos } = await supabaseClient.from('viajes').select('*').eq('estado', 'solicitado');
-            data = (todos || []).filter(v => normalizarTipoViaje(v.tipo_servicio) === tipoConductor);
-          } else {
-            data = filtrados || [];
-          }
-        } else {
-          const { data: todos } = await supabaseClient.from('viajes').select('*').eq('estado', 'solicitado');
-          data = todos || [];
-        }
-      } catch (e) {
-        console.error('Error cargando viajes:', e);
-        data = [];
+      const { data } = await supabaseClient.from('viajes').select('*').eq('estado', 'solicitado');
+      let viajes = data || [];
+
+      // Filtrar por tipo de servicio del conductor si tiene uno registrado
+      if (claveConductor && viajes.length > 0) {
+        viajes = viajes.filter((v) => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveConductor);
       }
 
-      if (data && data.length > 0) {
-        statusTextConductor.innerHTML = tipoConductorBonito
-          ? `${data.length} viaje${data.length > 1 ? 's' : ''} de <b style="color:var(--primary-color)">${escapeHtml(tipoConductorBonito)}</b> disponible${data.length > 1 ? 's' : ''}:`
-          : `${data.length} viaje${data.length > 1 ? 's' : ''} disponible${data.length > 1 ? 's' : ''}:`;
-        data.forEach((viaje, i) => renderizarTarjetaViaje(viaje, i));
-        // Expandir el contenedor del conductor para mostrar todos los servicios con animación
-        requestAnimationFrame(() => uiConductor.classList.add('expandido'));
+      if (viajes.length > 0) {
+        statusTextConductor.innerHTML = `${viajes.length} viaje(s) disponible(s)${etiquetaConductor ? ` de <b style="color:var(--primary-color)">${etiquetaConductor}</b>` : ''}:`;
+        viajes.forEach(renderizarTarjetaViaje);
+        contenedorSolicitudes.style.opacity = '1';
       } else {
-        statusTextConductor.innerHTML = tipoConductorBonito
-          ? `No hay viajes de <b style="color:var(--primary-color)">${escapeHtml(tipoConductorBonito)}</b> disponibles por ahora.`
+        statusTextConductor.innerHTML = etiquetaConductor
+          ? `No hay viajes de <b style="color:var(--primary-color)">${etiquetaConductor}</b> disponibles por ahora.`
           : 'No hay viajes disponibles por ahora.';
-        uiConductor.classList.remove('expandido');
+        contenedorSolicitudes.innerHTML = '';
+        contenedorSolicitudes.style.opacity = '.6';
       }
     }
 
-    function iconoPorTipoServicio(tipo) {
-      const key = mapearIcono(tipo);
-      return ICONOS_SERVICIO[key] || ICONOS_SERVICIO.default;
-    }
-
-    function renderizarTarjetaViaje(viaje, index = 0) {
+    async function renderizarTarjetaViaje(viaje) {
       const tarjeta = document.createElement('div');
       tarjeta.className = 'tarjeta-viaje';
-      tarjeta.style.animationDelay = `${index * 90}ms`;
 
-      const tipo = viaje.tipo_servicio || 'Servicio';
-      const tipoBonito = String(tipo).replace(/\b\w/g, l => l.toUpperCase());
-      const distancia = Number.isFinite(viaje.distancia_km)
-        ? viaje.distancia_km
-        : (viaje.origen_lat && viaje.destino_lat
-            ? calcularDistancia(viaje.origen_lat, viaje.origen_lon, viaje.destino_lat, viaje.destino_lon).toFixed(1)
-            : null);
+      // Calcular distancia y nombres
+      const distViaje = viaje.distancia_km || (viaje.origen_lat && viaje.destino_lat ?
+        calcularDistancia(viaje.origen_lat, viaje.origen_lon, viaje.destino_lat, viaje.destino_lat) : null);
+
+      let nombreOrigen = viaje.origen_nombre || '';
+      let nombreDestino = viaje.destino_nombre || '';
+      if (!nombreOrigen && viaje.origen_lat) {
+        try { nombreOrigen = await consultarDireccionCorta(viaje.origen_lat, viaje.origen_lon); } catch(e) {}
+      }
+      if (!nombreDestino && viaje.destino_lat) {
+        try { nombreDestino = await consultarDireccionCorta(viaje.destino_lat, viaje.destino_lon); } catch(e) {}
+      }
+      if (!nombreOrigen) nombreOrigen = 'Punto de origen';
+      if (!nombreDestino) nombreDestino = 'Punto de destino';
+
+      const claveServ = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio);
+      const tipoServicio = viaje.nombre_servicio || etiquetaServicioCanonica(claveServ);
+      const iconoServ = iconoParaServicio(claveServ);
 
       tarjeta.innerHTML = `
-        <div class="tarjeta-viaje-cabecera">
-          <span class="tarjeta-viaje-tipo">
-            ${iconoPorTipoServicio(tipo)}
-            <span>${escapeHtml(tipoBonito)}</span>
-          </span>
-          <div class="tarjeta-viaje-tarifa">
+        <div class="viaje-header">
+          <div class="viaje-tipo-badge">
+            <span style="display:inline-flex;width:16px;height:16px">${iconoServ}</span>
+            ${tipoServicio}
+          </div>
+          <div class="viaje-precio-badge">
             <small>Tarifa</small>
-            $${viaje.tarifa}
+            $${Number(viaje.tarifa).toLocaleString('es-CO')}
           </div>
         </div>
-        <p><strong>Distancia estimada</strong>${distancia ? `${distancia} km aproximadamente` : 'Pendiente de cálculo'}</p>
-        <p><strong>ID de viaje</strong>#${viaje.id}</p>
-        <button class="btn-main" onclick="aceptarViaje(${viaje.id})">Aceptar Viaje</button>`;
+        <div class="viaje-ruta">
+          <div class="viaje-punto">
+            <div class="viaje-punto-dot origen">O</div>
+            <div class="viaje-punto-text">
+              ${nombreOrigen}
+              <span class="viaje-punto-sub">Punto de recogida</span>
+            </div>
+          </div>
+          <div class="viaje-linea-conector"></div>
+          <div class="viaje-punto">
+            <div class="viaje-punto-dot destino">D</div>
+            <div class="viaje-punto-text">
+              ${nombreDestino}
+              <span class="viaje-punto-sub">Destino</span>
+            </div>
+          </div>
+        </div>
+        <div class="viaje-footer">
+          <div class="viaje-distancia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1-3.4 0L2.7 5.7"/><path d="M6 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM18 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+            ${distViaje ? distViaje.toFixed(1) + ' km' : 'Distancia a calcular'}
+          </div>
+          <div class="viaje-cta">
+            <button class="btn-main" data-viaje-id="${viaje.id}">Aceptar Viaje</button>
+          </div>
+        </div>`;
+
+      tarjeta.querySelector('button[data-viaje-id]').addEventListener('click', () => aceptarViaje(viaje.id));
       contenedorSolicitudes.appendChild(tarjeta);
     }
 
     async function aceptarViaje(viajeId) {
       const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
       const { error } = await supabaseClient.from('viajes').update({ estado: 'aceptado', conductor_id: conductorId }).eq('id', viajeId);
-      if (!error) { alert('¡Viaje aceptado exitosamente!'); cargarViajesSolicitados(); }
+      if (!error) {
+        mostrarToast('¡Viaje aceptado!', '✓');
+        cargarViajesSolicitados();
+      }
       else alert('Error al aceptar viaje: ' + error.message);
     }
     window.aceptarViaje = aceptarViaje;
@@ -1203,18 +1205,15 @@
     /* ================= SUPABASE REALTIME ================= */
     supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
       event: 'INSERT', schema: 'public', table: 'viajes'
-    }, (payload) => {
-      if (modoActual !== 'conductor') return;
-      const tipoConductor = obtenerTipoServicioConductor();
-      const tipoViajeNuevo = normalizarTipoViaje(payload && payload.new && payload.new.tipo_servicio);
-      // Si el conductor tiene tipo asignado, solo recargar cuando coincida.
-      if (tipoConductor && tipoViajeNuevo && tipoConductor !== tipoViajeNuevo) return;
-      cargarViajesSolicitados();
+    }, () => {
+      if (modoActual === 'conductor') {
+        cargarViajesSolicitados();
+        mostrarToast('Nueva solicitud recibida', '🔔');
+      }
     }).subscribe();
 
     /* ================= INICIO ================= */
     verificarSesionGuardada();
   </script>
-  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
