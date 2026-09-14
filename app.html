@@ -430,11 +430,11 @@
     /* Convierte cualquier etiqueta ("Taxi Auto", "moto delivery", "MOTO_TAXI"...) a la clave canónica */
     function normalizarClaveServicio(raw) {
       if (!raw) return null;
-      const c = String(raw).toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[_-]+/g, ' ');
-      if (/moto\s*deliver|deliver|domicilio|paqueter|mensajer|reparto/.test(c)) return 'moto_delivery';
-      if (/moto\s*taxi|mototaxi|\bmoto\b/.test(c))                              return 'moto_taxi';
+      const c = String(raw).toLowerCase().trim().normalize('NFD').replace(/[u0300-u036f]/g, '').replace(/[_-]+/g, ' ');
+      if (/motos*deliver|deliver|domicilio|paqueter|mensajer|reparto/.test(c)) return 'moto_delivery';
+      if (/motos*taxi|mototaxi|bmotob/.test(c))                              return 'moto_taxi';
       if (/carga|mudanza|camion|furgon|encomienda/.test(c))                     return 'taxi_carga';
-      if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c))    return 'taxi_auto';
+      if (/taxis*auto|bautob|btaxib|bcarrob|bcocheb|sedan/.test(c))    return 'taxi_auto';
       return null;
     }
     function servicioPorClave(clave){ return CATALOGO_SERVICIOS.find(s => s.clave === clave) || null; }
@@ -606,7 +606,7 @@
     /* Texto corto: "Av. Arequipa 1234" o "Nombre del lugar" */
     function direccionCorta(result) {
       if (!result) return '';
-      if (result.name && !/^[\d\s-]+$/.test(result.name)) {
+      if (result.name && !/^[ds-]+$/.test(result.name)) {
         const ruta = componente(result.address_components, 'route');
         if (result.name !== ruta) return result.name;
       }
@@ -1163,127 +1163,123 @@
       cerrarPanelServicios();
       statusTextPasajero.innerHTML = `¡Viaje <b style="color:var(--primary-color)">${servicio.etiqueta}</b> solicitado! Buscando conductor…`;
       btnPedirViaje.disabled = true;
-      btnPedirViaje.textContent = 'Buscando conductor…';
-      escucharEstadoViajePasajero(data[0].id);
-    }
-
-    function escucharEstadoViajePasajero(viajeId) {
-      supabaseClient.channel(`pasajero-viaje-${viajeId}`).on('postgres_changes', {
-        event:'UPDATE', schema:'public', table:'viajes', filter:`id=eq.${viajeId}`
-      }, (payload) => {
-        if (payload.new.estado === 'aceptado') {
-          statusTextPasajero.textContent = '¡Un conductor ha aceptado tu viaje!';
-          btnPedirViaje.textContent = 'En Ruta';
-          mostrarToast('¡Conductor en camino!', '🚗');
-        }
-      }).subscribe();
+      btnPedirViaje.textContent = 'Solicitud enviada';
     }
 
     /* ============================================================
-       CONDUCTOR · solicitudes filtradas por su tipo de servicio
+       PANEL CONDUCTOR · SOLICITUDES Y ACEPTACIÓN DE VIAJES
        ============================================================ */
     async function cargarViajesSolicitados() {
-      contenedorSolicitudes.innerHTML = '';
-      const etiqueta = claveServicioConductor ? etiquetaServicio(claveServicioConductor) : null;
-      statusTextConductor.innerHTML = etiqueta
-        ? `Servicio: <b style="color:var(--primary-color)">${etiqueta}</b> · buscando solicitudes…`
-        : 'Buscando solicitudes cercanas…';
+      if (modoActual !== 'conductor') return;
+      contenedorSolicitudes.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted-text)">
+        <div class="loading-pulse" style="justify-content:center;margin-bottom:8px"><span></span><span></span><span></span></div>
+        Cargando viajes pendientes…</div>`;
 
-      const { data } = await supabaseClient.from('viajes').select('*').eq('estado','solicitado').order('id',{ascending:false});
-      let viajes = data || [];
+      const { data, error } = await supabaseClient
+        .from('viajes')
+        .select('*')
+        .eq('estado', 'solicitado')
+        .order('id', { ascending: false });
 
-      if (claveServicioConductor) {
-        viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
-      }
-
-      if (!viajes.length) {
-        statusTextConductor.innerHTML = etiqueta
-          ? `No hay viajes de <b style="color:var(--primary-color)">${etiqueta}</b> por ahora.`
-          : 'No hay viajes disponibles por ahora.';
+      if (error) {
+        statusTextConductor.textContent = 'Error al cargar viajes: ' + error.message;
+        contenedorSolicitudes.innerHTML = '';
         return;
       }
 
-      statusTextConductor.innerHTML = `<b style="color:var(--primary-color)">${viajes.length}</b> viaje(s) de ${etiqueta || 'todos los servicios'}:`;
-      for (const viaje of viajes) await renderizarTarjetaViaje(viaje);
-    }
-
-    async function renderizarTarjetaViaje(viaje) {
-      const tarjeta = document.createElement('div');
-      tarjeta.className = 'tarjeta-viaje';
-      contenedorSolicitudes.appendChild(tarjeta);
-
-      /* Direcciones reales (guardadas o resueltas con Google) */
-      let oNombre = viaje.origen_nombre || '';
-      let dNombre = viaje.destino_nombre || '';
-      if (!oNombre && viaje.origen_lat != null) {
-        const i = await geocodificarInverso({ lat:+viaje.origen_lat, lng:+viaje.origen_lon });
-        oNombre = [i.corta, i.detalle].filter(Boolean).join(', ');
+      let viajes = data || [];
+      if (claveServicioConductor) {
+        viajes = viajes.filter(v => {
+          const claveViaje = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio);
+          return claveViaje === claveServicioConductor;
+        });
       }
-      if (!dNombre && viaje.destino_lat != null) {
-        const i = await geocodificarInverso({ lat:+viaje.destino_lat, lng:+viaje.destino_lon });
-        dNombre = [i.corta, i.detalle].filter(Boolean).join(', ');
-      }
-      oNombre = oNombre || 'Punto de recogida';
-      dNombre = dNombre || 'Punto de destino';
 
-      const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'taxi_auto';
-      const etiqueta = viaje.nombre_servicio || etiquetaServicio(clave);
-      const dist = viaje.distancia_km != null ? Number(viaje.distancia_km) : null;
-
-      tarjeta.innerHTML = `
-        <div class="viaje-header">
-          <span class="viaje-tipo-badge">${iconoServicio(clave)} ${etiqueta}</span>
-          <span class="viaje-precio-badge"><small>Tarifa</small>${formatoMoneda(viaje.tarifa)}</span>
-        </div>
-        <div class="viaje-ruta">
-          <div class="viaje-punto">
-            <span class="viaje-punto-dot origen">A</span>
-            <span class="viaje-punto-text">${oNombre}<span class="viaje-punto-sub">Punto de recogida</span></span>
-          </div>
-          <div class="viaje-linea-conector"></div>
-          <div class="viaje-punto">
-            <span class="viaje-punto-dot destino">B</span>
-            <span class="viaje-punto-text">${dNombre}<span class="viaje-punto-sub">Destino</span></span>
-          </div>
-        </div>
-        <div class="viaje-footer">
-          <span class="viaje-distancia">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h6l3 6 3-6h6"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
-            ${dist != null ? dist.toFixed(1) + ' km' : 'Distancia por calcular'}
-          </span>
-          <span class="viaje-cta"><button class="btn-main" type="button">Aceptar Viaje</button></span>
+      if (viajes.length === 0) {
+        statusTextConductor.textContent = 'No hay solicitudes pendientes en este momento.';
+        contenedorSolicitudes.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted-text);font-size:.85rem">
+          Esperando nuevas solicitudes para ${claveServicioConductor ? etiquetaServicio(claveServicioConductor) : 'tu categoría'}...
         </div>`;
+        return;
+      }
 
-      tarjeta.querySelector('.viaje-cta .btn-main').addEventListener('click', () => aceptarViaje(viaje.id));
+      statusTextConductor.textContent = `${viajes.length} viaje(s) disponible(s) para ti`;
+      contenedorSolicitudes.innerHTML = '';
+
+      viajes.forEach((viaje) => {
+        const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
+        const card = document.createElement('div');
+        card.className = 'tarjeta-viaje';
+        card.innerHTML = `
+          <div class="viaje-header">
+            <span class="viaje-tipo-badge">${iconoServicio(clave)} ${viaje.tipo_servicio || 'Servicio'}</span>
+            <div class="viaje-precio-badge">${formatoMoneda(viaje.tarifa || 0)}<small>TARIFA</small></div>
+          </div>
+          <div class="viaje-ruta">
+            <div class="viaje-punto">
+              <span class="viaje-punto-dot origen">A</span>
+              <div class="viaje-punto-text">${viaje.origen_nombre || 'Origen'}<span class="viaje-punto-sub">Punto de recojo</span></div>
+            </div>
+            <div class="viaje-linea-conector"></div>
+            <div class="viaje-punto">
+              <span class="viaje-punto-dot destino">B</span>
+              <div class="viaje-punto-text">${viaje.destino_nombre || 'Destino'}<span class="viaje-punto-sub">Punto de entrega</span></div>
+            </div>
+          </div>
+          <div class="viaje-footer">
+            <span class="viaje-distancia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              ${viaje.distancia_km ? viaje.distancia_km + ' km' : 'Distancia N/D'}
+            </span>
+            <div class="viaje-cta">
+              <button type="button" class="btn-main btn-aceptar-viaje" data-id="${viaje.id}">Aceptar Viaje</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
+        contenedorSolicitudes.appendChild(card);
+      });
     }
 
-    async function aceptarViaje(viajeId) {
+    async function aceptarViaje(viaje) {
       const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
-      const { error } = await supabaseClient.from('viajes')
-        .update({ estado:'aceptado', conductor_id: conductorId }).eq('id', viajeId);
-      if (error) { mostrarToast('Error: ' + error.message, '!'); return; }
-      mostrarToast('¡Viaje aceptado!');
+
+      const { error } = await supabaseClient
+        .from('viajes')
+        .update({
+          estado: 'aceptado',
+          conductor_id: conductorId
+        })
+        .eq('id', viaje.id);
+
+      if (error) {
+        mostrarToast('Error al aceptar viaje: ' + error.message, '!');
+        return;
+      }
+
+      mostrarToast('¡Viaje aceptado con éxito!');
       cargarViajesSolicitados();
     }
-    window.aceptarViaje = aceptarViaje;
 
     /* ============================================================
-       REALTIME
+       SINCRONIZACIÓN EN TIEMPO REAL (Supabase Realtime)
        ============================================================ */
-    supabaseClient.channel('solicitudes-conductor').on('postgres_changes', {
-      event:'INSERT', schema:'public', table:'viajes'
-    }, (payload) => {
-      if (modoActual !== 'conductor') return;
-      const clave = normalizarClaveServicio(payload.new?.tipo_servicio);
-      if (claveServicioConductor && clave && clave !== claveServicioConductor) return;
-      cargarViajesSolicitados();
-      mostrarToast('Nueva solicitud recibida', '🔔');
-    }).subscribe();
+    function suscribirRealtime() {
+      supabaseClient
+        .channel('public:viajes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'viajes' }, () => {
+          if (modoActual === 'conductor') {
+            cargarViajesSolicitados();
+          }
+        })
+        .subscribe();
+    }
 
-    /* ============================================================
-       ARRANQUE
-       ============================================================ */
-    cargarGoogleMaps();
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarGoogleMaps();
+      suscribirRealtime();
+    });
   </script>
 </body>
 </html>
