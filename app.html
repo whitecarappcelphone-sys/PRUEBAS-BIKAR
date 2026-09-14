@@ -180,12 +180,15 @@
       display:flex;flex-direction:column;
       transform:translateX(100%);transition:transform .42s cubic-bezier(.2,.8,.2,1),opacity .3s;
       padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));
-      color:var(--text-color)}
+      color:var(--text-color);
+      overflow:hidden;
+      -webkit-overflow-scrolling:touch}
     #panel-servicios.visible{transform:translateX(0);animation:slideInRight .42s cubic-bezier(.2,.8,.2,1) both}
     #panel-servicios.cerrando{transform:translateX(100%);opacity:0}
     @media (max-width:480px){
-      #panel-servicios{width:100vw;border-left:none;border-radius:24px 24px 0 0;bottom:auto;max-height:88vh;
-        top:auto;bottom:0;transform:translateY(100%);border-top:1px solid var(--glass-border)}
+      #panel-servicios{width:100vw;border-left:none;border-radius:24px 24px 0 0;bottom:auto;max-height:92vh;
+        top:auto;bottom:0;transform:translateY(100%);border-top:1px solid var(--glass-border);
+        padding-left:18px;padding-right:18px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
       #panel-servicios.visible{transform:translateY(0);animation:slideUpMobile .42s cubic-bezier(.2,.8,.2,1) both}
     }
     @keyframes slideUpMobile{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -215,10 +218,12 @@
     .servicios-meta-label{display:block;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);margin-bottom:2px}
     .servicios-meta-valor{font-size:.92rem;font-weight:700}
 
-    .servicios-lista{display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding-right:4px;flex:1;
-      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.4) transparent}
+    .servicios-lista{display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;padding:4px 6px 4px 2px;flex:1;min-height:0;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.4) transparent;
+      -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
     .servicios-lista::-webkit-scrollbar{width:6px}
     .servicios-lista::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .servicios-lista::-webkit-scrollbar-track{background:transparent}
 
     .servicio-card{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--field-border);
       border-radius:18px;background:var(--field-bg);cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);
@@ -258,10 +263,15 @@
     .servicios-leyenda{text-align:center;font-size:.72rem;color:var(--muted-text);margin-top:10px;line-height:1.35}
 
     /* CONDUCTOR - tarjetas animadas */
-    #contenedor-solicitudes{display:flex;flex-direction:column;gap:12px;max-height:52vh;overflow-y:auto;padding-right:4px;
-      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent;transition:max-height .4s ease}
+    #ui-conductor{display:flex;flex-direction:column;text-align:center}
+    #contenedor-solicitudes{display:flex;flex-direction:column;gap:12px;max-height:52vh;min-height:0;
+      overflow-y:auto;overflow-x:hidden;padding:4px 6px 4px 2px;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent;
+      transition:max-height .4s ease;
+      -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
     #contenedor-solicitudes::-webkit-scrollbar{width:6px}
     #contenedor-solicitudes::-webkit-scrollbar-thumb{background:rgba(71,133,167,.35);border-radius:3px}
+    #contenedor-solicitudes::-webkit-scrollbar-track{background:transparent}
     .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:18px;padding:16px 16px 16px 20px;background:var(--field-bg);
       text-align:left;animation:cardPop .5s cubic-bezier(.2,.8,.2,1) both;overflow:hidden;
       transition:transform .25s,box-shadow .25s,border-color .25s}
