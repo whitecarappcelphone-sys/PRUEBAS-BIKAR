@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#121212">
-  <title>BIKAR · Acceso</title>
+  <title>BIKAR · Viajes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://maps.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     /* ============================================================
-       BIKAR · PARTE 1/2 · AUTENTICACIÓN (Glassmorphism)
+       BIKAR · PARTE 2/2 · MAPA, VIAJES Y TIEMPO REAL (Google Maps)
        Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e
        ============================================================ */
     :root{
@@ -34,117 +35,120 @@
     *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
     html,body{width:100%;height:100%;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);transition:background-color .3s,color .3s;-webkit-font-smoothing:antialiased}
     .oculto{display:none!important}
-    button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
+    button:focus-visible,input:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
 
-    /* ANIMACIONES */
-    @keyframes modalIn{from{opacity:0;transform:translate(-50%,calc(-50% + 18px)) scale(.985)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+    @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes slideInLeft{from{opacity:0;transform:translateX(-64px)}to{opacity:1;transform:translateX(0)}}
-    @keyframes orbFloat{from{transform:translate(0,0)}to{transform:translate(-40px,50px)}}
     @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(71,133,167,.65)}70%{box-shadow:0 0 0 9px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
-    @keyframes scan{from{transform:translateY(-10vh);opacity:0}15%{opacity:1}85%{opacity:1}to{transform:translateY(110vh);opacity:0}}
-    @keyframes mecanografiar{from{width:0}to{width:100%}}
-    @keyframes parpadeoCursor{from,to{border-color:transparent}50%{border-color:var(--primary-color)}}
-    @keyframes opcionesAsomar{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes modalIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes slideUpMobile{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes serviceCardIn{from{opacity:0;transform:translateX(24px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+    @keyframes cardPop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+    @keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 
-    /* BOTÓN TEMA */
+    /* ================= MAPA (Google Maps) ================= */
+    #map{position:absolute;inset:0;width:100%;height:100vh;height:100dvh;z-index:1;background:var(--bg-color)}
+    /* Oculta el POI clickable por defecto de Google para que el click del mapa marque el destino */
+    .gm-style .gm-style-iw-c{background:var(--glass-bg-strong)!important;border:1px solid var(--glass-border)!important;
+      border-radius:14px!important;box-shadow:0 12px 34px rgba(0,0,0,.30)!important;padding:0!important;
+      -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+    .gm-style .gm-style-iw-d{overflow:hidden!important;padding:0!important;max-height:none!important}
+    .gm-style .gm-style-iw-tc::after{background:var(--glass-bg-strong)!important}
+    .gm-style .gm-style-iw-chr{display:none!important}      /* oculta la X nativa */
+    .gm-style .gm-style-iw button.gm-ui-hover-effect{display:none!important}
+    .gm-style-iw-t::after{background:linear-gradient(45deg,var(--glass-bg-strong) 50%,rgba(0,0,0,0) 51%)!important}
+    .gm-style .gm-style-cc{opacity:.7}
+    .gmnoprint a,.gmnoprint span,.gm-style-cc{font-size:10px!important}
+
+    /* Popup del punto de partida */
+    .popup-origen{position:relative;min-width:200px;max-width:250px;padding:12px 44px 12px 14px}
+    .popup-origen-label{display:block;margin-bottom:4px;color:var(--primary-color);font-size:.62rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+    .popup-origen-address{display:block;color:var(--text-color);font-size:.82rem;line-height:1.32;font-weight:700}
+    .popup-origen-sub{display:block;margin-top:3px;color:var(--muted-text);font-size:.68rem;line-height:1.3;font-weight:500}
+    .popup-origen-change{position:absolute;right:10px;top:50%;width:28px;height:28px;transform:translateY(-50%);border:1px solid rgba(71,133,167,.45);border-radius:9px;
+      background:var(--field-bg);color:var(--primary-color);font-size:1.2rem;line-height:1;cursor:pointer;transition:background .2s,transform .2s}
+    .popup-origen-change:hover{background:rgba(71,133,167,.14);transform:translate(1px,-50%)}
+
+    /* PERFIL */
+    .perfil-superior{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;z-index:3000;width:46px;height:46px;border-radius:50%;overflow:hidden;
+      border:2px solid var(--primary-color);box-shadow:0 8px 24px rgba(0,0,0,.25);background-color:var(--card-bg);cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .perfil-superior:hover{transform:scale(1.05)}
+    #foto-perfil-header{width:100%;height:100%;object-fit:cover}
+
+    /* BOTÓN TEMA (sol / luna) */
     .btn-theme-toggle{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;background:var(--glass-bg-strong);
+      display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--glass-bg-strong);
       border:1px solid rgba(71,133,167,.5);color:var(--text-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
       box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 4px rgba(71,133,167,.12);transition:transform .2s,box-shadow .2s,border-color .2s}
-    .btn-theme-toggle:hover{transform:translateY(-1px) rotate(15deg);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(71,133,167,.18)}
+    .btn-theme-toggle:hover{transform:translateY(-1px);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(71,133,167,.18)}
+    .btn-theme-toggle svg{width:20px;height:20px;transition:transform .4s ease}
+    .btn-theme-toggle:hover svg{transform:rotate(-20deg) scale(1.08)}
 
-    /* PANTALLA DE INICIO */
-    .pantalla-inicio{position:absolute;inset:0;z-index:2500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
-      padding:24px 20px;text-align:center;overflow-x:hidden;overflow-y:auto;isolation:isolate;
-      background:radial-gradient(900px 520px at 15% -10%,var(--glow),transparent 60%),
-                 radial-gradient(800px 520px at 110% 110%,rgba(19,73,137,.35),transparent 60%),rgba(18,18,18,.45);
-      animation:fadeIn .6s ease both}
-    .pantalla-inicio::before{content:"";position:absolute;inset:0;z-index:-1;
-      background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
-      background-size:42px 42px;-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%)}
-    .pantalla-inicio::after{content:"";position:absolute;z-index:-1;width:420px;height:420px;top:-140px;right:-140px;border-radius:50%;
-      background:radial-gradient(circle,var(--glow-strong),transparent 65%);filter:blur(40px);animation:orbFloat 12s ease-in-out infinite alternate}
-    .fx-scan{position:absolute;left:0;right:0;top:0;height:2px;z-index:1;
-      background:linear-gradient(90deg,transparent,var(--primary-color),transparent);opacity:.7;filter:blur(1px);animation:scan 9s linear infinite;pointer-events:none}
-    .video-fondo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;pointer-events:none;filter:brightness(.55);transition:opacity .6s ease-in-out}
-    .video-oscuro{opacity:0}.video-claro{opacity:1}
-    body.dark-mode .video-oscuro{opacity:1}body.dark-mode .video-claro{opacity:0}
-
-    .inicio-features{position:absolute;top:calc(24px + env(safe-area-inset-top));left:16px;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;
-      animation:riseIn .7s .15s cubic-bezier(.2,.8,.2,1) backwards;text-shadow:0 1px 10px rgba(0,0,0,.65)}
-    .inicio-features span{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#fff!important}
-    .inicio-features span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--primary-color);box-shadow:0 0 8px var(--primary-color)}
-    .texto-subtitulo{position:absolute;top:calc(85px + env(safe-area-inset-top));left:16px;z-index:2;color:#fff!important;font-size:.85rem;font-weight:500;
-      text-shadow:0 1px 8px rgba(0,0,0,.7);white-space:nowrap;overflow:hidden;border-right:2px solid var(--primary-color);width:0;max-width:max-content;
-      animation:mecanografiar 3s steps(30,end) forwards,parpadeoCursor .75s step-end infinite}
-
-    /* ROLES */
-    .roles-container{position:absolute;left:16px;bottom:calc(50px + env(safe-area-inset-bottom));z-index:2;display:flex;flex-direction:column;gap:10px;width:calc(100% - 32px);max-width:250px}
-    .tarjeta-rol{position:relative;display:flex;align-items:center;gap:12px;width:100%;background:var(--field-bg);border:1px solid var(--field-border);
-      border-radius:12px;padding:10px 14px;cursor:pointer;color:var(--text-color);text-align:left;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-      box-shadow:0 12px 32px rgba(0,0,0,.28),inset 0 1px 0 var(--glass-highlight);
-      transition:transform .25s,border-color .25s,box-shadow .25s,background .25s;animation:slideInLeft .65s cubic-bezier(.2,.8,.2,1) backwards}
-    .tarjeta-rol:nth-child(1){animation-delay:.20s}.tarjeta-rol:nth-child(2){animation-delay:.34s}.tarjeta-rol:nth-child(3){animation-delay:.48s}
-    .tarjeta-rol::after{content:"";margin-left:auto;width:8px;height:8px;flex-shrink:0;border-top:2px solid var(--primary-color);border-right:2px solid var(--primary-color);
-      transform:rotate(45deg);opacity:.85;transition:transform .25s}
-    .tarjeta-rol:hover,.tarjeta-rol:focus-visible{transform:translateY(-2px);border-color:var(--primary-color);box-shadow:0 12px 30px var(--glow),inset 0 0 0 1px rgba(71,133,167,.25)}
-    .tarjeta-rol:hover::after{transform:translateX(4px) rotate(45deg)}
-    .tarjeta-rol:active{transform:translateY(0) scale(.99)}
-    .rol-icon{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border-radius:10px;
-      background:linear-gradient(145deg,rgba(71,133,167,.22),rgba(19,73,137,.12));border:1px solid rgba(71,133,167,.35);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.12);color:var(--primary-color)}
-    .rol-icon svg{width:22px;height:22px;stroke:var(--primary-color);fill:none}
-    .rol-text{display:flex;flex-direction:column;gap:1px;min-width:0}
-    .rol-title{font-size:.9rem;font-weight:700;color:var(--text-color)}
-    .rol-desc{font-size:.72rem;color:var(--muted-text)}
-
-    /* PANELES / MODALES */
-    .ui-panel{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:92%;max-width:420px;
-      padding:22px 20px 20px;z-index:1000;text-align:center;
-      background:linear-gradient(180deg,var(--glass-bg-strong) 0%,var(--glass-bg) 100%);border:1px solid var(--glass-border);border-radius:24px;
-      -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
-      box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);color:var(--text-color);
-      animation:panelIn .5s cubic-bezier(.2,.8,.2,1) both}
-    .panel-title{color:var(--text-color);font-size:1.35rem;font-weight:700;margin-bottom:6px}
-    .panel-title::before{content:"BIKAR";display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--primary-color);margin-bottom:6px}
-    .panel-subtitle{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
-    #modal-registro,#modal-login{top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:2600;width:88%;max-width:360px;
-      background:rgba(20,20,20,.58)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-      max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;
-      box-shadow:0 0 0 200vmax rgba(0,0,0,.25),0 15px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
-      animation:modalIn .5s cubic-bezier(.2,.8,.2,1) both;scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent}
-    #form-registro,#form-login{text-align:left}
-    #form-registro .btn-main,#form-login .btn-main{margin-top:6px}
-    .form-note{margin-top:14px;text-align:center;font-size:.76rem;color:var(--muted-text);display:flex;align-items:center;justify-content:center;gap:6px}
-
-    /* CAMPOS */
-    .input-group{position:relative;margin-bottom:12px;text-align:left}
-    .input-group>input,.input-group>select{width:100%;height:54px;padding:0 16px 0 50px;background-color:var(--field-bg);
-      border:1px solid var(--field-border);border-radius:14px;color:var(--text-color);font-size:.95rem;outline:none;
-      background-repeat:no-repeat;background-position:16px center;background-size:20px 20px;-webkit-appearance:none;appearance:none;
-      transition:border-color .2s,box-shadow .2s,background-color .2s}
-    .input-group>select{padding-left:16px;cursor:pointer}
-    .input-group>input::placeholder{color:var(--muted-text)}
-    .input-group>input:focus,.input-group>select:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.22),0 0 26px rgba(71,133,167,.18)}
-
-    #reg-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E")}
-    #reg-telefono{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E")}
-    #reg-email{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E")}
-    #reg-password,#reg-password-confirm,#login-password{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E")}
-    #reg-num-doc,#login-dni{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='M15 8h2m-2 4h2M7 16h10'/%3E%3C/svg%3E")}
-    #reg-vehiculo{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2'/%3E%3Ccircle cx='7' cy='17' r='2'/%3E%3Cpath d='M9 17h6'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E")}
-    #reg-placa{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 12h.01M10 12h4M18 12h.01'/%3E%3C/svg%3E")}
-    #reg-comercio-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1.5-5h15L21 9'/%3E%3Cpath d='M3 9v11h18V9'/%3E%3Cpath d='M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E")}
-    #reg-comercio-categoria{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%234785A7'/%3E%3C/svg%3E")}
-
-    /* BOTONES */
+    /* SELECTOR DE MODO */
+    #mode-selector{position:absolute;top:calc(16px + env(safe-area-inset-top));left:70px;right:78px;z-index:2000;max-width:420px;animation:fadeIn .6s ease both}
+    @media (min-width:620px){#mode-selector{left:50%;right:auto;width:420px;transform:translateX(-50%)}}
     .btn-secondary{width:100%;padding:12px 16px;background:var(--glass-bg-strong);color:var(--primary-color);border:1px solid rgba(71,133,167,.45);
       border-radius:999px;font-weight:600;font-size:.86rem;cursor:pointer;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
       box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 var(--glass-highlight);transition:transform .2s,box-shadow .2s,border-color .2s,background .2s}
     .btn-secondary:hover{border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.22),0 0 0 4px rgba(71,133,167,.14)}
     .btn-secondary:active{transform:scale(.99)}
+    #btn-cambiar-modo{position:relative;padding-left:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+    #btn-cambiar-modo::before{content:"";position:absolute;left:16px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;
+      background:var(--primary-color);animation:pulseDot 2s ease-out infinite}
+    /* El chip superior solo muestra el nombre del usuario (el modo se cambia desde el menú de perfil) */
+    #btn-cambiar-modo.chip-usuario{cursor:default;color:var(--text-color);font-weight:700}
+    #btn-cambiar-modo.chip-usuario:hover{transform:none;border-color:rgba(71,133,167,.45);box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 var(--glass-highlight)}
+
+    /* PANELES */
+    .ui-panel{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:92%;max-width:420px;
+      max-height:calc(92vh - 86px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      padding:22px 20px 20px;z-index:1000;text-align:center;
+      background:linear-gradient(180deg,var(--glass-bg-strong) 0%,var(--glass-bg) 100%);border:1px solid var(--glass-border);border-radius:24px;
+      -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+      box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);color:var(--text-color);
+      animation:panelIn .5s cubic-bezier(.2,.8,.2,1) both;
+      overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.35) transparent}
+    .ui-panel::-webkit-scrollbar{width:6px}
+    .ui-panel::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .ui-panel::before{content:"";position:sticky;display:block;top:0;left:14%;right:14%;height:2px;border-radius:2px;margin:-8px 14% 6px;
+      background:linear-gradient(90deg,transparent,var(--primary-color),transparent);opacity:.9;pointer-events:none}
+    .panel-title{color:var(--text-color);font-size:1.35rem;font-weight:700;margin-bottom:6px}
+    .panel-title::before{content:"BIKAR";display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+      color:var(--primary-color);margin-bottom:6px}
+    .panel-subtitle,.status-text{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
+    .status-text{line-height:1.4;margin:4px 0 14px}
+
+    /* CAMPOS */
+    .input-group{position:relative;margin-bottom:12px;text-align:left}
+    .input-group>input{width:100%;height:54px;padding:0 16px 0 50px;background-color:var(--field-bg);border:1px solid var(--field-border);
+      border-radius:14px;color:var(--text-color);font-size:.95rem;outline:none;background-repeat:no-repeat;background-position:16px center;
+      background-size:20px 20px;transition:border-color .2s,box-shadow .2s,background-color .2s}
+    .input-group>input::placeholder{color:var(--muted-text)}
+    .input-group>input:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.22),0 0 26px rgba(71,133,167,.18)}
+    #input-destino{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
+    #input-origen-modal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E")}
+
+    /* SUGERENCIAS (Google Places Autocomplete personalizado) */
+    .lista-sugerencias{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
+      border-radius:14px;max-height:240px;overflow-y:auto;z-index:2000;box-shadow:0 16px 40px rgba(0,0,0,.35);text-align:left;
+      -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);-webkit-overflow-scrolling:touch}
+    .lista-sugerencias:empty{display:none}
+    .sugerencia-item{display:flex;align-items:flex-start;gap:10px;width:100%;padding:11px 14px;background:transparent;color:var(--text-color);cursor:pointer;
+      border:0;border-bottom:1px solid var(--glass-border);text-align:left;transition:background .15s,color .15s}
+    .sugerencia-item:last-child{border-bottom:none}
+    .sugerencia-item:hover{background-color:rgba(71,133,167,.14)}
+    .sugerencia-pin{flex-shrink:0;width:18px;height:18px;margin-top:1px;color:var(--primary-color)}
+    .sugerencia-textos{flex:1;min-width:0}
+    .sugerencia-principal{display:block;font-size:.84rem;font-weight:700;line-height:1.25;color:var(--text-color)}
+    .sugerencia-detalle{display:block;margin-top:3px;color:var(--muted-text);font-size:.7rem;line-height:1.25}
+    .powered-google{display:flex;justify-content:flex-end;align-items:center;gap:5px;padding:6px 12px;font-size:.6rem;color:var(--muted-text);
+      border-top:1px solid var(--glass-border);letter-spacing:.04em}
+
+    /* BOTÓN PRINCIPAL */
     .btn-main{position:relative;width:100%;padding:15px 46px 15px 20px;border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:600;
       cursor:pointer;overflow:hidden;background:linear-gradient(90deg,#134989 0%,#366986 45%,#4785A7 100%);
       box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
@@ -157,820 +161,1713 @@
     .btn-main:active{transform:translateY(0);filter:brightness(.92)}
     .btn-main:disabled{opacity:.6;cursor:progress;transform:none}
 
-    /* FOTO */
-    .foto-group{position:relative;margin-top:4px}
-    .label-foto{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1px dashed rgba(71,133,167,.55);
-      background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;
-      transition:border-color .2s,box-shadow .2s,background .2s}
-    .foto-group:hover .label-foto,.foto-group:focus-within .label-foto{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.18),0 0 26px rgba(71,133,167,.15)}
-    #reg-foto{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
-    .preview-container{position:relative;margin-top:12px;width:100%;height:150px;border-radius:14px;overflow:hidden;border:1px solid rgba(71,133,167,.5);
-      box-shadow:0 0 0 3px rgba(71,133,167,.15),0 10px 30px rgba(0,0,0,.25);animation:fadeIn .4s ease both}
-    #preview-foto{display:block;width:100%;height:100%;object-fit:cover}
+    /* MODAL ORIGEN */
+    .modal-origen{position:fixed;inset:0;z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:calc(78px + env(safe-area-inset-top)) 16px 24px;
+      background:rgba(8,22,34,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:fadeIn .2s ease both}
+    .modal-origen-dialog{position:relative;width:min(100%,380px);padding:18px;background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));
+      border:1px solid var(--glass-border);border-radius:20px;box-shadow:var(--shadow);animation:modalIn .25s ease both}
+    .modal-origen-cabecera{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:5px}
+    .modal-origen-titulo{color:var(--text-color);font-size:1rem;font-weight:700}
+    .modal-origen-cerrar{width:28px;height:28px;border:1px solid var(--field-border);border-radius:9px;background:var(--field-bg);color:var(--muted-text);cursor:pointer;font-size:1rem;line-height:1}
+    .modal-origen-cerrar:hover{color:var(--primary-color);border-color:var(--primary-color)}
+    .modal-origen-ayuda{margin-bottom:14px;color:var(--muted-text);font-size:.75rem;line-height:1.4}
+    .modal-origen-acciones{display:flex;justify-content:space-between;gap:8px;margin-top:5px}
+    .btn-modal-secundario{padding:9px 13px;border:1px solid var(--field-border);border-radius:10px;background:var(--field-bg);color:var(--muted-text);font-size:.78rem;font-weight:600;cursor:pointer}
+    .btn-modal-secundario:hover{border-color:var(--primary-color);color:var(--primary-color)}
+    .btn-modal-gps{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid rgba(71,133,167,.45);border-radius:10px;
+      background:rgba(71,133,167,.10);color:var(--primary-color);font-size:.78rem;font-weight:700;cursor:pointer}
+    .btn-modal-gps:hover{background:rgba(71,133,167,.20)}
 
-    /* OPCIONES DE ROL */
-    .opciones-rol-bikar{position:absolute!important;left:16px!important;bottom:290px!important;z-index:2601!important;
-      display:flex!important;flex-direction:column!important;gap:10px!important;width:230px!important;background:transparent!important;
-      border:none!important;box-shadow:none!important;padding:0!important;margin:0!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-      visibility:hidden!important;pointer-events:none!important}
-    #modal-opciones-rol.opciones-rol-bikar{background:none!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;outline:none!important}
-    #modal-opciones-rol.opciones-rol-bikar::before,#modal-opciones-rol.opciones-rol-bikar::after{content:none!important;display:none!important}
-    #modal-opciones-rol.oculto{display:none!important;visibility:hidden!important;pointer-events:none!important}
-    #modal-opciones-rol:not(.oculto){display:flex!important;visibility:visible!important;pointer-events:auto!important}
-    .btn-opcion-rol{width:100%;padding:13px 18px;border:1px solid rgba(255,255,255,.25);border-radius:14px;background:rgba(20,20,20,.65);
-      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:14px;font-weight:600;cursor:pointer;
-      opacity:0;transform:translateX(-40px);animation:opcionesAsomar .45s ease forwards}
-    .btn-opcion-rol:nth-child(1){animation-delay:.05s}.btn-opcion-rol:nth-child(2){animation-delay:.15s}.btn-opcion-rol:nth-child(3){animation-delay:.25s}
-    .btn-opcion-rol:active{transform:scale(.96)}
-    .btn-cerrar-x{width:46px!important;height:46px!important;padding:0!important;align-self:flex-start;border-radius:50%!important;
-      display:flex;align-items:center;justify-content:center;font-size:22px!important;font-weight:400!important;margin-top:4px}
-    #modal-opciones-rol .btn-opcion-rol{width:auto!important;max-width:max-content!important;padding:9px 14px!important;font-size:13px!important;
-      line-height:1.2!important;align-self:flex-start}
-    @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
-    #modal-login .panel-title,
-#modal-registro .panel-title {
-  color: #ffffff !important;
-}
+    /* PANEL DE SERVICIOS (slide derecha → izquierda) */
+    #panel-servicios{position:fixed;top:0;right:0;bottom:0;width:min(440px,94vw);max-width:100vw;z-index:4500;
+      background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));border-left:1px solid var(--glass-border);
+      -webkit-backdrop-filter:blur(26px) saturate(160%);backdrop-filter:blur(26px) saturate(160%);
+      box-shadow:-20px 0 60px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;
+      transform:translateX(100%);transition:transform .42s cubic-bezier(.2,.8,.2,1),opacity .3s;
+      padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));color:var(--text-color)}
+    #panel-servicios.visible{transform:translateX(0);animation:slideInRight .42s cubic-bezier(.2,.8,.2,1) both}
+    #panel-servicios.cerrando{transform:translateX(100%);opacity:0}
+    @media (max-width:480px){
+      #panel-servicios{width:100vw;border-left:none;border-radius:24px 24px 0 0;top:auto;bottom:0;max-height:92vh;
+        transform:translateY(100%);border-top:1px solid var(--glass-border);padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+      #panel-servicios.visible{transform:translateY(0);animation:slideUpMobile .42s cubic-bezier(.2,.8,.2,1) both}
+      #panel-servicios.cerrando{transform:translateY(100%)}
+    }
+    #backdrop-servicios{position:fixed;inset:0;z-index:4400;background:rgba(8,22,34,.35);
+      -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s}
+    #backdrop-servicios.visible{opacity:1;pointer-events:auto}
+
+    .servicios-cabecera{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0}
+    .servicios-titulo{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
+    .servicios-titulo::before{content:"ELIGE TU SERVICIO";display:block;font-size:.62rem;font-weight:800;letter-spacing:.26em;
+      color:var(--primary-color);margin-bottom:6px}
+    .btn-cerrar-servicios{width:34px;height:34px;border-radius:12px;border:1px solid var(--field-border);background:var(--field-bg);
+      color:var(--muted-text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .2s;flex-shrink:0}
+    .btn-cerrar-servicios:hover{color:var(--primary-color);border-color:var(--primary-color);transform:rotate(90deg)}
+
+    .servicios-resumen{flex-shrink:0;display:flex;flex-direction:column;gap:9px;margin:14px 0 16px;padding:14px;
+      background:var(--field-bg);border:1px solid var(--field-border);border-radius:16px}
+    .servicios-ruta{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;line-height:1.35}
+    .servicios-ruta .punto{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff}
+    .servicios-ruta .punto.origen{background:var(--primary-color)}
+    .servicios-ruta .punto.destino{background:var(--deep-blue)}
+    .servicios-ruta .texto{flex:1;min-width:0;color:var(--text-color);font-weight:700;padding-top:2px;word-break:break-word}
+    .servicios-ruta .texto small{display:block;margin-top:2px;font-size:.68rem;font-weight:500;color:var(--muted-text)}
+    .servicios-meta{display:flex;gap:16px;margin-top:6px;padding-top:10px;border-top:1px dashed var(--field-border)}
+    .servicios-meta > div{flex:1}
+    .servicios-meta-label{display:block;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);margin-bottom:2px}
+    .servicios-meta-valor{font-size:.92rem;font-weight:700}
+
+    .servicios-lista{display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;padding:4px 6px 4px 2px;flex:1;min-height:0;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.4) transparent;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+    .servicios-lista::-webkit-scrollbar{width:6px}
+    .servicios-lista::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+
+    .servicio-card{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--field-border);
+      border-radius:18px;background:var(--field-bg);cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);width:100%;
+      animation:serviceCardIn .45s cubic-bezier(.2,.8,.2,1) both;opacity:0}
+    .servicio-card:nth-child(1){animation-delay:.08s}.servicio-card:nth-child(2){animation-delay:.16s}
+    .servicio-card:nth-child(3){animation-delay:.24s}.servicio-card:nth-child(4){animation-delay:.32s}
+    .servicio-card:hover{border-color:var(--primary-color);transform:translateX(-3px);box-shadow:0 10px 28px rgba(71,133,167,.22),0 0 0 3px rgba(71,133,167,.08)}
+    .servicio-card.seleccionado{border-color:var(--primary-color);background:linear-gradient(135deg,rgba(71,133,167,.10),rgba(19,73,137,.06));
+      box-shadow:0 8px 24px rgba(71,133,167,.25),0 0 0 3px rgba(71,133,167,.18)}
+    .servicio-card.seleccionado::before{content:"✓";position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;
+      background:var(--primary-color);color:#fff;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;animation:checkPop .3s ease both}
+    .servicio-icono{flex-shrink:0;width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.35)}
+    .servicio-icono svg{width:30px;height:30px}
+    .servicio-info{flex:1;min-width:0;text-align:left}
+    .servicio-nombre{font-size:.98rem;font-weight:700;color:var(--text-color);margin-bottom:2px}
+    .servicio-desc{font-size:.72rem;color:var(--muted-text);line-height:1.3}
+    .servicio-tiempo{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:.70rem;font-weight:700;color:var(--primary-color)}
+    .servicio-conductores{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:.68rem;font-weight:700;color:#2ecc71}
+    .servicio-precio{flex-shrink:0;text-align:right}
+    .servicio-precio-valor{font-size:1.05rem;font-weight:800;color:var(--text-color)}
+    .servicio-precio-etiqueta{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary-color)}
+
+    .servicios-footer{flex-shrink:0;margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border)}
+    .servicios-footer .btn-main{padding:16px 46px 16px 20px}
+    .servicios-leyenda{text-align:center;font-size:.72rem;color:var(--muted-text);margin-top:10px;line-height:1.35}
+
+    /* CONDUCTOR */
+    #ui-conductor{display:flex;flex-direction:column}
+    #ui-conductor .panel-title,#ui-conductor .status-text{text-align:center}
+    #contenedor-solicitudes{display:flex;flex-direction:column;gap:12px;padding:2px 2px 2px 0;transition:opacity .3s ease}
+    .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:18px;padding:16px 16px 16px 20px;background:var(--field-bg);
+      text-align:left;animation:cardPop .5s cubic-bezier(.2,.8,.2,1) both;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
+    .tarjeta-viaje::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:4px;border-radius:4px;
+      background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 12px var(--glow-strong)}
+    .tarjeta-viaje:hover{transform:translateY(-2px);border-color:var(--primary-color);box-shadow:0 14px 32px rgba(71,133,167,.22)}
+    .tarjeta-viaje:nth-child(1){animation-delay:.05s}.tarjeta-viaje:nth-child(2){animation-delay:.12s}
+    .tarjeta-viaje:nth-child(3){animation-delay:.19s}.tarjeta-viaje:nth-child(4){animation-delay:.26s}
+    .viaje-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .viaje-tipo-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
+      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.12));border:1px solid rgba(71,133,167,.35);
+      font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--primary-color);text-transform:uppercase}
+    .viaje-tipo-badge svg{width:13px;height:13px}
+    .viaje-precio-badge{font-size:1.15rem;font-weight:800;color:var(--text-color);letter-spacing:-.02em;text-align:right}
+    .viaje-precio-badge small{font-size:.6rem;font-weight:700;color:var(--primary-color);letter-spacing:.08em;display:block}
+    .viaje-ruta{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .viaje-punto{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;line-height:1.3}
+    .viaje-punto-dot{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:.65rem;font-weight:800;color:#fff;margin-top:1px}
+    .viaje-punto-dot.origen{background:var(--primary-color)}
+    .viaje-punto-dot.destino{background:var(--deep-blue)}
+    .viaje-punto-text{flex:1;min-width:0;font-weight:700;color:var(--text-color);padding-top:2px;word-break:break-word}
+    .viaje-punto-sub{display:block;font-size:.68rem;font-weight:500;color:var(--muted-text);margin-top:2px}
+    .viaje-linea-conector{width:2px;height:9px;background:linear-gradient(180deg,var(--primary-color),var(--deep-blue));margin-left:10px;border-radius:1px;opacity:.5}
+    .viaje-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .viaje-distancia{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--muted-text)}
+    .viaje-distancia svg{width:14px;height:14px;color:var(--primary-color)}
+    .viaje-cta .btn-main{padding:11px 40px 11px 16px;font-size:.84rem;border-radius:12px;min-width:145px}
+
+    .comercio-info{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px dashed rgba(71,133,167,.5);
+      color:var(--muted-text);font-size:.78rem;line-height:1.45;text-align:left}
+    .comercio-info b{color:var(--primary-color)}
+
+    .loading-pulse{display:inline-flex;align-items:center;gap:4px}
+    .loading-pulse span{width:6px;height:6px;border-radius:50%;background:var(--primary-color);animation:pulseDot 1.4s ease-out infinite}
+    .loading-pulse span:nth-child(2){animation-delay:.2s}
+    .loading-pulse span:nth-child(3){animation-delay:.4s}
+
+    /* Toast */
+    #toast{position:fixed;top:calc(80px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-20px);z-index:6000;
+      padding:12px 20px;border-radius:14px;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
+      -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 12px 32px rgba(0,0,0,.25);
+      font-size:.88rem;font-weight:600;color:var(--text-color);opacity:0;pointer-events:none;transition:all .3s;
+      display:flex;align-items:center;gap:10px;max-width:88vw}
+    #toast.visible{opacity:1;transform:translate(-50%,0)}
+    #toast .toast-icon{width:24px;height:24px;flex-shrink:0;border-radius:50%;background:var(--primary-color);color:#fff;
+      display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800}
 
     /* ============================================================
-       NUEVO · DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor)
+       AÑADIDO · MENÚ FLOTANTE DEL PERFIL (4 botones pequeños)
        ============================================================ */
-    #modal-documentacion{top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:2700;width:88%;max-width:360px;
-      background:rgba(20,20,20,.58)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-      max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;
-      box-shadow:0 0 0 200vmax rgba(0,0,0,.25),0 15px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
-      animation:modalIn .5s cubic-bezier(.2,.8,.2,1) both;scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent}
-    #modal-documentacion .panel-title{color:#ffffff!important}
-    #modal-documentacion .panel-subtitle{color:rgba(248,249,250,.70)}
-    #form-documentacion{text-align:left}
-    #form-documentacion .btn-main{margin-top:6px}
-    .doc-seccion{margin:4px 0 10px 4px;font-size:.66rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--primary-color)}
-    .doc-seccion:not(:first-child){margin-top:18px}
-    .doc-nota{margin:-4px 4px 12px;font-size:.72rem;line-height:1.4;color:rgba(248,249,250,.62)}
-    #doc-tipo-servicio{padding:0 44px 0 50px;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M3 12h6.5M14.5 12H21M12 14.5V21'/%3E%3C/svg%3E"),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-position:16px center,right 16px center;background-size:20px 20px,18px 18px}
-    #doc-marca{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%234785A7'/%3E%3C/svg%3E")}
-    #doc-anio{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
-    .btn-documentacion{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:14px;border:1px dashed rgba(71,133,167,.55);
-      background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;
-      transition:border-color .2s,box-shadow .2s,background .2s,transform .2s}
-    .btn-documentacion:hover,.btn-documentacion:focus-visible{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.18),0 0 26px rgba(71,133,167,.15)}
-    .btn-documentacion:active{transform:scale(.99)}
-    .btn-documentacion svg{flex-shrink:0}
-    .btn-documentacion .doc-btn-text{flex:1;min-width:0}
-    .doc-estado{flex-shrink:0;padding:4px 9px;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
-      background:rgba(241,196,15,.14);color:#f1c40f;border:1px solid rgba(241,196,15,.40)}
-    .btn-documentacion.completa{border-style:solid;border-color:rgba(46,204,113,.60)}
-    .btn-documentacion.completa .doc-estado{background:rgba(46,204,113,.15);color:#2ecc71;border-color:rgba(46,204,113,.40)}
-    .doc-item{margin-bottom:14px}
-    .doc-label{display:block;margin:0 0 6px 4px;font-size:.78rem;font-weight:600;color:#f8f9fa}
-    .doc-drop{position:relative;display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:14px;border:1px dashed rgba(71,133,167,.55);
-      background:var(--field-bg);color:var(--text-color);font-size:.88rem;font-weight:600;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s}
-    .doc-drop:hover,.doc-drop:focus-within{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.18),0 0 26px rgba(71,133,167,.15)}
-    .doc-drop svg{flex-shrink:0}
-    .doc-drop-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .doc-drop input[type="file"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
-    .doc-item.cargado .doc-drop{border-style:solid;border-color:rgba(46,204,113,.60)}
-    .doc-preview{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid rgba(71,133,167,.40);
-      background:rgba(0,0,0,.25);animation:fadeIn .35s ease both}
-    .doc-preview-img{width:52px;height:52px;flex-shrink:0;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}
-    .doc-preview-pdf{display:grid;place-items:center;width:52px;height:52px;flex-shrink:0;border-radius:8px;font-size:.62rem;font-weight:800;letter-spacing:.08em;
-      color:#fff;background:linear-gradient(145deg,#c0392b,#96281b);border:1px solid rgba(255,255,255,.12)}
-    .doc-preview-nombre{flex:1;min-width:0;font-size:.76rem;color:#f8f9fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .doc-quitar{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.06);color:#fff;font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
-    .doc-quitar:hover{background:rgba(231,76,60,.25);border-color:rgba(231,76,60,.60)}
+    @keyframes menuItemIn{from{opacity:0;transform:translate(-16px,-18px) scale(.55)}to{opacity:1;transform:translate(0,0) scale(1)}}
+    #menu-perfil{position:absolute;top:calc(68px + env(safe-area-inset-top));left:14px;z-index:3100;
+      display:flex;flex-direction:column;align-items:flex-start;gap:7px;pointer-events:none}
+    #menu-perfil.oculto{display:none!important}
+    .menu-perfil-item{pointer-events:auto;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+      padding:7px 13px 7px 9px;border-radius:999px;cursor:pointer;font-size:.7rem;font-weight:700;letter-spacing:.02em;
+      color:var(--text-color);background:var(--glass-bg-strong);border:1px solid var(--glass-border);
+      -webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);
+      box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px 0 var(--glass-highlight);
+      transform-origin:top left;opacity:0;animation:menuItemIn .34s cubic-bezier(.2,.9,.25,1.2) both;
+      transition:border-color .2s,transform .18s,box-shadow .2s,background .2s}
+    #menu-perfil .menu-perfil-item:nth-child(1){animation-delay:.02s}
+    #menu-perfil .menu-perfil-item:nth-child(2){animation-delay:.07s}
+    #menu-perfil .menu-perfil-item:nth-child(3){animation-delay:.12s}
+    #menu-perfil .menu-perfil-item:nth-child(4){animation-delay:.17s}
+    .menu-perfil-item:hover{transform:translateX(3px);border-color:var(--primary-color);
+      box-shadow:0 10px 26px rgba(71,133,167,.28),0 0 0 3px rgba(71,133,167,.12)}
+    .menu-perfil-item:active{transform:scale(.97)}
+    .menu-perfil-item .mi-ico{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff}
+    .menu-perfil-item .mi-ico svg{width:12px;height:12px}
+    .menu-perfil-item.peligro .mi-ico{background:linear-gradient(135deg,#e05a5a,#a32626)}
+    .menu-perfil-item.peligro:hover{border-color:#e05a5a;box-shadow:0 10px 26px rgba(224,90,90,.25),0 0 0 3px rgba(224,90,90,.12)}
+
+    /* ============================================================
+       AÑADIDO · MODALES GENÉRICOS (perfil / historial / confirmación)
+       ============================================================ */
+    .modal-bikar{position:fixed;inset:0;z-index:5500;display:flex;align-items:center;justify-content:center;
+      padding:calc(70px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));
+      background:rgba(8,22,34,.42);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:fadeIn .2s ease both}
+    .modal-bikar-dialog{position:relative;width:min(100%,460px);max-height:100%;display:flex;flex-direction:column;
+      padding:20px 18px 18px;background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));
+      border:1px solid var(--glass-border);border-radius:24px;box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);
+      -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+      color:var(--text-color);animation:modalIn .28s cubic-bezier(.2,.8,.2,1) both;overflow:hidden}
+    .modal-bikar-cerrar{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:10px;z-index:3;
+      border:1px solid var(--field-border);background:var(--field-bg);color:var(--muted-text);cursor:pointer;font-size:1rem;line-height:1;
+      display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .modal-bikar-cerrar:hover{color:var(--primary-color);border-color:var(--primary-color);transform:rotate(90deg)}
+    .modal-bikar-scroll{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:4px;
+      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.35) transparent}
+    .modal-bikar-scroll::-webkit-scrollbar{width:6px}
+    .modal-bikar-scroll::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .modal-kicker{display:block;font-size:.6rem;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--primary-color);margin-bottom:4px}
+    .modal-titulo{font-size:1.15rem;font-weight:800;letter-spacing:-.01em;margin-bottom:2px}
+
+    /* PERFIL */
+    .perfil-hero{display:flex;align-items:center;gap:14px;margin:6px 0 16px}
+    .perfil-hero-foto{width:74px;height:74px;border-radius:24px;object-fit:cover;flex-shrink:0;background:var(--field-bg);
+      border:2px solid var(--primary-color);box-shadow:0 10px 26px rgba(71,133,167,.32)}
+    .perfil-hero-txt{min-width:0}
+    .perfil-hero-nombre{font-size:1.12rem;font-weight:800;line-height:1.2;word-break:break-word}
+    .perfil-rol{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 10px;border-radius:999px;
+      font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);
+      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.10));border:1px solid rgba(71,133,167,.35)}
+    .perfil-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
+    .perfil-dato{padding:10px 12px;border-radius:14px;background:var(--field-bg);border:1px solid var(--field-border);min-width:0;
+      animation:cardPop .38s cubic-bezier(.2,.8,.2,1) both}
+    .perfil-dato-label{display:block;font-size:.58rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-color);margin-bottom:3px}
+    .perfil-dato-valor{display:block;font-size:.84rem;font-weight:700;line-height:1.32;word-break:break-word;color:var(--text-color)}
+    .perfil-seccion-titulo{margin:16px 0 8px;font-size:.66rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-text)}
+    .perfil-vacio{padding:18px;text-align:center;font-size:.82rem;color:var(--muted-text)}
+
+    /* HISTORIAL */
+    .historial-tabs{display:flex;gap:8px;margin:12px 0 10px;flex-shrink:0}
+    .historial-tab{flex:1;padding:9px 10px;border-radius:12px;cursor:pointer;font-size:.76rem;font-weight:700;
+      color:var(--muted-text);background:var(--field-bg);border:1px solid var(--field-border);transition:all .2s}
+    .historial-tab:hover{color:var(--primary-color);border-color:var(--primary-color)}
+    .historial-tab.activo{color:#fff;border-color:transparent;background:linear-gradient(90deg,#134989,#4785A7);
+      box-shadow:0 8px 20px rgba(71,133,167,.32)}
+    .historial-barra{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-shrink:0}
+    .historial-select{flex:1;height:40px;padding:0 12px;border-radius:12px;font-size:.78rem;font-weight:600;cursor:pointer;
+      color:var(--text-color);background:var(--field-bg);border:1px solid var(--field-border);outline:none}
+    .historial-select:focus{border-color:var(--primary-color)}
+    .btn-descargar{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;cursor:pointer;
+      font-size:.74rem;font-weight:800;color:var(--primary-color);background:rgba(71,133,167,.12);border:1px solid rgba(71,133,167,.45);transition:all .2s}
+    .btn-descargar:hover{background:rgba(71,133,167,.22);transform:translateY(-1px)}
+    .btn-descargar svg{width:14px;height:14px}
+    .historial-lista{display:flex;flex-direction:column;gap:10px;padding:2px 4px 6px 2px}
+    .historial-card{position:relative;padding:13px 14px 13px 17px;border-radius:16px;background:var(--field-bg);border:1px solid var(--field-border);
+      overflow:hidden;animation:cardPop .4s cubic-bezier(.2,.8,.2,1) both;transition:border-color .2s,transform .2s,box-shadow .2s}
+    .historial-card:hover{border-color:var(--primary-color);transform:translateY(-2px);box-shadow:0 12px 28px rgba(71,133,167,.18)}
+    .historial-card::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:3px;
+      background:linear-gradient(180deg,var(--primary-color),var(--deep-blue))}
+    .historial-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .historial-servicio{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--primary-color)}
+    .historial-servicio svg{width:13px;height:13px}
+    .historial-precio{font-size:1rem;font-weight:800;color:var(--text-color)}
+    .historial-ruta{font-size:.78rem;line-height:1.45;color:var(--text-color);font-weight:600}
+    .historial-ruta span{color:var(--muted-text);font-weight:500}
+    .historial-pie{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;flex-wrap:wrap}
+    .historial-fecha{font-size:.68rem;color:var(--muted-text);font-weight:600}
+    .estado-chip{padding:3px 9px;border-radius:999px;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+      border:1px solid var(--field-border);color:var(--muted-text);background:var(--glass-bg)}
+    .estado-chip.solicitado{color:#d68b1f;border-color:rgba(214,139,31,.45);background:rgba(214,139,31,.12)}
+    .estado-chip.aceptado{color:#2ecc71;border-color:rgba(46,204,113,.45);background:rgba(46,204,113,.12)}
+    .estado-chip.finalizado{color:var(--primary-color);border-color:rgba(71,133,167,.45);background:rgba(71,133,167,.12)}
+    .estado-chip.cancelado{color:#e05a5a;border-color:rgba(224,90,90,.45);background:rgba(224,90,90,.12)}
+    .pagos-resumen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .pago-kpi{padding:12px 10px;border-radius:16px;text-align:center;background:var(--field-bg);border:1px solid var(--field-border);
+      animation:cardPop .38s cubic-bezier(.2,.8,.2,1) both}
+    .pago-kpi-label{display:block;font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);margin-bottom:4px}
+    .pago-kpi-valor{display:block;font-size:1rem;font-weight:800;color:var(--text-color);letter-spacing:-.02em}
+    .pago-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border-radius:14px;
+      background:var(--field-bg);border:1px solid var(--field-border);animation:cardPop .35s cubic-bezier(.2,.8,.2,1) both}
+    .pago-fila-info{min-width:0}
+    .pago-fila-tit{font-size:.8rem;font-weight:700;color:var(--text-color)}
+    .pago-fila-sub{font-size:.67rem;color:var(--muted-text);margin-top:2px}
+    .pago-fila-valor{font-size:.92rem;font-weight:800;color:var(--primary-color);white-space:nowrap}
+
+    /* CONFIRMACIÓN PROPIA (sin alert del navegador) */
+    .modal-bikar.confirmar-capa{z-index:6500;align-items:center}
+    .confirmar-dialog{width:min(100%,340px);text-align:center;padding:24px 20px 18px}
+    .confirmar-icono{width:54px;height:54px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,rgba(224,90,90,.22),rgba(163,38,38,.16));border:1px solid rgba(224,90,90,.4);color:#e05a5a}
+    .confirmar-icono svg{width:24px;height:24px}
+    .confirmar-titulo{font-size:1.05rem;font-weight:800;margin-bottom:6px}
+    .confirmar-mensaje{font-size:.82rem;line-height:1.45;color:var(--muted-text);margin-bottom:18px}
+    .confirmar-acciones{display:flex;gap:10px}
+    .confirmar-acciones button{flex:1;padding:11px 12px;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .btn-conf-cancelar{color:var(--text-color);background:var(--field-bg);border:1px solid var(--field-border)}
+    .btn-conf-cancelar:hover{border-color:var(--primary-color);color:var(--primary-color)}
+    .btn-conf-aceptar{color:#fff;border:none;background:linear-gradient(90deg,#a32626,#e05a5a);box-shadow:0 10px 24px rgba(224,90,90,.32)}
+    .btn-conf-aceptar:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(224,90,90,.4)}
   </style>
 </head>
 <body class="dark-mode">
 
-  <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Tema" aria-label="Cambiar tema"><span id="theme-icon">☀️</span></button>
+  <div id="perfil-superior" class="perfil-superior oculto" title="Toca para ver tu menú">
+    <img id="foto-perfil-header" src="" alt="Foto de Perfil">
+  </div>
 
-  <!-- PANTALLA DE INICIO -->
-  <div id="pantalla-inicio" class="pantalla-inicio">
-    <video id="video-oscuro" class="video-fondo video-oscuro" autoplay loop muted playsinline>
-      <source src="https://i.imgur.com/7qoNKhR.mp4" type="video/mp4">
-    </video>
-    <video id="video-claro" class="video-fondo video-claro" autoplay loop muted playsinline>
-      <source src="https://i.imgur.com/xO5vIAY.mp4" type="video/mp4">
-    </video>
-    <div class="fx-scan" aria-hidden="true"></div>
-    <div class="inicio-features" aria-hidden="true"><span>Tiempo real</span><span>GPS</span><span>Seguro</span></div>
-    <p class="texto-subtitulo">SELECCIONA TU ROL</p>
+  <!-- AÑADIDO · Menú flotante que se desprende desde la foto de perfil -->
+  <nav id="menu-perfil" class="oculto" aria-label="Menú de usuario">
+    <button type="button" class="menu-perfil-item" id="menu-item-perfil">
+      <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>
+      Perfil
+    </button>
+    <button type="button" class="menu-perfil-item" id="menu-item-historial">
+      <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+      Historial de servicios
+    </button>
+    <button type="button" class="menu-perfil-item" id="menu-item-modo">
+      <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16h16"/><circle cx="7.5" cy="16" r="2"/><circle cx="16.5" cy="16" r="2"/><path d="M5 13l2-5h8l3 5"/></svg></span>
+      Modo Conductor
+    </button>
+    <button type="button" class="menu-perfil-item peligro" id="menu-item-salir">
+      <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span>
+      Cerrar sesión
+    </button>
+  </nav>
 
-    <div class="roles-container">
-      <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')" aria-label="Ingresar como Pasajero">
-        <span class="rol-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-        <span class="rol-text"><span class="rol-title">Pasajero</span><span class="rol-desc">Solicita un viaje al instante</span></span>
-      </button>
-      <button class="tarjeta-rol" onclick="seleccionarRol('conductor')" aria-label="Ingresar como Conductor">
-        <span class="rol-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></span>
-        <span class="rol-text"><span class="rol-title">Conductor</span><span class="rol-desc">Recibe solicitudes en tiempo real</span></span>
-      </button>
-      <button class="tarjeta-rol" onclick="seleccionarRol('comercio')" aria-label="Ingresar como Comercio">
-        <span class="rol-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v11h18V9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M9 20v-6h6v6"/></svg></span>
-        <span class="rol-text"><span class="rol-title">Comercio</span><span class="rol-desc">Registra tu establecimiento</span></span>
-      </button>
+  <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">
+    <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    <svg id="icon-sun" class="oculto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+  </button>
+
+  <div id="mode-selector">
+    <button id="btn-cambiar-modo" class="btn-secondary chip-usuario" type="button">BIKAR</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="ui-pasajero" class="ui-panel oculto">
+    <h3 class="panel-title">Solicitar Viaje</h3>
+    <div class="input-group">
+      <input type="text" id="input-destino" placeholder="¿A dónde vas?" autocomplete="off">
+      <div id="sugerencias-destino" class="lista-sugerencias"></div>
+    </div>
+    <p id="status-text-pasajero" class="status-text">Tu punto de partida es tu ubicación actual. También puedes tocar el mapa para marcar el destino.</p>
+    <button id="btn-pedir-viaje" class="btn-main">Confirmar Puntos</button>
+  </div>
+
+  <div id="ui-conductor" class="ui-panel oculto">
+    <h3 class="panel-title">Viajes Solicitados</h3>
+    <p id="status-text-conductor" class="status-text">Buscando solicitudes cercanas...</p>
+    <div id="contenedor-solicitudes"></div>
+  </div>
+
+  <div id="modal-origen" class="modal-origen oculto" role="dialog" aria-modal="true" aria-labelledby="modal-origen-titulo">
+    <div class="modal-origen-dialog">
+      <div class="modal-origen-cabecera">
+        <h2 id="modal-origen-titulo" class="modal-origen-titulo">Cambiar punto de partida</h2>
+        <button id="btn-cerrar-modal-origen" class="modal-origen-cerrar" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <p class="modal-origen-ayuda">Escribe una dirección y elige una sugerencia de Google Maps para mover tu punto de partida.</p>
+      <div class="input-group">
+        <input type="text" id="input-origen-modal" placeholder="Calle, número, ciudad" autocomplete="off">
+        <div id="sugerencias-origen" class="lista-sugerencias"></div>
+      </div>
+      <div class="modal-origen-acciones">
+        <button id="btn-usar-gps" class="btn-modal-gps" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
+          Mi ubicación
+        </button>
+        <button id="btn-cancelar-modal-origen" class="btn-modal-secundario" type="button">Cancelar</button>
+      </div>
     </div>
   </div>
 
-  <!-- OPCIONES DEL ROL -->
-  <div id="modal-opciones-rol" class="opciones-rol-bikar oculto">
-    <button type="button" id="btn-iniciar-sesion" class="btn-opcion-rol">Iniciar sesión</button>
-    <button type="button" id="btn-crear-cuenta" class="btn-opcion-rol">Crear cuenta</button>
-    <button type="button" id="btn-cerrar-opciones" class="btn-opcion-rol btn-cerrar-x" aria-label="Cerrar">✕</button>
+  <div id="backdrop-servicios"></div>
+
+  <aside id="panel-servicios" aria-hidden="true">
+    <div class="servicios-cabecera">
+      <div><h2 class="servicios-titulo">Servicios disponibles</h2></div>
+      <button id="btn-cerrar-servicios" class="btn-cerrar-servicios" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="servicios-resumen">
+      <div class="servicios-ruta">
+        <div class="punto origen">A</div>
+        <div class="texto" id="resumen-origen">Ubicación actual<small id="resumen-origen-sub"></small></div>
+      </div>
+      <div class="servicios-ruta">
+        <div class="punto destino">B</div>
+        <div class="texto" id="resumen-destino">Destino<small id="resumen-destino-sub"></small></div>
+      </div>
+      <div class="servicios-meta">
+        <div><span class="servicios-meta-label">Distancia</span><span class="servicios-meta-valor" id="resumen-distancia">— km</span></div>
+        <div><span class="servicios-meta-label">Duración</span><span class="servicios-meta-valor" id="resumen-duracion">— min</span></div>
+      </div>
+    </div>
+
+    <div id="servicios-lista" class="servicios-lista"></div>
+
+    <div class="servicios-footer">
+      <button id="btn-confirmar-servicio" class="btn-main" disabled>Selecciona un servicio</button>
+      <p class="servicios-leyenda">Los conductores registrados en este tipo de servicio recibirán tu solicitud al instante.</p>
+    </div>
+  </aside>
+
+  <!-- AÑADIDO · MODAL PERFIL -->
+  <div id="modal-perfil" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="perfil-titulo">
+    <div class="modal-bikar-dialog">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-perfil" aria-label="Cerrar">×</button>
+      <span class="modal-kicker">BIKAR · Mi cuenta</span>
+      <h2 class="modal-titulo" id="perfil-titulo">Perfil</h2>
+      <div class="modal-bikar-scroll" style="margin-top:6px">
+        <div class="perfil-hero">
+          <img id="perfil-foto-grande" class="perfil-hero-foto" src="" alt="Foto de perfil">
+          <div class="perfil-hero-txt">
+            <div class="perfil-hero-nombre" id="perfil-nombre-grande">Usuario BIKAR</div>
+            <span class="perfil-rol" id="perfil-rol-badge">Pasajero</span>
+          </div>
+        </div>
+        <div id="perfil-datos" class="perfil-datos"></div>
+        <div id="perfil-extra"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- LOGIN -->
-  <div id="modal-login" class="ui-panel oculto">
-    <h3 id="login-titulo" class="panel-title">Iniciar sesión</h3>
-    <p class="panel-subtitle">Ingresa tus datos para continuar</p>
-    <form id="form-login">
-      <div class="input-group"><input type="text" id="login-dni" placeholder="Número de Documento (DNI / CE)" required autocomplete="username"></div>
-      <div class="input-group"><input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password"></div>
-      <button type="submit" id="btn-login" class="btn-main">Iniciar sesión</button>
-      <button type="button" id="btn-cancelar-login" class="btn-secondary" style="margin-top:8px">Volver</button>
-    </form>
-  </div>
+  <!-- AÑADIDO · MODAL HISTORIAL / PAGOS -->
+  <div id="modal-historial" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="historial-titulo">
+    <div class="modal-bikar-dialog" style="height:min(660px,100%)">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-historial" aria-label="Cerrar">×</button>
+      <span class="modal-kicker">BIKAR · Actividad</span>
+      <h2 class="modal-titulo" id="historial-titulo">Historial de servicios</h2>
 
-  <!-- REGISTRO -->
-  <div id="modal-registro" class="ui-panel oculto">
-    <h3 id="registro-titulo" class="panel-title">Completar Registro</h3>
-    <p class="panel-subtitle">Completa tus datos para continuar</p>
-    <form id="form-registro">
-      <div class="input-group"><input type="text" id="reg-nombre" placeholder="Nombre completo" required autocomplete="name"></div>
-      <div class="input-group"><input type="password" id="reg-password" placeholder="Crear contraseña" required autocomplete="new-password"></div>
-      <div class="input-group"><input type="password" id="reg-password-confirm" placeholder="Confirmar contraseña" required autocomplete="new-password"></div>
-      <div class="input-group"><input type="tel" id="reg-telefono" placeholder="Teléfono / WhatsApp" required autocomplete="tel"></div>
-      <div class="input-group"><input type="email" id="reg-email" placeholder="Correo electrónico" required autocomplete="email"></div>
-      <div class="input-group">
-        <select id="reg-tipo-doc" required>
-          <option value="DNI">DNI (Documento Nacional de Identidad)</option>
-          <option value="CE">CE (Carnet de Extranjería)</option>
+      <div class="historial-tabs">
+        <button type="button" class="historial-tab activo" id="tab-servicios">Servicios</button>
+        <button type="button" class="historial-tab" id="tab-pagos">Mis pagos</button>
+      </div>
+
+      <div class="historial-barra">
+        <select id="filtro-periodo" class="historial-select" aria-label="Filtrar por periodo">
+          <option value="hoy">Hoy</option>
+          <option value="semana">Últimos 7 días</option>
+          <option value="mes" selected>Este mes</option>
+          <option value="todo">Todo el historial</option>
         </select>
-      </div>
-      <div class="input-group"><input type="text" id="reg-num-doc" placeholder="Número de Documento (DNI / CE)" required autocomplete="off"></div>
-      <div id="campos-especificos"></div>
-
-      <div class="input-group foto-group">
-        <label for="reg-foto" class="label-foto">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Capturar / Subir Foto
-        </label>
-        <input type="file" id="reg-foto" accept="image/*" capture="user" required>
-        <div id="preview-foto-container" class="preview-container oculto"><img id="preview-foto" src="" alt="Vista previa de foto"></div>
-      </div>
-
-      <!-- NUEVO: Botón "Documentación para el vehículo" (solo visible para CONDUCTOR) -->
-      <div id="bloque-documentacion" class="input-group oculto">
-        <button type="button" id="btn-documentacion-vehiculo" class="btn-documentacion" aria-haspopup="dialog" aria-controls="modal-documentacion">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-          <span class="doc-btn-text">Documentación para el vehículo</span>
-          <span id="doc-estado" class="doc-estado">Pendiente</span>
+        <button type="button" class="btn-descargar" id="btn-descargar-historial">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
+          Descargar
         </button>
       </div>
 
-      <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
-      <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top:8px">Volver</button>
-      <p class="form-note">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Tus datos se guardan de forma segura
-      </p>
-    </form>
+      <div class="modal-bikar-scroll" id="historial-contenido" style="flex:1;min-height:0"></div>
+    </div>
   </div>
 
-  <!-- NUEVO: DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) -->
-  <div id="modal-documentacion" class="ui-panel oculto" role="dialog" aria-modal="true" aria-labelledby="documentacion-titulo">
-    <h3 id="documentacion-titulo" class="panel-title">Documentación del vehículo</h3>
-    <p class="panel-subtitle">Adjunta fotos o PDF · <span id="doc-contador">0/5 documentos</span></p>
-    <form id="form-documentacion" novalidate>
-
-      <p class="doc-seccion">Datos del vehículo</p>
-      <div class="input-group">
-        <select id="doc-tipo-servicio" required>
-          <option value="" disabled selected>Tipo de servicio</option>
-          <option value="Taxi Auto">Taxi Auto</option>
-          <option value="Moto Delivery">Moto Delivery</option>
-          <option value="Taxi Carga">Taxi Carga</option>
-          <option value="Moto Taxi">Moto Taxi</option>
-        </select>
+  <!-- AÑADIDO · CONFIRMACIÓN PROPIA (sin alerta del navegador) -->
+  <div id="modal-confirmar" class="modal-bikar confirmar-capa oculto" role="alertdialog" aria-modal="true" aria-labelledby="confirmar-titulo">
+    <div class="modal-bikar-dialog confirmar-dialog">
+      <div class="confirmar-icono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
       </div>
-      <div class="input-group"><input type="text" id="doc-marca" placeholder="Marca del Vehículo (Ej: Chevrolet)" required autocomplete="off"></div>
-      <div class="input-group"><input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Spark)" required autocomplete="off"></div>
-      <div class="input-group"><input type="text" id="doc-anio" inputmode="numeric" maxlength="4" placeholder="Año del Vehículo (Ej: 2021)" required autocomplete="off"></div>
-      <p class="doc-nota">Si el vehículo tiene más de 3 años deberás adjuntar la revisión técnica.</p>
-      <div class="input-group"><input type="text" id="reg-placa" placeholder="Placa del Vehículo" required autocomplete="off"></div>
-
-      <p class="doc-seccion">Documentos (foto o PDF · máx. 5 MB)</p>
-
-      <div class="doc-item" data-doc="dni_ce">
-        <span class="doc-label">DNI o CE</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
-          <span class="doc-drop-text">Subir foto o PDF</span>
-          <input type="file" id="doc-dni" accept="image/*,application/pdf,.pdf">
-        </label>
-        <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa">
-          <span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span>
-          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
-        </div>
+      <h3 class="confirmar-titulo" id="confirmar-titulo">Cerrar sesión</h3>
+      <p class="confirmar-mensaje" id="confirmar-mensaje">¿Estás seguro de que deseas cerrar tu sesión en BIKAR?</p>
+      <div class="confirmar-acciones">
+        <button type="button" class="btn-conf-cancelar" id="confirmar-cancelar">Cancelar</button>
+        <button type="button" class="btn-conf-aceptar" id="confirmar-aceptar">Sí, cerrar sesión</button>
       </div>
-
-      <div class="doc-item" data-doc="antecedente_policial">
-        <span class="doc-label">Antecedentes policiales</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
-          <span class="doc-drop-text">Subir foto o PDF</span>
-          <input type="file" id="doc-antecedentes" accept="image/*,application/pdf,.pdf">
-        </label>
-        <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa">
-          <span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span>
-          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
-        </div>
-      </div>
-
-      <div class="doc-item" data-doc="brevete">
-        <span class="doc-label">Brevete de conductor</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
-          <span class="doc-drop-text">Subir foto o PDF</span>
-          <input type="file" id="doc-brevete" accept="image/*,application/pdf,.pdf">
-        </label>
-        <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa">
-          <span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span>
-          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
-        </div>
-      </div>
-
-      <div class="doc-item" data-doc="foto_vehiculo">
-        <span class="doc-label">Foto del vehículo</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <span class="doc-drop-text">Tomar / Subir foto</span>
-          <input type="file" id="doc-foto-vehiculo" accept="image/*">
-        </label>
-        <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa">
-          <span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span>
-          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
-        </div>
-      </div>
-
-      <div class="doc-item" data-doc="tarjeta_propiedad">
-        <span class="doc-label">Tarjeta de propiedad</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
-          <span class="doc-drop-text">Subir foto o PDF</span>
-          <input type="file" id="doc-tarjeta" accept="image/*,application/pdf,.pdf">
-        </label>
-        <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa">
-          <span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span>
-          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
-        </div>
-      </div>
-
-      <!-- Solo aparece si el vehículo tiene más de 3 años -->
-      <div id="doc-item-revision" class="doc-item oculto" data-doc="revision_tecnica">
-        <span class="doc-label">Revisión técnica (vehículo con más de 3 años)</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
-          <span class="doc-drop-text">Subir foto o PDF</span>
-          <input type="file" id="doc-revision" accept="image/*,application/pdf,.pdf">
-        </label>
-        <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa">
-          <span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span>
-          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
-        </div>
-      </div>
-
-      <button type="submit" id="btn-guardar-documentacion" class="btn-main">Guardar documentación</button>
-      <button type="button" id="btn-cancelar-documentacion" class="btn-secondary" style="margin-top:8px">Volver</button>
-      <p class="form-note">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Tus documentos se guardan de forma segura
-      </p>
-    </form>
+    </div>
   </div>
+
+  <div id="toast"><span class="toast-icon">✓</span><span id="toast-text"></span></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ================= SUPABASE ================= */
+    /* ============================================================
+       CONFIGURACIÓN
+       ============================================================ */
+    const GOOGLE_MAPS_API_KEY = "AIzaSyAjIECrPNcpw4rEJhsPqqa1zxv-qYGOgRM";
+
     const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const APP_URL = "app.html";            /* Destino tras el acceso */
-    const LLAVE_SESION = "bikar_usuario";  /* Puente entre las 2 páginas */
 
-    /* ================= ESTADO ================= */
-    let rolSeleccionado = null;
-    let fotoBase64 = null;
-    let usuarioActual = null;
+    const LOGIN_URL = "index.html";              /* Página 1/2 (acceso) */
+    const LLAVE_SESION = "bikar_usuario";        /* Puente con el login */
+    const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo"; /* Respaldo local del login */
+    const PASAJERO_ID_PRUEBA = "5";
+    const CONDUCTOR_ID_PRUEBA = "10";
 
-    /* ================= DOM ================= */
-    const $ = (id) => document.getElementById(id);
-    const pantallaInicio = $('pantalla-inicio');
-    const modalOpcionesRol = $('modal-opciones-rol');
-    const modalRegistro = $('modal-registro');
-    const modalLogin = $('modal-login');
-    const registroTitulo = $('registro-titulo');
-    const loginTitulo = $('login-titulo');
-    const formRegistro = $('form-registro');
-    const formLogin = $('form-login');
-    const loginDni = $('login-dni');
-    const loginPassword = $('login-password');
-    const btnLogin = $('btn-login');
-    const camposEspecificos = $('campos-especificos');
-    const regFoto = $('reg-foto');
-    const btnThemeToggle = $('btn-theme-toggle');
-    const themeIcon = $('theme-icon');
-
-    /* ================= VIDEO / TEMA ================= */
-    function reproducirVideoActivo() {
-      const claro = document.querySelector('.video-claro');
-      const oscuro = document.querySelector('.video-oscuro');
-      const activo = document.body.classList.contains('dark-mode') ? oscuro : claro;
-      const inactivo = document.body.classList.contains('dark-mode') ? claro : oscuro;
-      if (inactivo) inactivo.pause();
-      if (activo) { activo.muted = true; activo.play().catch(() => {}); }
-    }
-    reproducirVideoActivo();
-
-    btnThemeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      reproducirVideoActivo();
-      themeIcon.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-    });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) reproducirVideoActivo(); });
-
-    /* ================= SELECCIÓN DE ROL ================= */
-    window.seleccionarRol = function (rol) {
-      rolSeleccionado = rol;
-      pantallaInicio.classList.remove('oculto');
-      modalRegistro.classList.add('oculto');
-      modalLogin.classList.add('oculto');
-      $('modal-documentacion').classList.add('oculto'); /* NUEVO */
-      modalOpcionesRol.classList.remove('oculto');
-      reproducirVideoActivo();
+    /* ============================================================
+       CATÁLOGO DE SERVICIOS · idéntico al <select id="doc-tipo-servicio">
+       del formulario de registro (Parte 1/2)
+       ============================================================ */
+    const ICONOS_SERVICIO = {
+      taxi_auto: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M9 7V4h6v3"/></svg>`,
+      moto_taxi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/><path d="M6 11h4"/></svg>`,
+      moto_delivery: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/><rect x="2" y="5" width="7" height="6" rx="1"/><path d="M2 8h7"/></svg>`,
+      taxi_carga: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.3a1 1 0 0 0-.1-.5l-1.6-3.2a1 1 0 0 0-.9-.5H14"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>`,
+      default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`
     };
 
-    $('btn-cerrar-opciones').addEventListener('click', () => modalOpcionesRol.classList.add('oculto'));
-
-    $('btn-crear-cuenta').addEventListener('click', () => {
-      modalOpcionesRol.classList.add('oculto');
-      modalRegistro.classList.remove('oculto');
-      registroTitulo.innerText = `Registro - ${rolSeleccionado.toUpperCase()}`;
-      camposEspecificos.innerHTML = "";
-      /* NUEVO: el botón "Documentación para el vehículo" solo se muestra al CONDUCTOR
-         (los campos Modelo y Placa ahora viven dentro de ese modal) */
-      $('bloque-documentacion').classList.toggle('oculto', rolSeleccionado !== 'conductor');
-      if (rolSeleccionado === 'comercio') {
-        camposEspecificos.innerHTML = `
-          <div class="input-group"><input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required></div>
-          <div class="input-group"><input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required></div>`;
-      }
-    });
-
-    $('btn-iniciar-sesion').addEventListener('click', () => {
-      modalOpcionesRol.classList.add('oculto');
-      modalLogin.classList.remove('oculto');
-      loginTitulo.innerText = `Iniciar sesión - ${rolSeleccionado.toUpperCase()}`;
-      loginDni.value = '';
-      loginPassword.value = '';
-    });
-
-    $('btn-cancelar-login').addEventListener('click', () => {
-      modalLogin.classList.add('oculto');
-      modalOpcionesRol.classList.remove('oculto');
-    });
-
-    $('btn-cancelar-registro').addEventListener('click', () => {
-      modalRegistro.classList.add('oculto');
-      pantallaInicio.classList.remove('oculto');
-      reproducirVideoActivo();
-    });
-
-    /* ================= FOTO (compresión en Canvas) ================= */
-    regFoto.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (evt) {
-        const img = new Image();
-        img.onload = function () {
-          const canvas = document.createElement('canvas');
-          const MAX_SIZE = 400;
-          let width = img.width, height = img.height;
-          if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
-          else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-          canvas.width = width; canvas.height = height;
-          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-          fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
-          $('preview-foto').src = fotoBase64;
-          $('preview-foto-container').classList.remove('oculto');
-        };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    /* ================= NUEVO · DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) ================= */
-    const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo";
-    const MAX_MB_DOCUMENTO = 5;
-    const DOCS_OBLIGATORIOS = [
-      ['dni_ce', 'DNI o CE'],
-      ['antecedente_policial', 'Antecedentes policiales'],
-      ['brevete', 'Brevete de conductor'],
-      ['foto_vehiculo', 'Foto del vehículo'],
-      ['tarjeta_propiedad', 'Tarjeta de propiedad']
+    /* multiplicador y base se aplican sobre la tarifa calculada por distancia real (Google Directions) */
+    const CATALOGO_SERVICIOS = [
+      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Rápido y económico · 1 pasajero',        base:3000, porKm:1200, espera:'2 min' },
+      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envía paquetes, comida y documentos',    base:3500, porKm:1400, espera:'3 min' },
+      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto cómodo · hasta 4 pasajeros',        base:5000, porKm:2000, espera:'4 min' },
+      { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga y encomiendas grandes',  base:9000, porKm:3200, espera:'8 min' }
     ];
-    const modalDocumentacion = $('modal-documentacion');
-    const formDocumentacion = $('form-documentacion');
-    const btnDocumentacionVehiculo = $('btn-documentacion-vehiculo');
-    const docEstado = $('doc-estado');
-    const docContador = $('doc-contador');
-    const docAnio = $('doc-anio');
-    const docItemRevision = $('doc-item-revision');
-    const documentacionVehiculo = { completa: false, archivos: {} };
 
-    function requiereRevisionTecnica() {
-      const anio = parseInt(docAnio.value, 10);
-      return !isNaN(anio) && (new Date().getFullYear() - anio) > 3;
+    /* Convierte cualquier etiqueta ("Taxi Auto", "moto delivery", "MOTO_TAXI"...) a la clave canónica */
+    function normalizarClaveServicio(raw) {
+      if (!raw) return null;
+      const c = String(raw).toLowerCase().trim().normalize('NFD').replace(/[u0300-u036f]/g, '').replace(/[_-]+/g, ' ');
+      if (/motos*deliver|deliver|domicilio|paqueter|mensajer|reparto/.test(c)) return 'moto_delivery';
+      if (/motos*taxi|mototaxi|bmotob/.test(c))                              return 'moto_taxi';
+      if (/carga|mudanza|camion|furgon|encomienda/.test(c))                     return 'taxi_carga';
+      if (/taxis*auto|bautob|btaxib|bcarrob|bcocheb|sedan/.test(c))    return 'taxi_auto';
+      return null;
     }
-    function listaDocumentosRequeridos() {
-      return requiereRevisionTecnica()
-        ? [...DOCS_OBLIGATORIOS, ['revision_tecnica', 'Revisión técnica']]
-        : DOCS_OBLIGATORIOS;
-    }
-    function actualizarContadorDocumentos() {
-      const requeridos = listaDocumentosRequeridos();
-      const cargados = requeridos.filter(([clave]) => documentacionVehiculo.archivos[clave]).length;
-      docContador.innerText = `${cargados}/${requeridos.length} documentos`;
-    }
-    function actualizarRevisionTecnica() {
-      docItemRevision.classList.toggle('oculto', !requiereRevisionTecnica());
-      actualizarContadorDocumentos();
-    }
-    function marcarDocumentacionPendiente() {
-      documentacionVehiculo.completa = false;
-      btnDocumentacionVehiculo.classList.remove('completa');
-      docEstado.innerText = 'Pendiente';
-    }
-    function marcarDocumentacionCompleta() {
-      documentacionVehiculo.completa = true;
-      btnDocumentacionVehiculo.classList.add('completa');
-      docEstado.innerText = 'Completa';
-    }
-    function abrirModalDocumentacion() {
-      modalRegistro.classList.add('oculto');
-      modalDocumentacion.classList.remove('oculto');
-      modalDocumentacion.scrollTop = 0;
-      actualizarRevisionTecnica();
-    }
-    function cerrarModalDocumentacion() {
-      modalDocumentacion.classList.add('oculto');
-      modalRegistro.classList.remove('oculto');
-    }
+    function servicioPorClave(clave){ return CATALOGO_SERVICIOS.find(s => s.clave === clave) || null; }
+    function etiquetaServicio(clave){ const s = servicioPorClave(clave); return s ? s.etiqueta : 'Servicio'; }
+    function iconoServicio(clave){ return ICONOS_SERVICIO[clave] || ICONOS_SERVICIO.default; }
 
-    btnDocumentacionVehiculo.addEventListener('click', abrirModalDocumentacion);
-    $('btn-cancelar-documentacion').addEventListener('click', cerrarModalDocumentacion);
-    docAnio.addEventListener('input', actualizarRevisionTecnica);
-    formDocumentacion.addEventListener('input', marcarDocumentacionPendiente);
-    formDocumentacion.addEventListener('change', marcarDocumentacionPendiente);
+    /* ============================================================
+       ESTADO
+       ============================================================ */
+    let modoActual = 'pasajero';
+    let origen = null;               /* {lat,lng} */
+    let destino = null;              /* {lat,lng} */
+    let origenNombre = 'Ubicación actual';
+    let origenDetalle = '';
+    let destinoNombre = '';
+    let destinoDetalle = '';
+    let distanciaKm = 0;
+    let duracionMin = 0;
+    let servicioSeleccionado = null;
+    let usuarioActual = null;
+    let claveServicioConductor = null;
 
-    /* Lee el archivo: imagen comprimida en Canvas o PDF en base64 */
-    function procesarArchivoDocumento(file, callback) {
-      if (file.size > MAX_MB_DOCUMENTO * 1024 * 1024) { mostrarAlerta(`El archivo supera los ${MAX_MB_DOCUMENTO} MB.`); return false; }
-      const esPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-      const esImagen = file.type.startsWith('image/');
-      if (!esPdf && !esImagen) { mostrarAlerta('Formato no válido. Sube una foto o un PDF.'); return false; }
-      const reader = new FileReader();
-      reader.onload = function (evt) {
-        if (esPdf) { callback({ tipo: 'pdf', nombre: file.name, data: evt.target.result }); return; }
-        const img = new Image();
-        img.onload = function () {
-          const canvas = document.createElement('canvas');
-          const MAX_SIZE = 1200;
-          let width = img.width, height = img.height;
-          if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
-          else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-          canvas.width = width; canvas.height = height;
-          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-          callback({ tipo: 'imagen', nombre: file.name, data: canvas.toDataURL('image/jpeg', 0.75) });
-        };
-        img.onerror = () => mostrarAlerta('No se pudo leer la imagen. Intenta con otro archivo.');
-        img.src = evt.target.result;
+    /* Google */
+    let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
+    let sessionTokenOrigen = null, sessionTokenDestino = null;
+    let marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
+    let popupOrigenDireccion = null, popupOrigenSub = null;
+    const timersBusqueda = { origen:null, destino:null };
+    const cacheDirecciones = new Map();
+
+    /* ============================================================
+       DOM
+       ============================================================ */
+    const $ = (id) => document.getElementById(id);
+    const btnCambiarModo = $('btn-cambiar-modo');
+    const uiPasajero = $('ui-pasajero');
+    const uiConductor = $('ui-conductor');
+    const inputDestino = $('input-destino');
+    const inputOrigenModal = $('input-origen-modal');
+    const sugerenciasOrigen = $('sugerencias-origen');
+    const sugerenciasDestino = $('sugerencias-destino');
+    const statusTextPasajero = $('status-text-pasajero');
+    const btnPedirViaje = $('btn-pedir-viaje');
+    const statusTextConductor = $('status-text-conductor');
+    const contenedorSolicitudes = $('contenedor-solicitudes');
+    const perfilSuperior = $('perfil-superior');
+    const fotoPerfilHeader = $('foto-perfil-header');
+    const modalOrigen = $('modal-origen');
+    const panelServicios = $('panel-servicios');
+    const backdropServicios = $('backdrop-servicios');
+    const serviciosLista = $('servicios-lista');
+    const btnConfirmarServicio = $('btn-confirmar-servicio');
+    const resumenOrigen = $('resumen-origen');
+    const resumenOrigenSub = $('resumen-origen-sub');
+    const resumenDestino = $('resumen-destino');
+    const resumenDestinoSub = $('resumen-destino-sub');
+    const resumenDistancia = $('resumen-distancia');
+    const resumenDuracion = $('resumen-duracion');
+    const toast = $('toast');
+    const toastText = $('toast-text');
+    const iconMoon = $('icon-moon');
+    const iconSun = $('icon-sun');
+
+    /* DOM · añadidos */
+    const menuPerfil = $('menu-perfil');
+    const menuItemPerfil = $('menu-item-perfil');
+    const menuItemHistorial = $('menu-item-historial');
+    const menuItemModo = $('menu-item-modo');
+    const menuItemSalir = $('menu-item-salir');
+    const modalPerfil = $('modal-perfil');
+    const modalHistorial = $('modal-historial');
+    const modalConfirmar = $('modal-confirmar');
+    const historialContenido = $('historial-contenido');
+    const filtroPeriodo = $('filtro-periodo');
+    const tabServicios = $('tab-servicios');
+    const tabPagos = $('tab-pagos');
+
+    /* ============================================================
+       ESTILOS DEL MAPA (claro premium / oscuro)
+       ============================================================ */
+    const ESTILO_CLARO = [
+      {elementType:'geometry',stylers:[{color:'#f5f7fa'}]},
+      {elementType:'labels.icon',stylers:[{visibility:'off'}]},
+      {elementType:'labels.text.fill',stylers:[{color:'#5b6b78'}]},
+      {elementType:'labels.text.stroke',stylers:[{color:'#ffffff'},{weight:3}]},
+      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#cdd8e0'}]},
+      {featureType:'administrative.land_parcel',stylers:[{visibility:'off'}]},
+      {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#eef1f5'}]},
+      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#7a8a95'}]},
+      {featureType:'poi.business',stylers:[{visibility:'simplified'}]},
+      {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#dff0e2'}]},
+      {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#6b9b76'}]},
+      {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},
+      {featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#ffffff'}]},
+      {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#ffe9b8'}]},
+      {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#f0d090'}]},
+      {featureType:'road.local',elementType:'labels.text.fill',stylers:[{color:'#8a97a3'}]},
+      {featureType:'transit.line',elementType:'geometry',stylers:[{color:'#e3e7ec'}]},
+      {featureType:'transit.station',elementType:'geometry',stylers:[{color:'#e8ecf1'}]},
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#bcdcf0'}]},
+      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#6fa3c4'}]}
+    ];
+    const ESTILO_OSCURO = [
+      {elementType:'geometry',stylers:[{color:'#1b1b1b'}]},
+      {elementType:'labels.icon',stylers:[{visibility:'off'}]},
+      {elementType:'labels.text.fill',stylers:[{color:'#9aa5ad'}]},
+      {elementType:'labels.text.stroke',stylers:[{color:'#121212'}]},
+      {featureType:'administrative',elementType:'geometry',stylers:[{color:'#2c3a44'}]},
+      {featureType:'administrative.land_parcel',stylers:[{visibility:'off'}]},
+      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#7f8b93'}]},
+      {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1d2b23'}]},
+      {featureType:'road',elementType:'geometry',stylers:[{color:'#2a2a2a'}]},
+      {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#1b1b1b'}]},
+      {featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#343434'}]},
+      {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#3e4a52'}]},
+      {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#20272b'}]},
+      {featureType:'road.local',elementType:'labels.text.fill',stylers:[{color:'#767f86'}]},
+      {featureType:'transit',elementType:'geometry',stylers:[{color:'#252525'}]},
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#0e1c26'}]},
+      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#4785A7'}]}
+    ];
+
+    /* ============================================================
+       CARGA DE GOOGLE MAPS
+       ============================================================ */
+    function cargarGoogleMaps() {
+      const s = document.createElement('script');
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places,geometry&language=es&region=PE&callback=iniciarMapa`;
+      s.async = true; s.defer = true;
+      s.onerror = () => {
+        statusTextPasajero.textContent = 'No se pudo cargar Google Maps. Revisa tu conexión.';
       };
-      reader.readAsDataURL(file);
+      document.head.appendChild(s);
+    }
+
+    function iconoMarcador(color, letra) {
+      return {
+        path: 'M12 2C7.6 2 4 5.6 4 10c0 5.8 8 12 8 12s8-6.2 8-12c0-4.4-3.6-8-8-8z',
+        fillColor: color, fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2,
+        scale: 1.7, anchor: new google.maps.Point(12, 22), labelOrigin: new google.maps.Point(12, 10)
+      };
+    }
+
+    window.iniciarMapa = function () {
+      map = new google.maps.Map($('map'), {
+        center: { lat: -12.0464, lng: -77.0428 },  /* Lima por defecto hasta tener GPS */
+        zoom: 13,
+        disableDefaultUI: true,
+        zoomControl: true,
+        zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_CENTER },
+        clickableIcons: false,
+        gestureHandling: 'greedy',
+        styles: document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO
+      });
+
+      geocoder = new google.maps.Geocoder();
+      autocompleteService = new google.maps.places.AutocompleteService();
+      placesService = new google.maps.places.PlacesService(map);
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        map, suppressMarkers: true, preserveViewport: true,
+        polylineOptions: { strokeColor: '#4785A7', strokeOpacity: .95, strokeWeight: 6 }
+      });
+
+      infoOrigen = new google.maps.InfoWindow({ disableAutoPan: true, maxWidth: 260 });
+
+      map.addListener('click', (e) => {
+        if (modoActual !== 'pasajero') return;
+        establecerDestino({ lat: e.latLng.lat(), lng: e.latLng.lng() }, null, null, true);
+      });
+
+      obtenerUbicacionActual(true);
+      verificarSesionGuardada();
+    };
+
+    /* ============================================================
+       GEOCODIFICACIÓN · Formato de dirección corta (Google)
+       ============================================================ */
+    function componente(components, tipo) {
+      const c = (components || []).find(x => x.types.includes(tipo));
+      return c ? c.short_name : '';
+    }
+    /* Texto corto: "Av. Arequipa 1234" o "Nombre del lugar" */
+    function direccionCorta(result) {
+      if (!result) return '';
+      if (result.name && !/^[ds-]+$/.test(result.name)) {
+        const ruta = componente(result.address_components, 'route');
+        if (result.name !== ruta) return result.name;
+      }
+      const comps = result.address_components || [];
+      const numero = componente(comps, 'street_number');
+      const ruta = componente(comps, 'route');
+      if (ruta) return numero ? `${ruta} ${numero}` : ruta;
+      const barrio = componente(comps, 'sublocality') || componente(comps, 'sublocality_level_1') || componente(comps, 'neighborhood');
+      if (barrio) return barrio;
+      const ciudad = componente(comps, 'locality') || componente(comps, 'administrative_area_level_2');
+      if (ciudad) return ciudad;
+      return (result.formatted_address || '').split(',')[0];
+    }
+    /* Texto secundario: "Miraflores, Lima" */
+    function direccionDetalle(result) {
+      if (!result) return '';
+      const comps = result.address_components || [];
+      const partes = [
+        componente(comps, 'sublocality') || componente(comps, 'sublocality_level_1') || componente(comps, 'neighborhood'),
+        componente(comps, 'locality') || componente(comps, 'administrative_area_level_2'),
+        componente(comps, 'administrative_area_level_1')
+      ].filter(Boolean);
+      return [...new Set(partes)].join(', ');
+    }
+
+    function geocodificarInverso(latLng) {
+      const clave = `${latLng.lat.toFixed(5)},${latLng.lng.toFixed(5)}`;
+      if (cacheDirecciones.has(clave)) return Promise.resolve(cacheDirecciones.get(clave));
+      return new Promise((resolve) => {
+        geocoder.geocode({ location: latLng, language: 'es' }, (results, status) => {
+          if (status === 'OK' && results && results.length) {
+            /* Prefiere una dirección exacta de calle */
+            const exacto = results.find(r => r.types.includes('street_address') || r.types.includes('premise'))
+                        || results.find(r => r.types.includes('route'))
+                        || results[0];
+            const info = { corta: direccionCorta(exacto), detalle: direccionDetalle(exacto), completa: exacto.formatted_address };
+            cacheDirecciones.set(clave, info);
+            resolve(info);
+          } else {
+            resolve({ corta: '', detalle: '', completa: '' });
+          }
+        });
+      });
+    }
+
+    /* ============================================================
+       MARCADOR / POPUP DE ORIGEN
+       ============================================================ */
+    function contenidoPopupOrigen() {
+      const cont = document.createElement('div');
+      cont.className = 'popup-origen';
+      const label = document.createElement('span');
+      label.className = 'popup-origen-label';
+      label.textContent = 'Punto de partida';
+      popupOrigenDireccion = document.createElement('strong');
+      popupOrigenDireccion.className = 'popup-origen-address';
+      popupOrigenDireccion.textContent = origenNombre;
+      popupOrigenSub = document.createElement('small');
+      popupOrigenSub.className = 'popup-origen-sub';
+      popupOrigenSub.textContent = origenDetalle;
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'popup-origen-change';
+      btn.title = 'Cambiar punto de partida'; btn.setAttribute('aria-label','Cambiar punto de partida');
+      btn.textContent = '›';
+      btn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); abrirModalOrigen(); });
+      cont.append(label, popupOrigenDireccion, popupOrigenSub, btn);
+      return cont;
+    }
+
+    function mostrarPopupOrigen() {
+      if (!marcadorOrigen || !infoOrigen) return;
+      infoOrigen.setContent(contenidoPopupOrigen());
+      infoOrigen.open({ anchor: marcadorOrigen, map });
+    }
+
+    function pintarOrigen(coords, corta, detalle) {
+      origen = coords;
+      origenNombre = corta || 'Ubicación actual';
+      origenDetalle = detalle || '';
+      if (!marcadorOrigen) {
+        marcadorOrigen = new google.maps.Marker({
+          position: coords, map, icon: iconoMarcador('#4785A7'), zIndex: 20, title: 'Punto de partida'
+        });
+        marcadorOrigen.addListener('click', mostrarPopupOrigen);
+      } else {
+        marcadorOrigen.setPosition(coords);
+      }
+      mostrarPopupOrigen();
+    }
+
+    async function establecerOrigen(coords, corta, detalle, centrar) {
+      pintarOrigen(coords, corta || 'Buscando dirección…', detalle || '');
+      if (centrar) map.panTo(coords);
+      if (!corta) {
+        const info = await geocodificarInverso(coords);
+        pintarOrigen(coords, info.corta || 'Ubicación actual', info.detalle);
+      }
+      if (destino) calcularRuta();
+    }
+
+    async function establecerDestino(coords, corta, detalle, centrar) {
+      destino = coords;
+      destinoNombre = corta || 'Buscando dirección…';
+      destinoDetalle = detalle || '';
+      if (!marcadorDestino) {
+        marcadorDestino = new google.maps.Marker({
+          position: coords, map, icon: iconoMarcador('#134989'), zIndex: 21, title: 'Destino'
+        });
+      } else {
+        marcadorDestino.setPosition(coords);
+      }
+      if (centrar) map.panTo(coords);
+      if (!corta) {
+        const info = await geocodificarInverso(coords);
+        destinoNombre = info.corta || 'Destino en el mapa';
+        destinoDetalle = info.detalle;
+        if (!inputDestino.value.trim()) inputDestino.value = [destinoNombre, destinoDetalle].filter(Boolean).join(', ');
+      }
+      calcularRuta();
+    }
+
+    function obtenerUbicacionActual(centrar) {
+      if (!('geolocation' in navigator)) { statusTextPasajero.textContent = 'Tu navegador no soporta GPS.'; return; }
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        if (centrar) map.setCenter(coords), map.setZoom(16);
+        await establecerOrigen(coords, null, null, false);
+      }, () => {
+        statusTextPasajero.textContent = 'GPS desactivado. Usa "Cambiar punto de partida" para escribir tu dirección.';
+      }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+    }
+
+    /* ============================================================
+       RUTA REAL (Google Directions) + TARIFA
+       ============================================================ */
+    function calcularRuta() {
+      if (!origen || !destino) return;
+      directionsService.route({
+        origin: origen, destination: destino,
+        travelMode: google.maps.TravelMode.DRIVING,
+        region: 'PE', language: 'es'
+      }, (res, status) => {
+        if (status === 'OK' && res.routes.length) {
+          directionsRenderer.setDirections(res);
+          const leg = res.routes[0].legs[0];
+          distanciaKm = leg.distance.value / 1000;
+          duracionMin = Math.max(2, Math.round(leg.duration.value / 60));
+          const bounds = new google.maps.LatLngBounds();
+          bounds.extend(origen); bounds.extend(destino);
+          map.fitBounds(bounds, { top:120, bottom:300, left:60, right:60 });
+        } else {
+          /* Fallback: línea recta + haversine */
+          distanciaKm = google.maps.geometry.spherical.computeDistanceBetween(
+            new google.maps.LatLng(origen), new google.maps.LatLng(destino)) / 1000;
+          duracionMin = Math.max(3, Math.round(distanciaKm * 2.6));
+        }
+        const desde = Math.min(...CATALOGO_SERVICIOS.map(s => tarifaDe(s)));
+        statusTextPasajero.innerHTML =
+          `<b style="color:var(--primary-color)">${distanciaKm.toFixed(1)} km</b> · ${duracionMin} min · desde <b>S/ ${(desde/1000).toFixed(2)}</b>`;
+        btnPedirViaje.textContent = 'Ver servicios disponibles';
+        btnPedirViaje.disabled = false;
+        mostrarPopupOrigen();
+      });
+    }
+
+    function tarifaDe(servicio){ return Math.round((servicio.base + distanciaKm * servicio.porKm) / 100) * 100; }
+    function formatoMoneda(v){ return '$' + Number(v).toLocaleString('es-CO'); }
+
+    /* ============================================================
+       AUTOCOMPLETADO (Google Places)
+       ============================================================ */
+    const SVG_PIN = `<svg class="sugerencia-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
+
+    function pieGoogle() {
+      const d = document.createElement('div');
+      d.className = 'powered-google';
+      d.innerHTML = `Powered by <b style="color:var(--primary-color)">Google</b>`;
+      return d;
+    }
+
+    function buscarSugerencias(texto, contenedor, tipo, alSeleccionar) {
+      clearTimeout(timersBusqueda[tipo]);
+      const consulta = texto.trim();
+      if (consulta.length < 3) { contenedor.innerHTML = ''; return; }
+
+      timersBusqueda[tipo] = setTimeout(() => {
+        if (!autocompleteService) return;
+        if (tipo === 'origen' && !sessionTokenOrigen) sessionTokenOrigen = new google.maps.places.AutocompleteSessionToken();
+        if (tipo === 'destino' && !sessionTokenDestino) sessionTokenDestino = new google.maps.places.AutocompleteSessionToken();
+
+        const peticion = {
+          input: consulta,
+          language: 'es',
+          sessionToken: tipo === 'origen' ? sessionTokenOrigen : sessionTokenDestino
+        };
+        /* Prioriza resultados cerca del usuario, sin bloquear otras ciudades */
+        if (origen) {
+          peticion.locationBias = new google.maps.Circle({ center: origen, radius: 40000 });
+        }
+
+        autocompleteService.getPlacePredictions(peticion, (preds, status) => {
+          contenedor.innerHTML = '';
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !preds) return;
+          preds.slice(0, 6).forEach((p) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'sugerencia-item';
+            btn.title = p.description;
+            btn.innerHTML = `${SVG_PIN}<span class="sugerencia-textos">
+                <span class="sugerencia-principal">${p.structured_formatting.main_text}</span>
+                <span class="sugerencia-detalle">${p.structured_formatting.secondary_text || ''}</span>
+              </span>`;
+            btn.addEventListener('click', () => {
+              contenedor.innerHTML = '';
+              obtenerDetallePlace(p.place_id, tipo, alSeleccionar);
+            });
+            contenedor.appendChild(btn);
+          });
+          if (preds.length) contenedor.appendChild(pieGoogle());
+        });
+      }, 260);
+    }
+
+    function obtenerDetallePlace(placeId, tipo, callback) {
+      placesService.getDetails({
+        placeId,
+        fields: ['geometry','name','formatted_address','address_components'],
+        language: 'es',
+        sessionToken: tipo === 'origen' ? sessionTokenOrigen : sessionTokenDestino
+      }, (place, status) => {
+        if (tipo === 'origen') sessionTokenOrigen = null; else sessionTokenDestino = null;
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.geometry) {
+          mostrarToast('No se pudo obtener esa dirección', '!'); return;
+        }
+        const coords = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+        callback(coords, direccionCorta(place), direccionDetalle(place), place.formatted_address);
+      });
+    }
+
+    inputDestino.addEventListener('input', () => {
+      buscarSugerencias(inputDestino.value, sugerenciasDestino, 'destino', (coords, corta, detalle, completa) => {
+        inputDestino.value = completa || [corta, detalle].filter(Boolean).join(', ');
+        establecerDestino(coords, corta, detalle, true);
+      });
+    });
+
+    inputOrigenModal.addEventListener('input', () => {
+      buscarSugerencias(inputOrigenModal.value, sugerenciasOrigen, 'origen', (coords, corta, detalle) => {
+        establecerOrigen(coords, corta, detalle, true);
+        map.setZoom(16);
+        cerrarModalOrigen();
+        mostrarToast('Punto de partida actualizado');
+      });
+    });
+
+    /* ============================================================
+       MODAL DE ORIGEN
+       ============================================================ */
+    function abrirModalOrigen() {
+      modalOrigen.classList.remove('oculto');
+      inputOrigenModal.value = '';
+      sugerenciasOrigen.innerHTML = '';
+      setTimeout(() => inputOrigenModal.focus(), 60);
+    }
+    function cerrarModalOrigen() {
+      modalOrigen.classList.add('oculto');
+      inputOrigenModal.value = '';
+      sugerenciasOrigen.innerHTML = '';
+      mostrarPopupOrigen();
+    }
+    $('btn-cerrar-modal-origen').addEventListener('click', cerrarModalOrigen);
+    $('btn-cancelar-modal-origen').addEventListener('click', cerrarModalOrigen);
+    $('btn-usar-gps').addEventListener('click', () => { obtenerUbicacionActual(true); cerrarModalOrigen(); });
+    modalOrigen.addEventListener('click', (e) => { if (e.target === modalOrigen) cerrarModalOrigen(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (!modalConfirmar.classList.contains('oculto')) { resolverConfirmacion(false); return; }
+      if (!modalPerfil.classList.contains('oculto')) { modalPerfil.classList.add('oculto'); return; }
+      if (!modalHistorial.classList.contains('oculto')) { modalHistorial.classList.add('oculto'); return; }
+      if (!menuPerfil.classList.contains('oculto')) { cerrarMenuPerfil(); return; }
+      if (!modalOrigen.classList.contains('oculto')) cerrarModalOrigen();
+      else if (panelServicios.classList.contains('visible')) cerrarPanelServicios();
+    });
+
+    /* ============================================================
+       TEMA (sol / luna)
+       ============================================================ */
+    function actualizarIconoTema() {
+      const oscuro = document.body.classList.contains('dark-mode');
+      iconMoon.classList.toggle('oculto', oscuro);
+      iconSun.classList.toggle('oculto', !oscuro);
+    }
+    actualizarIconoTema();
+    $('btn-theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      actualizarIconoTema();
+      if (map) map.setOptions({ styles: document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO });
+      setTimeout(mostrarPopupOrigen, 120);
+    });
+
+    /* ============================================================
+       TOAST
+       ============================================================ */
+    let toastTimer;
+    function mostrarToast(mensaje, icono = '✓') {
+      toastText.textContent = mensaje;
+      toast.querySelector('.toast-icon').textContent = icono;
+      toast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
+    }
+
+    /* ============================================================
+       SESIÓN (puente con la Parte 1/2 · login)
+       ============================================================ */
+    /* Evita un bucle de recarga si esta misma página se sirve con el nombre del login */
+    function esLaMismaPagina(url) {
+      const actual = (location.pathname.split('/').pop() || 'index.html');
+      return actual === url || (actual === '' && url === 'index.html');
+    }
+
+    function verificarSesionGuardada() {
+      const sesion = localStorage.getItem(LLAVE_SESION);
+      if (!sesion) {
+        if (esLaMismaPagina(LOGIN_URL)) {
+          /* Sesión de cortesía para no recargar infinitamente sobre sí misma */
+          usuarioActual = { id: PASAJERO_ID_PRUEBA, nombre: 'Invitado', tipo_usuario: 'pasajero' };
+          aplicarSesionUsuario(usuarioActual);
+          return;
+        }
+        window.location.href = LOGIN_URL; return;
+      }
+      try { usuarioActual = JSON.parse(sesion); aplicarSesionUsuario(usuarioActual); }
+      catch (e) { console.error('Error al cargar sesión:', e); window.location.href = LOGIN_URL; }
+    }
+
+    async function aplicarSesionUsuario(usuario) {
+      if (!usuario) { window.location.href = LOGIN_URL; return; }
+
+      if (usuario.foto) { fotoPerfilHeader.src = usuario.foto; perfilSuperior.classList.remove('oculto'); }
+      else { perfilSuperior.classList.remove('oculto'); fotoPerfilHeader.src = avatarPorDefecto(nombreUsuario(usuario)); }
+
+      if (usuario.tipo_usuario === 'conductor') {
+        modoActual = 'conductor';
+        actualizarChipUsuario();
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.remove('oculto');
+        await resolverServicioDelConductor();
+        cargarViajesSolicitados();
+      } else {
+        modoActual = 'pasajero';
+        actualizarChipUsuario();
+        uiConductor.classList.add('oculto');
+        uiPasajero.classList.remove('oculto');
+        if (usuario.tipo_usuario === 'comercio' && !uiPasajero.querySelector('.comercio-info')) {
+          uiPasajero.insertAdjacentHTML('afterbegin',
+            `<div class="comercio-info"><b>Comercio activo:</b> ${usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento'} · ${usuario.categoria || 'Categoría no registrada'}</div>`);
+        }
+      }
+    }
+
+    /* ============================================================
+       AÑADIDO · MENÚ FLOTANTE DEL PERFIL
+       ============================================================ */
+    function nombreUsuario(u) {
+      if (!u) return 'Usuario BIKAR';
+      const compuesto = [u.nombre || u.nombres, u.apellido || u.apellidos].filter(Boolean).join(' ').trim();
+      return compuesto || u.nombre_comercio || u.nombre_establecimiento || u.usuario || u.correo || u.email || 'Usuario BIKAR';
+    }
+    function avatarPorDefecto(nombre) {
+      const letra = (String(nombre || 'B').trim()[0] || 'B').toUpperCase();
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#134989"/><stop offset="1" stop-color="#4785A7"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Inter,Arial" font-size="46" font-weight="800" fill="#ffffff">${letra}</text></svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+    function actualizarChipUsuario() {
+      btnCambiarModo.textContent = nombreUsuario(usuarioActual);
+      btnCambiarModo.title = modoActual === 'conductor' ? 'Modo Conductor activo' : 'Modo Pasajero activo';
+      menuItemModo.lastChild.nodeValue = modoActual === 'conductor' ? ' Modo Pasajero ' : ' Modo Conductor ';
+    }
+
+    function abrirMenuPerfil() {
+      menuPerfil.classList.remove('oculto');
+      /* reinicia la animación de aparición */
+      menuPerfil.querySelectorAll('.menu-perfil-item').forEach((el) => {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = '';
+      });
+    }
+    function cerrarMenuPerfil(){ menuPerfil.classList.add('oculto'); }
+    function alternarMenuPerfil(){ menuPerfil.classList.contains('oculto') ? abrirMenuPerfil() : cerrarMenuPerfil(); }
+
+    perfilSuperior.addEventListener('click', (e) => { e.stopPropagation(); alternarMenuPerfil(); });
+    document.addEventListener('click', (e) => {
+      if (menuPerfil.classList.contains('oculto')) return;
+      if (menuPerfil.contains(e.target) || perfilSuperior.contains(e.target)) return;
+      cerrarMenuPerfil();
+    });
+
+    menuItemPerfil.addEventListener('click', () => { cerrarMenuPerfil(); abrirModalPerfil(); });
+    menuItemHistorial.addEventListener('click', () => { cerrarMenuPerfil(); abrirModalHistorial(); });
+    menuItemModo.addEventListener('click', async () => { cerrarMenuPerfil(); await alternarModo(); });
+    menuItemSalir.addEventListener('click', async () => {
+      cerrarMenuPerfil();
+      const ok = await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión');
+      if (!ok) return;
+      localStorage.removeItem(LLAVE_SESION);
+      usuarioActual = null;
+      window.location.href = LOGIN_URL;
+    });
+
+    /* ============================================================
+       AÑADIDO · CONFIRMACIÓN PROPIA (sin alerta del navegador)
+       ============================================================ */
+    let resolverConfirmacionActual = null;
+    function resolverConfirmacion(valor) {
+      modalConfirmar.classList.add('oculto');
+      if (resolverConfirmacionActual) { const r = resolverConfirmacionActual; resolverConfirmacionActual = null; r(valor); }
+    }
+    function confirmarBikar(titulo, mensaje, textoAceptar) {
+      $('confirmar-titulo').textContent = titulo;
+      $('confirmar-mensaje').textContent = mensaje;
+      $('confirmar-aceptar').textContent = textoAceptar || 'Aceptar';
+      modalConfirmar.classList.remove('oculto');
+      return new Promise((resolve) => { resolverConfirmacionActual = resolve; });
+    }
+    $('confirmar-cancelar').addEventListener('click', () => resolverConfirmacion(false));
+    $('confirmar-aceptar').addEventListener('click', () => resolverConfirmacion(true));
+    modalConfirmar.addEventListener('click', (e) => { if (e.target === modalConfirmar) resolverConfirmacion(false); });
+
+    /* ============================================================
+       AÑADIDO · MODAL DE PERFIL (datos del registro)
+       ============================================================ */
+    const ETIQUETAS_PERFIL = {
+      id:'ID', usuario:'Usuario', nombre:'Nombre', nombres:'Nombres', apellido:'Apellido', apellidos:'Apellidos',
+      correo:'Correo', email:'Correo', telefono:'Teléfono', celular:'Celular', whatsapp:'WhatsApp',
+      documento:'Documento', dni:'DNI', cedula:'Cédula', nit:'NIT', ruc:'RUC',
+      direccion:'Dirección', barrio:'Barrio', ciudad:'Ciudad', departamento:'Departamento', pais:'País',
+      fecha_nacimiento:'Fecha de nacimiento', genero:'Género', tipo_usuario:'Tipo de cuenta',
+      tipo_servicio:'Servicio', servicio:'Servicio', placa:'Placa', marca:'Marca', modelo:'Modelo',
+      color:'Color', anio:'Año', año:'Año', cilindraje:'Cilindraje', licencia:'Licencia',
+      soat:'SOAT', tecnomecanica:'Tecnomecánica', tarjeta_propiedad:'Tarjeta de propiedad',
+      nombre_comercio:'Comercio', nombre_establecimiento:'Establecimiento', categoria:'Categoría',
+      horario:'Horario', descripcion:'Descripción', estado:'Estado', verificado:'Verificado',
+      created_at:'Registro', creado_en:'Registro', fecha_registro:'Registro'
+    };
+    const CLAVES_OCULTAS = ['foto','foto_url','avatar','imagen','password','contrasena','contraseña','clave','token','pass','hash'];
+
+    function valorLegible(clave, valor) {
+      if (valor === null || valor === undefined || valor === '') return null;
+      if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
+      if (typeof valor === 'object') return null;
+      const txt = String(valor);
+      if (/^\d{4}-\d{2}-\d{2}T/.test(txt)) {
+        const f = new Date(txt);
+        if (!isNaN(f)) return f.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
+      }
+      return txt;
+    }
+
+    function tarjetaDato(label, valor, indice) {
+      const div = document.createElement('div');
+      div.className = 'perfil-dato';
+      div.style.animationDelay = (indice * 0.035) + 's';
+      const l = document.createElement('span'); l.className = 'perfil-dato-label'; l.textContent = label;
+      const v = document.createElement('span'); v.className = 'perfil-dato-valor'; v.textContent = valor;
+      div.append(l, v);
+      return div;
+    }
+
+    async function abrirModalPerfil() {
+      const u = usuarioActual || {};
+      $('perfil-foto-grande').src = u.foto || fotoPerfilHeader.src || avatarPorDefecto(nombreUsuario(u));
+      $('perfil-nombre-grande').textContent = nombreUsuario(u);
+      const rol = (u.tipo_usuario || 'pasajero');
+      $('perfil-rol-badge').textContent = rol.charAt(0).toUpperCase() + rol.slice(1);
+
+      const cont = $('perfil-datos');
+      const extra = $('perfil-extra');
+      cont.innerHTML = '';
+      extra.innerHTML = '';
+
+      let i = 0;
+      Object.keys(u).forEach((clave) => {
+        if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
+        const valor = valorLegible(clave, u[clave]);
+        if (valor === null) return;
+        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+        cont.appendChild(tarjetaDato(etiqueta, valor, i++));
+      });
+
+      if (!i) cont.innerHTML = '<div class="perfil-vacio">No hay datos guardados de tu registro.</div>';
+
+      /* Documentación del vehículo (conductores) */
+      let doc = null;
+      try { doc = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null'); } catch (e) { doc = null; }
+      if (!doc && (u.tipo_usuario === 'conductor' || modoActual === 'conductor')) {
+        try {
+          let consulta = supabaseClient.from('documentos_conductor').select('*').limit(1);
+          consulta = u.conductor_id ? consulta.eq('conductor_id', u.conductor_id) : consulta.eq('usuario_id', u.id || u.Id);
+          const { data, error } = await consulta;
+          if (!error && data && data.length) doc = data[0];
+        } catch (e) { console.warn('No se pudo leer documentos_conductor:', e); }
+      }
+
+      if (doc && typeof doc === 'object') {
+        const titulo = document.createElement('div');
+        titulo.className = 'perfil-seccion-titulo';
+        titulo.textContent = 'Documentación del vehículo';
+        const grid = document.createElement('div');
+        grid.className = 'perfil-datos';
+        let j = 0;
+        Object.keys(doc).forEach((clave) => {
+          if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
+          const valor = valorLegible(clave, doc[clave]);
+          if (valor === null) return;
+          const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+          grid.appendChild(tarjetaDato(etiqueta, valor, j++));
+        });
+        if (j) { extra.append(titulo, grid); }
+      }
+
+      modalPerfil.classList.remove('oculto');
+    }
+    $('cerrar-modal-perfil').addEventListener('click', () => modalPerfil.classList.add('oculto'));
+    modalPerfil.addEventListener('click', (e) => { if (e.target === modalPerfil) modalPerfil.classList.add('oculto'); });
+
+    /* ============================================================
+       AÑADIDO · HISTORIAL DE SERVICIOS Y PAGOS
+       ============================================================ */
+    let vistaHistorial = 'servicios';      /* 'servicios' | 'pagos' */
+    let historialViajes = [];
+    let historialCargando = false;
+
+    function fechaDeViaje(v) {
+      const f = v.created_at || v.creado_en || v.fecha || v.fecha_creacion || v.fecha_solicitud;
+      if (!f) return null;
+      const d = new Date(f);
+      return isNaN(d) ? null : d;
+    }
+    function textoFecha(d) {
+      if (!d) return 'Sin fecha';
+      return d.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }) + ' · ' +
+             d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+    }
+    function dentroDePeriodo(d, periodo) {
+      if (periodo === 'todo') return true;
+      if (!d) return true;                       /* si no hay fecha, se muestra siempre */
+      const ahora = new Date();
+      if (periodo === 'hoy') return d.toDateString() === ahora.toDateString();
+      if (periodo === 'semana') return (ahora - d) <= 7 * 24 * 3600 * 1000;
+      if (periodo === 'mes') return d.getMonth() === ahora.getMonth() && d.getFullYear() === ahora.getFullYear();
       return true;
     }
+    function viajesFiltrados() {
+      const p = filtroPeriodo.value;
+      return historialViajes.filter(v => dentroDePeriodo(fechaDeViaje(v), p));
+    }
 
-    /* Conecta cada casilla de documento (subir, vista previa y quitar) */
-    formDocumentacion.querySelectorAll('.doc-item').forEach((item) => {
-      const clave = item.dataset.doc;
-      const input = item.querySelector('input[type="file"]');
-      const texto = item.querySelector('.doc-drop-text');
-      const textoOriginal = texto.innerText;
-      const preview = item.querySelector('.doc-preview');
-      const previewImg = item.querySelector('.doc-preview-img');
-      const previewPdf = item.querySelector('.doc-preview-pdf');
-      const previewNombre = item.querySelector('.doc-preview-nombre');
+    async function cargarHistorial() {
+      historialCargando = true;
+      historialContenido.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
+        <div class="loading-pulse" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
+        Cargando tu historial…</div>`;
 
-      const limpiar = () => {
-        input.value = '';
-        delete documentacionVehiculo.archivos[clave];
-        item.classList.remove('cargado');
-        texto.innerText = textoOriginal;
-        preview.classList.add('oculto');
-        previewImg.removeAttribute('src');
-        actualizarContadorDocumentos();
-      };
+      const u = usuarioActual || {};
+      const esConductor = modoActual === 'conductor' || u.tipo_usuario === 'conductor';
+      const idUsuario = esConductor
+        ? (u.conductor_id || u.id || u.Id || CONDUCTOR_ID_PRUEBA)
+        : (u.id || u.Id || PASAJERO_ID_PRUEBA);
 
-      input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const valido = procesarArchivoDocumento(file, (archivo) => {
-          documentacionVehiculo.archivos[clave] = archivo;
-          item.classList.add('cargado');
-          texto.innerText = 'Cambiar archivo';
-          previewNombre.innerText = archivo.nombre;
-          if (archivo.tipo === 'imagen') previewImg.src = archivo.data; else previewImg.removeAttribute('src');
-          previewImg.classList.toggle('oculto', archivo.tipo !== 'imagen');
-          previewPdf.classList.toggle('oculto', archivo.tipo !== 'pdf');
-          preview.classList.remove('oculto');
-          actualizarContadorDocumentos();
+      try {
+        let consulta = supabaseClient.from('viajes').select('*').order('id', { ascending:false }).limit(200);
+        consulta = esConductor ? consulta.eq('conductor_id', idUsuario) : consulta.eq('pasajero_id', idUsuario);
+        const { data, error } = await consulta;
+        if (error) throw error;
+        historialViajes = data || [];
+      } catch (e) {
+        historialViajes = [];
+        historialContenido.innerHTML = `<div class="perfil-vacio">No se pudo cargar el historial.<br><small>${(e && e.message) || ''}</small></div>`;
+        historialCargando = false;
+        return;
+      }
+      historialCargando = false;
+      renderizarHistorial();
+    }
+
+    function renderizarHistorial() {
+      if (historialCargando) return;
+      const esConductor = modoActual === 'conductor' || (usuarioActual && usuarioActual.tipo_usuario === 'conductor');
+      tabPagos.textContent = esConductor ? 'Mis ingresos' : 'Mis pagos';
+      const lista = viajesFiltrados();
+
+      if (vistaHistorial === 'servicios') {
+        if (!lista.length) {
+          historialContenido.innerHTML = `<div class="perfil-vacio">No hay servicios en el periodo seleccionado.</div>`;
+          return;
+        }
+        const cont = document.createElement('div');
+        cont.className = 'historial-lista';
+        lista.forEach((v, i) => {
+          const clave = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) || 'default';
+          const estado = String(v.estado || 'solicitado').toLowerCase();
+          const card = document.createElement('div');
+          card.className = 'historial-card';
+          card.style.animationDelay = (i * 0.04) + 's';
+          card.innerHTML = `
+            <div class="historial-card-top">
+              <span class="historial-servicio">${iconoServicio(clave)} ${v.tipo_servicio || v.nombre_servicio || 'Servicio'}</span>
+              <span class="historial-precio">${formatoMoneda(v.tarifa || 0)}</span>
+            </div>
+            <div class="historial-ruta"><span>A ·</span> ${v.origen_nombre || 'Origen'}</div>
+            <div class="historial-ruta"><span>B ·</span> ${v.destino_nombre || 'Destino'}</div>
+            <div class="historial-pie">
+              <span class="historial-fecha">${textoFecha(fechaDeViaje(v))}${v.distancia_km ? ' · ' + v.distancia_km + ' km' : ''}</span>
+              <span class="estado-chip ${estado}">${estado}</span>
+            </div>`;
+          cont.appendChild(card);
         });
-        if (!valido) limpiar();
-      });
+        historialContenido.innerHTML = '';
+        historialContenido.appendChild(cont);
+        return;
+      }
 
-      item.querySelector('.doc-quitar').addEventListener('click', () => { limpiar(); marcarDocumentacionPendiente(); });
+      /* ---- Vista de pagos / ingresos ---- */
+      const total = lista.reduce((acc, v) => acc + Number(v.tarifa || 0), 0);
+      const cantidad = lista.length;
+      const promedio = cantidad ? Math.round(total / cantidad) : 0;
+
+      const wrap = document.createElement('div');
+      const kpis = document.createElement('div');
+      kpis.className = 'pagos-resumen';
+      kpis.innerHTML = `
+        <div class="pago-kpi" style="animation-delay:.02s"><span class="pago-kpi-label">${esConductor ? 'Ganado' : 'Pagado'}</span><span class="pago-kpi-valor">${formatoMoneda(total)}</span></div>
+        <div class="pago-kpi" style="animation-delay:.08s"><span class="pago-kpi-label">Servicios</span><span class="pago-kpi-valor">${cantidad}</span></div>
+        <div class="pago-kpi" style="animation-delay:.14s"><span class="pago-kpi-label">Promedio</span><span class="pago-kpi-valor">${formatoMoneda(promedio)}</span></div>`;
+      wrap.appendChild(kpis);
+
+      if (!cantidad) {
+        wrap.insertAdjacentHTML('beforeend', `<div class="perfil-vacio">Sin movimientos en el periodo seleccionado.</div>`);
+      } else {
+        const filas = document.createElement('div');
+        filas.className = 'historial-lista';
+        lista.forEach((v, i) => {
+          const fila = document.createElement('div');
+          fila.className = 'pago-fila';
+          fila.style.animationDelay = (i * 0.035) + 's';
+          fila.innerHTML = `
+            <div class="pago-fila-info">
+              <div class="pago-fila-tit">${v.tipo_servicio || v.nombre_servicio || 'Servicio'} · #${v.id ?? '—'}</div>
+              <div class="pago-fila-sub">${textoFecha(fechaDeViaje(v))} · ${String(v.estado || 'solicitado')}</div>
+            </div>
+            <div class="pago-fila-valor">${esConductor ? '+' : '-'} ${formatoMoneda(v.tarifa || 0)}</div>`;
+          filas.appendChild(fila);
+        });
+        wrap.appendChild(filas);
+      }
+
+      historialContenido.innerHTML = '';
+      historialContenido.appendChild(wrap);
+    }
+
+    function descargarHistorial() {
+      const lista = viajesFiltrados();
+      if (!lista.length) { mostrarToast('No hay datos para descargar', '!'); return; }
+      const columnas = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa','estado','fecha'];
+      const filas = lista.map((v) => [
+        v.id ?? '', v.tipo_servicio || v.nombre_servicio || '', v.origen_nombre || '', v.destino_nombre || '',
+        v.distancia_km ?? '', v.tarifa ?? '', v.estado || '', textoFecha(fechaDeViaje(v))
+      ]);
+      const escapar = (c) => '"' + String(c).replace(/"/g, '""') + '"';
+      const csv = '\uFEFF' + [columnas, ...filas].map(f => f.map(escapar).join(';')).join('\r\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bikar_${vistaHistorial}_${filtroPeriodo.value}_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1200);
+      mostrarToast('Archivo descargado');
+    }
+
+    function abrirModalHistorial() {
+      vistaHistorial = 'servicios';
+      tabServicios.classList.add('activo');
+      tabPagos.classList.remove('activo');
+      modalHistorial.classList.remove('oculto');
+      cargarHistorial();
+    }
+    $('cerrar-modal-historial').addEventListener('click', () => modalHistorial.classList.add('oculto'));
+    modalHistorial.addEventListener('click', (e) => { if (e.target === modalHistorial) modalHistorial.classList.add('oculto'); });
+    tabServicios.addEventListener('click', () => {
+      vistaHistorial = 'servicios';
+      tabServicios.classList.add('activo'); tabPagos.classList.remove('activo');
+      renderizarHistorial();
+    });
+    tabPagos.addEventListener('click', () => {
+      vistaHistorial = 'pagos';
+      tabPagos.classList.add('activo'); tabServicios.classList.remove('activo');
+      renderizarHistorial();
+    });
+    filtroPeriodo.addEventListener('change', renderizarHistorial);
+    $('btn-descargar-historial').addEventListener('click', descargarHistorial);
+
+    perfilSuperior.title = 'Toca para ver tu menú';
+
+    /* ============================================================
+       TIPO DE SERVICIO DEL CONDUCTOR
+       (leído de 'documentos_conductor' creado en el registro)
+       ============================================================ */
+    async function resolverServicioDelConductor() {
+      claveServicioConductor = null;
+
+      /* 1) En la sesión */
+      let bruto = usuarioActual?.tipo_servicio || usuarioActual?.servicio || null;
+
+      /* 2) En el respaldo local que dejó el formulario de registro */
+      if (!bruto) {
+        try {
+          const doc = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null');
+          if (doc && doc.tipo_servicio) bruto = doc.tipo_servicio;
+        } catch (e) {}
+      }
+
+      /* 3) En Supabase: tabla documentos_conductor */
+      if (!bruto) {
+        const usuarioId = usuarioActual?.id || usuarioActual?.Id;
+        const conductorId = usuarioActual?.conductor_id;
+        try {
+          let consulta = supabaseClient.from('documentos_conductor').select('tipo_servicio').limit(1);
+          consulta = conductorId ? consulta.eq('conductor_id', conductorId) : consulta.eq('usuario_id', usuarioId);
+          const { data, error } = await consulta;
+          if (!error && data && data.length) bruto = data[0].tipo_servicio;
+        } catch (e) { console.warn('No se pudo leer documentos_conductor:', e); }
+      }
+
+      claveServicioConductor = normalizarClaveServicio(bruto);
+      if (claveServicioConductor && usuarioActual) {
+        usuarioActual.tipo_servicio = etiquetaServicio(claveServicioConductor);
+        try { localStorage.setItem(LLAVE_SESION, JSON.stringify(usuarioActual)); } catch (e) {}
+      }
+    }
+
+    /* ============================================================
+       CAMBIO DE MODO (ahora se dispara desde el menú de perfil)
+       ============================================================ */
+    async function alternarModo() {
+      if (modoActual === 'pasajero') {
+        modoActual = 'conductor';
+        actualizarChipUsuario();
+        uiPasajero.classList.add('oculto');
+        uiConductor.classList.remove('oculto');
+        cerrarPanelServicios();
+        if (claveServicioConductor === null) await resolverServicioDelConductor();
+        cargarViajesSolicitados();
+      } else {
+        modoActual = 'pasajero';
+        actualizarChipUsuario();
+        uiConductor.classList.add('oculto');
+        uiPasajero.classList.remove('oculto');
+      }
+    }
+
+    /* ============================================================
+       PANEL DE SERVICIOS (pasajero)
+       ============================================================ */
+    btnPedirViaje.addEventListener('click', () => {
+      if (!origen || !destino) { mostrarToast('Selecciona origen y destino', '!'); return; }
+      abrirPanelServicios();
     });
 
-    /* Guardar documentación: valida todo y regresa al registro */
-    formDocumentacion.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const camposTexto = [
-        ['doc-tipo-servicio', 'Selecciona el tipo de servicio.'],
-        ['doc-marca', 'Ingresa la marca del vehículo.'],
-        ['reg-vehiculo', 'Ingresa el modelo del vehículo.'],
-        ['doc-anio', 'Ingresa el año del vehículo.'],
-        ['reg-placa', 'Ingresa la placa del vehículo.']
-      ];
-      for (const [id, mensaje] of camposTexto) {
-        const campo = $(id);
-        if (!campo.value.trim()) { mostrarAlerta(mensaje); campo.focus(); return; }
-      }
-      const anio = parseInt(docAnio.value, 10);
-      const anioActual = new Date().getFullYear();
-      if (isNaN(anio) || anio < 1950 || anio > anioActual + 1) { mostrarAlerta('Ingresa un año de vehículo válido.'); docAnio.focus(); return; }
-      for (const [clave, nombre] of listaDocumentosRequeridos()) {
-        if (!documentacionVehiculo.archivos[clave]) {
-          mostrarAlerta(`Falta adjuntar: ${nombre}.`);
-          const item = formDocumentacion.querySelector(`.doc-item[data-doc="${clave}"]`);
-          if (item) item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
+    async function abrirPanelServicios() {
+      resumenOrigen.childNodes[0].nodeValue = origenNombre || 'Ubicación actual';
+      resumenOrigenSub.textContent = origenDetalle || '';
+      resumenDestino.childNodes[0].nodeValue = destinoNombre || 'Destino seleccionado';
+      resumenDestinoSub.textContent = destinoDetalle || '';
+      resumenDistancia.textContent = `${distanciaKm.toFixed(1)} km`;
+      resumenDuracion.textContent = `${duracionMin} min`;
+
+      panelServicios.classList.remove('oculto','cerrando');
+      backdropServicios.classList.remove('oculto');
+      void panelServicios.offsetWidth;
+      panelServicios.classList.add('visible');
+      backdropServicios.classList.add('visible');
+      panelServicios.setAttribute('aria-hidden','false');
+
+      await cargarServiciosDisponibles();
+    }
+
+    function cerrarPanelServicios() {
+      if (!panelServicios.classList.contains('visible')) return;
+      panelServicios.classList.remove('visible');
+      panelServicios.classList.add('cerrando');
+      backdropServicios.classList.remove('visible');
+      setTimeout(() => {
+        panelServicios.classList.remove('cerrando');
+        panelServicios.setAttribute('aria-hidden','true');
+      }, 420);
+      servicioSeleccionado = null;
+      btnConfirmarServicio.disabled = true;
+      btnConfirmarServicio.textContent = 'Selecciona un servicio';
+    }
+    $('btn-cerrar-servicios').addEventListener('click', cerrarPanelServicios);
+    backdropServicios.addEventListener('click', cerrarPanelServicios);
+
+    /* Consulta qué tipos de servicio tienen conductores registrados */
+    async function cargarServiciosDisponibles() {
+      serviciosLista.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
+        <div class="loading-pulse" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
+        Buscando conductores disponibles…</div>`;
+
+      const conteo = {};
+      try {
+        const { data, error } = await supabaseClient.from('documentos_conductor').select('tipo_servicio');
+        if (!error && data) {
+          data.forEach((fila) => {
+            const clave = normalizarClaveServicio(fila.tipo_servicio);
+            if (clave) conteo[clave] = (conteo[clave] || 0) + 1;
+          });
         }
+      } catch (e) { console.warn('No se pudo consultar documentos_conductor:', e); }
+
+      /* Si hay conductores registrados solo mostramos esos servicios; si no, todo el catálogo */
+      const hayDatos = Object.keys(conteo).length > 0;
+      const disponibles = hayDatos
+        ? CATALOGO_SERVICIOS.filter(s => conteo[s.clave])
+        : CATALOGO_SERVICIOS;
+
+      serviciosLista.innerHTML = '';
+      servicioSeleccionado = null;
+      btnConfirmarServicio.disabled = true;
+      btnConfirmarServicio.textContent = 'Selecciona un servicio';
+
+      if (!disponibles.length) {
+        serviciosLista.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
+          No hay conductores disponibles en este momento.</div>`;
+        return;
       }
-      documentacionVehiculo.tipo_servicio = $('doc-tipo-servicio').value;
-      documentacionVehiculo.marca = $('doc-marca').value.trim();
-      documentacionVehiculo.modelo = $('reg-vehiculo').value.trim();
-      documentacionVehiculo.anio = anio;
-      documentacionVehiculo.placa = $('reg-placa').value.trim();
-      documentacionVehiculo.requiere_revision_tecnica = requiereRevisionTecnica();
-      marcarDocumentacionCompleta();
-      cerrarModalDocumentacion();
-      mostrarAlerta('Documentación del vehículo guardada.');
+
+      disponibles.forEach((servicio) => {
+        const tarifa = tarifaDe(servicio);
+        const n = conteo[servicio.clave] || 0;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'servicio-card';
+        card.dataset.clave = servicio.clave;
+        card.innerHTML = `
+          <div class="servicio-icono">${iconoServicio(servicio.clave)}</div>
+          <div class="servicio-info">
+            <div class="servicio-nombre">${servicio.etiqueta}</div>
+            <div class="servicio-desc">${servicio.desc}</div>
+            <div>
+              <span class="servicio-tiempo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                ${servicio.espera}
+              </span>
+              ${n ? `<span class="servicio-conductores">● ${n} disponible${n>1?'s':''}</span>` : ''}
+            </div>
+          </div>
+          <div class="servicio-precio">
+            <div class="servicio-precio-valor">${formatoMoneda(tarifa)}</div>
+            <div class="servicio-precio-etiqueta">Tarifa</div>
+          </div>`;
+        card.addEventListener('click', () => {
+          serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
+          card.classList.add('seleccionado');
+          servicioSeleccionado = { ...servicio, tarifa };
+          btnConfirmarServicio.disabled = false;
+          btnConfirmarServicio.textContent = `Confirmar ${servicio.etiqueta} · ${formatoMoneda(tarifa)}`;
+        });
+        serviciosLista.appendChild(card);
+      });
+    }
+
+    btnConfirmarServicio.addEventListener('click', async () => {
+      if (!servicioSeleccionado) return;
+      btnConfirmarServicio.disabled = true;
+      btnConfirmarServicio.textContent = 'Solicitando…';
+      await solicitarViaje(servicioSeleccionado);
     });
 
-    /* Guarda la documentación tras crear al conductor (no interrumpe el registro si falla) */
-    async function guardarDocumentacionConductor(usuarioId, conductorId) {
-      const archivos = documentacionVehiculo.archivos;
+    /* ============================================================
+       SOLICITAR VIAJE
+       ============================================================ */
+    async function solicitarViaje(servicio) {
+      const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
       const registro = {
-        usuario_id: usuarioId,
-        conductor_id: conductorId,
-        tipo_servicio: documentacionVehiculo.tipo_servicio || null,
-        marca: documentacionVehiculo.marca || null,
-        modelo: documentacionVehiculo.modelo || null,
-        anio: documentacionVehiculo.anio || null,
-        placa: documentacionVehiculo.placa || null,
-        requiere_revision_tecnica: !!documentacionVehiculo.requiere_revision_tecnica,
-        dni_ce: archivos.dni_ce?.data || null,
-        antecedente_policial: archivos.antecedente_policial?.data || null,
-        brevete: archivos.brevete?.data || null,
-        foto_vehiculo: archivos.foto_vehiculo?.data || null,
-        tarjeta_propiedad: archivos.tarjeta_propiedad?.data || null,
-        revision_tecnica: archivos.revision_tecnica?.data || null
+        pasajero_id: pasajeroId,
+        origen_lat: origen.lat, origen_lon: origen.lng,
+        destino_lat: destino.lat, destino_lon: destino.lng,
+        origen_nombre: [origenNombre, origenDetalle].filter(Boolean).join(', '),
+        destino_nombre: [destinoNombre, destinoDetalle].filter(Boolean).join(', '),
+        tipo_servicio: servicio.etiqueta,       /* guarda la etiqueta del registro: "Taxi Auto", etc. */
+        nombre_servicio: servicio.etiqueta,
+        tarifa: servicio.tarifa,
+        distancia_km: Math.round(distanciaKm * 10) / 10,
+        estado: 'solicitado'
       };
-      try {
-        const resumen = { ...registro };
-        ['dni_ce', 'antecedente_policial', 'brevete', 'foto_vehiculo', 'tarjeta_propiedad', 'revision_tecnica']
-          .forEach((clave) => { resumen[clave] = archivos[clave] ? archivos[clave].nombre : null; });
-        localStorage.setItem(LLAVE_DOCUMENTACION, JSON.stringify(resumen));
-      } catch (errStorage) { console.warn("No se pudo guardar el resumen de la documentación:", errStorage); }
-      try {
-        const { error } = await supabaseClient.from('documentos_conductor').insert([registro]);
-        if (error) console.warn("No se pudo guardar la documentación en Supabase (tabla 'documentos_conductor'):", error.message);
-      } catch (err) { console.warn("Error al guardar la documentación del vehículo:", err); }
-    }
 
-    actualizarContadorDocumentos();
+      const { data, error } = await supabaseClient.from('viajes').insert([registro]).select();
 
-    /* ================= INICIO DE SESIÓN ================= */
-    formLogin.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const dni = loginDni.value.trim();
-      const pwd = loginPassword.value;
-
-      btnLogin.disabled = true;
-      btnLogin.innerText = "Verificando...";
-
-      try {
-        const { data: usuarios, error: errUsuario } = await supabaseClient
-          .from('usuarios')
-          .select('*')
-          .or(`numero_documento.eq.${dni},email.eq.${dni}`)
-          .limit(1);
-
-        if (errUsuario) { alert("Error al buscar el usuario: " + errUsuario.message); return; }
-        if (!usuarios || usuarios.length === 0) { alert("No se encontró usuario con ese documento o correo."); return; }
-
-        const usuario = usuarios[0];
-
-        if (usuario.tipo_usuario && rolSeleccionado && usuario.tipo_usuario !== rolSeleccionado) {
-          alert("No existe una cuenta con ese documento para este rol.");
-          return;
-        }
-        if (!usuario.email) { alert("Esta cuenta no tiene un correo asociado."); return; }
-
-        const { error: errAuth } = await supabaseClient.auth.signInWithPassword({ email: usuario.email, password: pwd });
-        if (errAuth) { alert("Contraseña incorrecta o error de acceso: " + errAuth.message); return; }
-
-        if (usuario.tipo_usuario === 'conductor' && !usuario.conductor_id) {
-          const { data: cond } = await supabaseClient
-            .from('conductores').select('id').eq('usuario_id', usuario.id || usuario.Id).limit(1);
-          if (cond && cond.length > 0) usuario.conductor_id = cond[0].id;
-        }
-
-        usuarioActual = usuario;
-        guardarSesion(usuario);
-        modalLogin.classList.add('oculto');
-        mostrarAlerta(`¡Bienvenido de nuevo, ${usuario.nombre || 'Usuario'}!`);
-        irAlApp();
-      } catch (err) {
-        console.error(err);
-        alert("Ocurrió un error al iniciar sesión: " + err.message);
-      } finally {
-        btnLogin.disabled = false;
-        btnLogin.innerText = "Iniciar sesión";
-      }
-    });
-
-    /* ================= REGISTRO ================= */
-    formRegistro.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btnGuardar = $('btn-guardar-registro');
-      const regEmail = $('reg-email');
-      const regPassword = $('reg-password');
-      const regPasswordConfirm = $('reg-password-confirm');
-      const regTipoDoc = $('reg-tipo-doc');
-      const regNumDoc = $('reg-num-doc');
-
-      if (regPassword.value !== regPasswordConfirm.value) { alert("Las contraseñas no coinciden."); return; }
-
-      /* NUEVO: el conductor debe completar la documentación del vehículo antes de registrarse */
-      if (rolSeleccionado === 'conductor' && !documentacionVehiculo.completa) {
-        mostrarAlerta("Completa la documentación para el vehículo antes de continuar.");
-        abrirModalDocumentacion();
+      if (error) {
+        mostrarToast('Error: ' + error.message, '!');
+        btnConfirmarServicio.disabled = false;
+        btnConfirmarServicio.textContent = `Confirmar ${servicio.etiqueta} · ${formatoMoneda(servicio.tarifa)}`;
         return;
       }
 
-      btnGuardar.disabled = true;
-      btnGuardar.innerText = "Guardando...";
+      mostrarToast(`${servicio.etiqueta} solicitado`);
+      cerrarPanelServicios();
+      statusTextPasajero.innerHTML = `¡Viaje <b style="color:var(--primary-color)">${servicio.etiqueta}</b> solicitado! Buscando conductor…`;
+      btnPedirViaje.disabled = true;
+      btnPedirViaje.textContent = 'Solicitud enviada';
+    }
 
-      const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-        email: regEmail.value.trim(),
-        password: regPassword.value
+    /* ============================================================
+       PANEL CONDUCTOR · SOLICITUDES Y ACEPTACIÓN DE VIAJES
+       ============================================================ */
+    async function cargarViajesSolicitados() {
+      if (modoActual !== 'conductor') return;
+      contenedorSolicitudes.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted-text)">
+        <div class="loading-pulse" style="justify-content:center;margin-bottom:8px"><span></span><span></span><span></span></div>
+        Cargando viajes pendientes…</div>`;
+
+      const { data, error } = await supabaseClient
+        .from('viajes')
+        .select('*')
+        .eq('estado', 'solicitado')
+        .order('id', { ascending: false });
+
+      if (error) {
+        statusTextConductor.textContent = 'Error al cargar viajes: ' + error.message;
+        contenedorSolicitudes.innerHTML = '';
+        return;
+      }
+
+      let viajes = data || [];
+      if (claveServicioConductor) {
+        viajes = viajes.filter(v => {
+          const claveViaje = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio);
+          return claveViaje === claveServicioConductor;
+        });
+      }
+
+      if (viajes.length === 0) {
+        statusTextConductor.textContent = 'No hay solicitudes pendientes en este momento.';
+        contenedorSolicitudes.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted-text);font-size:.85rem">
+          Esperando nuevas solicitudes para ${claveServicioConductor ? etiquetaServicio(claveServicioConductor) : 'tu categoría'}...
+        </div>`;
+        return;
+      }
+
+      statusTextConductor.textContent = `${viajes.length} viaje(s) disponible(s) para ti`;
+      contenedorSolicitudes.innerHTML = '';
+
+      viajes.forEach((viaje) => {
+        const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
+        const card = document.createElement('div');
+        card.className = 'tarjeta-viaje';
+        card.innerHTML = `
+          <div class="viaje-header">
+            <span class="viaje-tipo-badge">${iconoServicio(clave)} ${viaje.tipo_servicio || 'Servicio'}</span>
+            <div class="viaje-precio-badge">${formatoMoneda(viaje.tarifa || 0)}<small>TARIFA</small></div>
+          </div>
+          <div class="viaje-ruta">
+            <div class="viaje-punto">
+              <span class="viaje-punto-dot origen">A</span>
+              <div class="viaje-punto-text">${viaje.origen_nombre || 'Origen'}<span class="viaje-punto-sub">Punto de recojo</span></div>
+            </div>
+            <div class="viaje-linea-conector"></div>
+            <div class="viaje-punto">
+              <span class="viaje-punto-dot destino">B</span>
+              <div class="viaje-punto-text">${viaje.destino_nombre || 'Destino'}<span class="viaje-punto-sub">Punto de entrega</span></div>
+            </div>
+          </div>
+          <div class="viaje-footer">
+            <span class="viaje-distancia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              ${viaje.distancia_km ? viaje.distancia_km + ' km' : 'Distancia N/D'}
+            </span>
+            <div class="viaje-cta">
+              <button type="button" class="btn-main btn-aceptar-viaje" data-id="${viaje.id}">Aceptar Viaje</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
+        contenedorSolicitudes.appendChild(card);
       });
+    }
 
-      if (authError) {
-        alert("Error al crear la cuenta: " + authError.message);
-        btnGuardar.disabled = false;
-        btnGuardar.innerText = "Guardar y Continuar";
+    async function aceptarViaje(viaje) {
+      const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+
+      const { error } = await supabaseClient
+        .from('viajes')
+        .update({
+          estado: 'aceptado',
+          conductor_id: conductorId
+        })
+        .eq('id', viaje.id);
+
+      if (error) {
+        mostrarToast('Error al aceptar viaje: ' + error.message, '!');
         return;
       }
 
-      const datosUsuario = {
-        nombre: $('reg-nombre').value,
-        auth_user_id: authData.user.id,
-        telefono: $('reg-telefono').value,
-        email: regEmail ? regEmail.value : '',
-        tipo_documento: regTipoDoc ? regTipoDoc.value : 'DNI',
-        numero_documento: regNumDoc ? regNumDoc.value : '',
-        tipo_usuario: rolSeleccionado,
-        foto: fotoBase64
-      };
+      mostrarToast('¡Viaje aceptado con éxito!');
+      cargarViajesSolicitados();
+    }
 
-      const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
-        .from('usuarios').insert([datosUsuario]).select();
+    /* ============================================================
+       SINCRONIZACIÓN EN TIEMPO REAL (Supabase Realtime)
+       ============================================================ */
+    function suscribirRealtime() {
+      supabaseClient
+        .channel('public:viajes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'viajes' }, () => {
+          if (modoActual === 'conductor') {
+            cargarViajesSolicitados();
+          }
+          if (!modalHistorial.classList.contains('oculto')) {
+            cargarHistorial();
+          }
+        })
+        .subscribe();
+    }
 
-      if (errorUsuario) {
-        alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
-        btnGuardar.disabled = false;
-        btnGuardar.innerText = "Guardar y Continuar";
-        return;
-      }
-
-      const usuarioCreado = usuarioInsertado[0];
-      const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
-
-      if (rolSeleccionado === 'conductor') {
-        const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
-        const vehiculoPlaca = document.getElementById('reg-placa')?.value;
-
-        const { data: conductorInsertado, error: errCond } = await supabaseClient
-          .from('conductores').insert([{ usuario_id: nuevoUsuarioId }]).select();
-
-        if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
-          const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
-          usuarioCreado.conductor_id = conductorId;
-          await supabaseClient.from('vehiculos').insert([{ conductor_id: conductorId, modelo: vehiculoModelo, placa: vehiculoPlaca }]);
-          /* NUEVO: guarda la documentación del vehículo (no interrumpe el registro si falla) */
-          await guardarDocumentacionConductor(nuevoUsuarioId, conductorId);
-        }
-      }
-
-      usuarioActual = usuarioCreado;
-      guardarSesion(usuarioCreado);
-      btnGuardar.disabled = false;
-      btnGuardar.innerText = "Guardar y Continuar";
-      mostrarAlerta(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
-      irAlApp();
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarGoogleMaps();
+      suscribirRealtime();
     });
-
-    function mostrarAlerta(mensaje) {
-  const alerta = document.createElement('div');
-
-  alerta.textContent = mensaje;
-
-  Object.assign(alerta.style, {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex: '9999',
-    width: '85%',
-    maxWidth: '320px',
-    padding: '20px',
-    background: 'rgba(20,20,20,.88)',
-    color: '#fff',
-    border: '1px solid rgba(71,133,167,.5)',
-    borderRadius: '18px',
-    backdropFilter: 'blur(18px)',
-    WebkitBackdropFilter: 'blur(18px)',
-    boxShadow: '0 20px 50px rgba(0,0,0,.45)',
-    textAlign: 'center',
-    fontSize: '15px',
-    fontWeight: '600'
-  });
-
-  document.body.appendChild(alerta);
-
-  setTimeout(() => {
-    alerta.remove();
-  }, 1800);
-}
-    
-    /* ================= PUENTE ENTRE PÁGINAS ================= */
-    function guardarSesion(usuario) {
-      try { localStorage.setItem(LLAVE_SESION, JSON.stringify(usuario)); }
-      catch (errStorage) { console.warn("No se pudo guardar la sesión en el navegador:", errStorage); }
-    }
-
-    function irAlApp() {
-      setTimeout(() => { window.location.href = APP_URL; }, 400);
-    }
-
-    /* Si ya hay sesión activa, entra directo a la app */
-    (function verificarSesionGuardada() {
-      const sesionGuardada = localStorage.getItem(LLAVE_SESION);
-      if (!sesionGuardada) return;
-      try {
-        usuarioActual = JSON.parse(sesionGuardada);
-        if (usuarioActual) irAlApp();
-      } catch (e) { console.error("Error al cargar sesión:", e); }
-    })();
   </script>
 </body>
 </html>
