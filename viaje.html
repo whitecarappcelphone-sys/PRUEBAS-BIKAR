@@ -3,407 +3,687 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d1117">
   <title>BIKAR · Estado del Viaje</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --bg-color: #f4f6f9;
-      --card-bg: #ffffff;
-      --text-color: #1f2937;
-      --muted-text: #6b7280;
-      --primary-color: #134989;
-      --primary-hover: #275c98;
-      --border-color: #e5e7eb;
-      --accent-green: #10b981;
-      --accent-amber: #f59e0b;
-      --accent-blue: #3b82f6;
-      --shadow: 0 10px 30px -5px rgba(0,0,0,0.08);
-      --radius: 18px;
+    :root{
+      --bg-color:#f4f6f9; --card-bg:#ffffff; --text-color:#1f2937; --muted-text:#6b7280;
+      --primary-color:#134989; --primary-hover:#275c98; --brand:#4785A7; --border-color:#e5e7eb;
+      --accent-green:#10b981; --accent-amber:#f59e0b; --accent-blue:#3b82f6; --accent-red:#ef4444;
+      --field-bg:rgba(19,73,137,.05);
+      --shadow:0 10px 30px -5px rgba(0,0,0,.08); --radius:18px;
     }
-
-    body.dark-theme {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --text-color: #f0f6fc;
-      --muted-text: #8b949e;
-      --border-color: #30363d;
-      --shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+    body.dark-theme{
+      --bg-color:#0d1117; --card-bg:#161b22; --text-color:#f0f6fc; --muted-text:#8b949e;
+      --border-color:#30363d; --field-bg:rgba(71,133,167,.12);
+      --shadow:0 10px 30px -5px rgba(0,0,0,.5);
     }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    body{background:var(--bg-color);color:var(--text-color);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--card-bg);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:10}
+    .brand{font-size:1.2rem;font-weight:800;color:var(--primary-color);display:flex;align-items:center;gap:8px;text-decoration:none}
+    .brand small{display:block;font-size:.55rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--brand)}
+    .header-acciones{display:flex;align-items:center;gap:8px}
+    .btn-icon{background:transparent;border:1px solid var(--border-color);color:var(--text-color);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:all .2s}
+    .btn-icon:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+    .btn-icon svg{width:18px;height:18px}
 
-    header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
-    .brand { font-size: 1.25rem; font-weight: 800; color: var(--primary-color); display: flex; align-items: center; gap: 8px; text-decoration: none; }
-    .btn-icon { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+    main{flex:1;max-width:600px;width:100%;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+    .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow)}
+    .card-title{font-size:.8rem;text-transform:uppercase;color:var(--muted-text);font-weight:700;letter-spacing:.5px;margin-bottom:14px}
 
-    main { flex: 1; max-width: 600px; width: 100%; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    /* ESTADO */
+    .status-card{text-align:center}
+    .status-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+    .status-badge.solicitado{background:rgba(245,158,11,.15);color:var(--accent-amber)}
+    .status-badge.aceptado{background:rgba(59,130,246,.15);color:var(--accent-blue)}
+    .status-badge.en_camino,.status-badge.en_progreso{background:rgba(19,73,137,.15);color:var(--primary-color)}
+    .status-badge.terminado{background:rgba(16,185,129,.15);color:var(--accent-green)}
+    .status-badge.cancelado{background:rgba(239,68,68,.15);color:var(--accent-red)}
+    .pulse-dot{width:10px;height:10px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite}
+    @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}100%{opacity:1;transform:scale(1)}}
+    .status-titulo{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
+    .status-desc{font-size:.85rem;color:var(--muted-text);margin-top:5px;line-height:1.45}
 
-    .status-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); text-align: center; }
-    .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-    .status-badge.solicitado { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
-    .status-badge.aceptado { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
-    .status-badge.en_camino, .status-badge.en_progreso { background: rgba(19, 73, 137, 0.15); color: var(--primary-color); }
-    .status-badge.terminado { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+    .stepper{display:flex;justify-content:space-between;position:relative;margin:22px 0 4px}
+    .stepper::before{content:'';position:absolute;top:14px;left:12%;right:12%;height:2px;background:var(--border-color);z-index:1}
+    .step{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;width:25%}
+    .step-icon{width:30px;height:30px;border-radius:50%;background:var(--card-bg);border:2px solid var(--border-color);display:grid;place-items:center;font-size:.72rem;font-weight:800;color:var(--muted-text)}
+    .step.active .step-icon{border-color:var(--primary-color);background:var(--primary-color);color:#fff}
+    .step.completed .step-icon{border-color:var(--accent-green);background:var(--accent-green);color:#fff}
+    .step-text{font-size:.66rem;color:var(--muted-text);font-weight:700;text-align:center;line-height:1.2}
+    .step.active .step-text,.step.completed .step-text{color:var(--text-color)}
 
-    .pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } 100% { opacity: 1; transform: scale(1); } }
+    /* PERFIL DE LA CONTRAPARTE */
+    .profile-box{display:flex;align-items:center;gap:14px}
+    .profile-img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color);background:var(--field-bg);flex-shrink:0}
+    .profile-info{flex:1;min-width:0}
+    .profile-name{font-size:1.05rem;font-weight:800;word-break:break-word}
+    .profile-sub{font-size:.82rem;color:var(--muted-text);margin-top:2px}
+    .profile-extra{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+    .vehicle-tag,.mini-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--field-bg);color:var(--primary-color);border-radius:9px;font-weight:700;font-size:.74rem}
+    .vehicle-tag svg,.mini-tag svg{width:13px;height:13px;flex-shrink:0}
+    .mini-tag{color:var(--text-color)}
+    .placa{letter-spacing:1px;text-transform:uppercase}
+    .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color)}
+    .btn-contacto{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:12px;cursor:pointer;
+      font-size:.8rem;font-weight:800;text-decoration:none;transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color)}
+    .btn-contacto:hover{transform:translateY(-1px);border-color:var(--primary-color)}
+    .btn-contacto svg{width:15px;height:15px}
+    .btn-contacto.whatsapp{color:#128c7e;border-color:rgba(18,140,126,.35)}
 
-    .stepper { display: flex; justify-content: space-between; position: relative; margin: 20px 0 10px; }
-    .stepper::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 2px; background: var(--border-color); z-index: 1; }
-    .step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 25%; }
-    .step-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--card-bg); border: 2px solid var(--border-color); display: grid; place-items: center; font-size: 0.75rem; font-weight: bold; color: var(--muted-text); }
-    .step.active .step-icon { border-color: var(--primary-color); background: var(--primary-color); color: #fff; }
-    .step.completed .step-icon { border-color: var(--accent-green); background: var(--accent-green); color: #fff; }
-    .step-text { font-size: 0.7rem; color: var(--muted-text); font-weight: 600; text-align: center; }
+    /* RUTA */
+    .route-box{display:flex;flex-direction:column;gap:12px}
+    .route-point{display:flex;align-items:flex-start;gap:12px}
+    .dot{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.66rem;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px}
+    .dot.a{background:var(--primary-color)}
+    .dot.b{background:var(--accent-green)}
+    .route-detail{font-size:.88rem;font-weight:700;word-break:break-word}
+    .route-sub{font-size:.74rem;color:var(--muted-text);margin-top:1px}
+    .route-map{margin-left:32px;font-size:.72rem;font-weight:800;color:var(--brand);text-decoration:none}
+    .route-map:hover{text-decoration:underline}
+    .ruta-total{margin-top:16px;padding-top:14px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .kpi-label{font-size:.74rem;color:var(--muted-text);font-weight:600}
+    .kpi-valor{font-weight:800;font-size:.95rem;margin-top:2px}
+    .kpi-tarifa{text-align:right}
+    .kpi-tarifa .kpi-valor{font-size:1.2rem;color:var(--primary-color);font-weight:800}
+    .servicio-linea{display:inline-flex;align-items:center;gap:6px}
+    .servicio-linea svg{width:15px;height:15px;color:var(--brand)}
 
-    .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
-    .card-title { font-size: 0.85rem; text-transform: uppercase; color: var(--muted-text); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 14px; }
+    /* ACCIONES */
+    .btn-action{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(90deg,#134989,#4785A7);color:#fff;
+      font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s,transform .1s,opacity .2s}
+    .btn-action:hover{filter:brightness(1.08)}
+    .btn-action:active{transform:scale(.985)}
+    .btn-action:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .btn-action svg{width:18px;height:18px}
+    .btn-danger{background:linear-gradient(90deg,#a32626,#e05a5a)}
+    .btn-secundario{background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color)}
+    .zona-acciones{display:flex;flex-direction:column;gap:8px}
 
-    .profile-box { display: flex; align-items: center; gap: 16px; }
-    .profile-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
-    .profile-info { flex: 1; }
-    .profile-name { font-size: 1.1rem; font-weight: 700; }
-    .profile-sub { font-size: 0.85rem; color: var(--muted-text); margin-top: 2px; }
+    .aviso{padding:12px 14px;border-radius:12px;font-size:.78rem;font-weight:600;line-height:1.45;color:var(--muted-text);
+      background:var(--field-bg);border:1px dashed var(--border-color)}
+    .aviso b{color:var(--primary-color)}
 
-    .vehicle-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(19, 73, 137, 0.08); color: var(--primary-color); border-radius: 8px; font-weight: 700; font-size: 0.8rem; margin-top: 6px; }
+    .skeleton{display:inline-block;border-radius:6px;background:var(--field-bg);animation:shimmer 1.4s infinite linear;background-size:200% 100%}
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-    .route-box { display: flex; flex-direction: column; gap: 12px; }
-    .route-point { display: flex; align-items: flex-start; gap: 12px; }
-    .dot { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: bold; color: white; flex-shrink: 0; margin-top: 2px; }
-    .dot.a { background: var(--primary-color); }
-    .dot.b { background: var(--accent-green); }
-    .route-detail { font-size: 0.9rem; font-weight: 600; }
-    .route-sub { font-size: 0.78rem; color: var(--muted-text); margin-top: 1px; }
-
-    .btn-action { width: 100%; padding: 16px; border: none; border-radius: 14px; background: var(--primary-color); color: white; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s, transform 0.1s; }
-    .btn-action:hover { background: var(--primary-hover); }
-    .btn-action:active { transform: scale(0.98); }
-    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f2937; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: transform 0.3s ease; z-index: 100; }
-    .toast.visible { transform: translateX(-50%) translateY(0); }
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#1f2937;color:#fff;
+      padding:12px 24px;border-radius:30px;font-size:.88rem;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.25);transition:transform .3s ease;z-index:100;max-width:88vw;text-align:center}
+    .toast.visible{transform:translateX(-50%) translateY(0)}
+    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}}
   </style>
 </head>
 <body>
 
   <header>
     <a href="#" id="btn-volver" class="brand">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      BIKAR
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>BIKAR<small>Estado del viaje</small></span>
     </a>
-    <button class="btn-icon" id="btn-tema" title="Cambiar tema">????</button>
+    <div class="header-acciones">
+      <button class="btn-icon" id="btn-refrescar" title="Actualizar" aria-label="Actualizar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-tema" title="Cambiar tema" aria-label="Cambiar tema">
+        <svg id="ico-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="ico-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+    </div>
   </header>
 
   <main>
-    <!-- Card de Estado Generales -->
+    <!-- ESTADO -->
     <section class="status-card">
       <div id="status-badge" class="status-badge solicitado">
         <span class="pulse-dot"></span>
         <span id="status-texto">Buscando conductor</span>
       </div>
-      <h2 id="status-titulo" style="font-size:1.3rem; font-weight:800;">Solicitud enviada</h2>
-      <p id="status-desc" style="font-size:0.85rem; color:var(--muted-text); margin-top:4px;">Tu solicitud está visible para conductores cercanos.</p>
+      <h2 id="status-titulo" class="status-titulo">Solicitud enviada</h2>
+      <p id="status-desc" class="status-desc">Tu solicitud está visible para los conductores cercanos.</p>
+      <p id="status-id" style="margin-top:10px;font-size:.68rem;font-weight:700;color:var(--muted-text);letter-spacing:.08em"></p>
 
-      <div class="stepper">
-        <div class="step active" id="step-1">
-          <div class="step-icon">1</div>
-          <span class="step-text">Solicitado</span>
-        </div>
-        <div class="step" id="step-2">
-          <div class="step-icon">2</div>
-          <span class="step-text">Aceptado</span>
-        </div>
-        <div class="step" id="step-3">
-          <div class="step-icon">3</div>
-          <span class="step-text">En Curso</span>
-        </div>
-        <div class="step" id="step-4">
-          <div class="step-icon">4</div>
-          <span class="step-text">Finalizado</span>
-        </div>
+      <div class="stepper" id="stepper">
+        <div class="step active"><div class="step-icon">1</div><span class="step-text">Solicitado</span></div>
+        <div class="step"><div class="step-icon">2</div><span class="step-text">Aceptado</span></div>
+        <div class="step"><div class="step-icon">3</div><span class="step-text">En curso</span></div>
+        <div class="step"><div class="step-icon">4</div><span class="step-text">Finalizado</span></div>
       </div>
     </section>
 
-    <!-- Card de la Contraparte (Pasajero o Conductor según el rol) -->
+    <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
-      <div class="card-title" id="titulo-persona">Información del Conductor</div>
+      <div class="card-title" id="titulo-persona">Información del conductor</div>
       <div class="profile-box">
-        <img id="persona-foto" src="https://raw.githubusercontent.com/BikarApp/bikar/main/avatar-default.png" alt="Foto" class="profile-img">
+        <img id="persona-foto" class="profile-img" alt="Foto de perfil" src="">
         <div class="profile-info">
-          <div class="profile-name" id="persona-nombre">Esperando conductor...</div>
-          <div class="profile-sub" id="persona-sub">Se asignará en cuanto un conductor acepte</div>
-          <div id="persona-extra"></div>
+          <div class="profile-name" id="persona-nombre">Cargando…</div>
+          <div class="profile-sub" id="persona-sub"></div>
+          <div class="profile-extra" id="persona-extra"></div>
         </div>
+      </div>
+      <div class="contacto" id="zona-contacto" style="display:none">
+        <a class="btn-contacto" id="btn-llamar" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg>
+          Llamar
+        </a>
+        <a class="btn-contacto whatsapp" id="btn-whatsapp" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
+          WhatsApp
+        </a>
       </div>
     </section>
 
-    <!-- Detalle de la Ruta y Tarifa -->
+    <!-- RUTA -->
     <section class="card">
-      <div class="card-title">Detalles del Viaje</div>
+      <div class="card-title">Detalles del viaje</div>
       <div class="route-box">
         <div class="route-point">
           <span class="dot a">A</span>
           <div>
-            <div class="route-detail" id="txt-origen">Origen...</div>
+            <div class="route-detail" id="txt-origen">Origen…</div>
             <div class="route-sub">Punto de recojo</div>
           </div>
         </div>
         <div class="route-point">
           <span class="dot b">B</span>
           <div>
-            <div class="route-detail" id="txt-destino">Destino...</div>
+            <div class="route-detail" id="txt-destino">Destino…</div>
             <div class="route-sub">Punto de entrega</div>
           </div>
         </div>
+        <a class="route-map" id="link-maps" href="#" target="_blank" rel="noopener">Ver ruta en Google Maps →</a>
       </div>
 
-      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+      <div class="ruta-total">
         <div>
-          <span style="font-size:0.8rem; color:var(--muted-text);">Servicio</span>
-          <div id="txt-servicio" style="font-weight:700; font-size:0.95rem;">-</div>
+          <span class="kpi-label">Servicio</span>
+          <div class="kpi-valor servicio-linea" id="txt-servicio">—</div>
         </div>
-        <div style="text-align:right;">
-          <span style="font-size:0.8rem; color:var(--muted-text);">Tarifa total</span>
-          <div id="txt-tarifa" style="font-weight:800; font-size:1.2rem; color:var(--primary-color);">$0</div>
+        <div class="kpi-tarifa">
+          <span class="kpi-label">Tarifa total</span>
+          <div class="kpi-valor" id="txt-tarifa">S/ 0.00</div>
         </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap">
+        <div><span class="kpi-label">Distancia</span><div class="kpi-valor" id="txt-distancia">—</div></div>
+        <div><span class="kpi-label">Solicitado</span><div class="kpi-valor" id="txt-fecha">—</div></div>
       </div>
     </section>
 
-    <!-- Botón de Acción Dinámico (Conductor) -->
-    <section id="sec-acciones" style="display:none;">
-      <button id="btn-siguiente-estado" class="btn-action">Conducir hacia el origen</button>
+    <!-- ACCIONES -->
+    <section id="sec-acciones" class="zona-acciones" style="display:none">
+      <div class="aviso" id="aviso-rol" style="display:none"></div>
+      <button id="btn-siguiente-estado" class="btn-action">Cargando…</button>
+      <a id="btn-inicio" class="btn-action btn-secundario" href="index.html" style="display:none;text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        Volver al inicio
+      </a>
     </section>
   </main>
 
   <div id="toast" class="toast">Notificación</div>
 
   <script>
-    // CONFIGURACIÓN DE SUPABASE (Toma las mismas credenciales de tu app)
-    const SUPABASE_URL = "https://TU_SUPABASE_PROJECT_URL.supabase.co"; 
-    const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY"; 
-    
-    // Si ya tienes un cliente global inicializado localmente lo tomará
-    let supabaseClient = window.supabaseClient || (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null);
+  (function () {
+    'use strict';
 
-    // Parámetros URL y Estado Local
-    const urlParams = new URLSearchParams(window.location.search);
+    /* ============================================================
+       CONFIGURACIÓN (mismas credenciales reales que index.html)
+       ============================================================ */
+    const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+    const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    window.supabaseClient = db;                      /* compatibilidad con otros scripts */
+
+    const K_SESION = 'bikar_usuario';
+    const FOTO_REPO_GITHUB = 'https://raw.githubusercontent.com/bikar-app/perfil/main/index.svg';
+    const INTERVALO_REFRESCO = 8000;                 /* respaldo si Realtime no está disponible */
+
+    /* ============================================================
+       ESTADO
+       ============================================================ */
+    const urlParams = new URLSearchParams(location.search);
     const viajeId = urlParams.get('id');
-    const rolUsuario = urlParams.get('rol') || 'pasajero'; // 'pasajero' o 'conductor'
+    let rolUsuario = (urlParams.get('rol') || 'pasajero').toLowerCase();
+    let viajeActual = null, usuarioSesion = null, canalRealtime = null, timerRefresco = null, realtimeOK = false;
+    const cachePerfiles = new Map();
 
-    let viajeActual = null;
+    /* ============================================================
+       DOM
+       ============================================================ */
+    const $ = (id) => document.getElementById(id);
+    const statusBadge = $('status-badge'), statusTexto = $('status-texto');
+    const statusTitulo = $('status-titulo'), statusDesc = $('status-desc'), statusId = $('status-id');
+    const pasos = Array.prototype.slice.call($('stepper').querySelectorAll('.step'));
+    const personaFoto = $('persona-foto'), personaNombre = $('persona-nombre'), personaSub = $('persona-sub');
+    const personaExtra = $('persona-extra'), tituloPersona = $('titulo-persona'), zonaContacto = $('zona-contacto');
+    const btnLlamar = $('btn-llamar'), btnWhatsapp = $('btn-whatsapp'), linkMaps = $('link-maps');
+    const secAcciones = $('sec-acciones'), btnSiguiente = $('btn-siguiente-estado');
+    const btnInicio = $('btn-inicio'), avisoRol = $('aviso-rol');
 
-    // Elementos DOM
-    const statusBadge = document.getElementById('status-badge');
-    const statusTexto = document.getElementById('status-texto');
-    const statusTitulo = document.getElementById('status-titulo');
-    const statusDesc = document.getElementById('status-desc');
-    const btnSiguiente = document.getElementById('btn-siguiente-estado');
-    const secAcciones = document.getElementById('sec-acciones');
+    /* ============================================================
+       ICONOS SVG
+       ============================================================ */
+    const SVG = {
+      auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-4l2-5h9l3 5h3a1 1 0 0 1 1 1v3h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>',
+      moto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17" r="3"/><circle cx="5.5" cy="17" r="3"/><path d="M12 17V13l-3-3 4-2.5 2 2.5h2"/></svg>',
+      caja: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.3l-1.7-3.2a1 1 0 0 0-.9-.5H14"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>',
+      bolsa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+      reloj: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+      ruta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+      check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+      usuario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>',
+      estrella: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17.8 6.5 20l1-6.1L3 9.5l6.3-.9z"/></svg>',
+      siguiente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>'
+    };
+    const ICONO_SERVICIO = {
+      moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, taxi_carga: SVG.caja, default: SVG.ruta
+    };
 
-    // MODO OSCURO
-    const btnTema = document.getElementById('btn-tema');
-    function aplicarTema(dark) {
-      document.body.classList.toggle('dark-theme', dark);
-      btnTema.textContent = dark ? '☀️' : '????';
-      localStorage.setItem('bikar_tema', dark ? 'oscuro' : 'claro');
-    }
-    btnTema.addEventListener('click', () => aplicarTema(!document.body.classList.contains('dark-theme')));
-    if (localStorage.getItem('bikar_tema') === 'oscuro') aplicarTema(true);
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    const mismoId = (a, b) => a != null && b != null && String(a) === String(b);
+    const lsJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+    const formatoMoneda = (v) => 'S/ ' + (Number(v || 0) / 1000).toFixed(2);
 
     function mostrarToast(msg) {
-      const t = document.getElementById('toast');
+      const t = $('toast');
       t.textContent = msg;
       t.classList.add('visible');
-      setTimeout(() => t.classList.remove('visible'), 3000);
+      clearTimeout(mostrarToast._t);
+      mostrarToast._t = setTimeout(() => t.classList.remove('visible'), 3000);
     }
 
-    function formatoMoneda(valor) {
-      return '$' + Number(valor || 0).toLocaleString('es-CO');
+    /* ============================================================
+       TEMA
+       ============================================================ */
+    function aplicarTema(oscuro) {
+      document.body.classList.toggle('dark-theme', oscuro);
+      $('ico-luna').style.display = oscuro ? 'none' : 'block';
+      $('ico-sol').style.display = oscuro ? 'block' : 'none';
+      try { localStorage.setItem('bikar_tema', oscuro ? 'oscuro' : 'claro'); } catch (e) {}
+    }
+    $('btn-tema').addEventListener('click', () => aplicarTema(!document.body.classList.contains('dark-theme')));
+    aplicarTema((localStorage.getItem('bikar_tema') || 'oscuro') === 'oscuro');
+
+    /* ============================================================
+       NORMALIZACIÓN DE SERVICIO (mismo criterio que index.html)
+       ============================================================ */
+    function normalizarClaveServicio(raw) {
+      if (raw === null || raw === undefined || raw === '') return null;
+      let c = String(raw).toLowerCase().trim();
+      try { c = c.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
+      c = c.replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
+      if (/moto\s*deliver|delivery|domicili|paqueter|mensajer|reparto|envio/.test(c)) return 'moto_delivery';
+      if (/moto\s*taxi|\bmoto\b/.test(c)) return 'moto_taxi';
+      if (/carga|mudanza|camion|furgon|encomienda/.test(c)) return 'taxi_carga';
+      if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c)) return 'taxi_auto';
+      return null;
+    }
+    function etiquetaServicio(clave) {
+      return { moto_taxi:'Moto Taxi', moto_delivery:'Moto Delivery', taxi_auto:'Taxi Auto', taxi_carga:'Taxi Carga' }[clave] || 'Servicio BIKAR';
     }
 
-    // CARGAR Y ESCUCHAR CAMBIOS EN REALTIME
-    async function inicializar() {
-      if (!viajeId) {
-        statusTitulo.textContent = "Sin viaje activo";
-        statusDesc.textContent = "No se especificó un código de viaje válido.";
-        return;
-      }
-
-      await obtenerDatosViaje();
-      suscribirRealtime();
-    }
-
-    async function obtenerDatosViaje() {
+    /* ============================================================
+       CARGA DE DATOS
+       ============================================================ */
+    async function obtenerDatosViaje(silencioso) {
+      if (!db || !viajeId) return;
       try {
-        const { data, error } = await supabaseClient
-          .from('viajes')
-          .select('*')
-          .eq('id', viajeId)
-          .single();
-
+        const { data, error } = await db.from('viajes').select('*').eq('id', viajeId).maybeSingle();
         if (error) throw error;
+        if (!data) { estadoVacio('No encontramos este viaje'); return; }
         viajeActual = data;
         renderizarUI();
       } catch (e) {
-        console.error("Error al obtener el viaje:", e);
+        console.error('Error al obtener el viaje:', e);
+        if (!silencioso) estadoVacio('No se pudo leer el viaje', (e && e.message) || '');
       }
     }
 
-    function suscribirRealtime() {
-      supabaseClient
-        .channel(`viaje-${viajeId}`)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}` }, (payload) => {
-          viajeActual = payload.new;
-          renderizarUI();
-          mostrarToast("¡El estado del viaje ha sido actualizado!");
-        })
-        .subscribe();
+    /* Busca una fila de "usuarios" por id, correo o usuario (mismo criterio de la app) */
+    async function buscarUsuario(id, correo) {
+      const llave = String(id != null ? 'id:' + id : 'c:' + correo);
+      if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
+      let fila = null;
+      if (db) {
+        try {
+          if (id != null) {
+            const r = await db.from('usuarios').select('*').eq('id', id).maybeSingle();
+            fila = r.data || null;
+          }
+          if (!fila && correo) {
+            const r = await db.from('usuarios').select('*').eq('correo', correo).maybeSingle();
+            fila = r.data || null;
+          }
+        } catch (e) { console.warn('usuarios:', e); }
+      }
+      cachePerfiles.set(llave, fila);
+      return fila;
     }
 
-    async function renderizarUI() {
+    async function buscarDocumentoConductor(id) {
+      const llave = 'doc:' + id;
+      if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
+      let fila = null;
+      if (db) {
+        try {
+          let r = await db.from('documentos_conductor').select('*').eq('usuario_id', id).maybeSingle();
+          fila = r.data || null;
+          if (!fila) { r = await db.from('documentos_conductor').select('*').eq('conductor_id', id).maybeSingle(); fila = r.data || null; }
+        } catch (e) { console.warn('documentos_conductor:', e); }
+      }
+      cachePerfiles.set(llave, fila);
+      return fila;
+    }
+
+    function pintarPersona(info) {
+      const nombre = info.nombre || 'Usuario BIKAR';
+      personaNombre.textContent = nombre;
+      personaSub.textContent = info.sub || '';
+      personaFoto.src = info.foto || avatarDe(nombre);
+
+      const chips = [];
+      if (info.rol === 'conductor') {
+        if (info.tipo_servicio) chips.push('<span class="vehicle-tag">' + (ICONO_SERVICIO[info.tipo_servicio] || SVG.ruta) + esc(info.tipo_servicio) + '</span>');
+        if (info.vehiculo) chips.push('<span class="mini-tag">' + SVG.auto + esc(info.vehiculo) + '</span>');
+        if (info.placa) chips.push('<span class="mini-tag"><span class="placa">' + esc(info.placa) + '</span></span>');
+        if (info.calificacion) chips.push('<span class="mini-tag">' + SVG.estrella + esc(info.calificacion) + '</span>');
+      } else {
+        if (info.telefono) chips.push('<span class="mini-tag">' + SVG.usuario + 'Pasajero</span>');
+        if (info.correo) chips.push('<span class="mini-tag">' + esc(info.correo) + '</span>');
+      }
+      personaExtra.innerHTML = chips.join('');
+
+      if (info.telefono) {
+        const tel = String(info.telefono).replace(/[^\d+]/g, '');
+        zonaContacto.style.display = 'flex';
+        btnLlamar.href = 'tel:' + tel;
+        btnWhatsapp.href = 'https://wa.me/' + tel.replace(/^\+/, '') +
+          '?text=' + encodeURIComponent('Hola ' + (nombre.split(' ')[0] || '') + ', te contacto por tu viaje BIKAR #' + viajeId);
+      } else {
+        zonaContacto.style.display = 'none';
+      }
+    }
+
+    function avatarDe(nombre) {
+      const letra = (String(nombre || 'B').trim().charAt(0) || 'B').toUpperCase();
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0" stop-color="#134989"/><stop offset="1" stop-color="#4785A7"/></linearGradient></defs>' +
+        '<rect width="100" height="100" fill="url(#g)"/><text x="50" y="50" dy=".36em" text-anchor="middle" ' +
+        'font-family="Inter,Arial" font-size="46" font-weight="800" fill="#fff">' + letra + '</text></svg>';
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    async function cargarPerfilConductor(id) {
+      const [u, doc] = await Promise.all([buscarUsuario(id), buscarDocumentoConductor(id)]);
+      const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
+        || (u && (u.usuario || u.correo)) || 'Conductor BIKAR';
+      pintarPersona({
+        rol: 'conductor', nombre,
+        sub: (u && u.telefono) ? 'Teléfono · ' + u.telefono : 'Conductor verificado BIKAR',
+        foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
+        telefono: u && u.telefono,
+        tipo_servicio: doc && doc.tipo_servicio,
+        vehiculo: doc ? [doc.marca, doc.modelo, doc.color].filter(Boolean).join(' ') : '',
+        placa: doc && doc.placa,
+        calificacion: doc && (doc.calificacion || doc.rating)
+      });
+    }
+
+    async function cargarPerfilPasajero(id) {
+      const u = await buscarUsuario(id);
+      const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
+        || (u && (u.usuario || u.correo)) || 'Pasajero BIKAR';
+      pintarPersona({
+        rol: 'pasajero', nombre,
+        sub: (u && u.telefono) ? 'Teléfono · ' + u.telefono : 'Pasajero BIKAR',
+        foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
+        telefono: u && u.telefono,
+        correo: u && u.correo
+      });
+    }
+
+    /* ============================================================
+       RENDER
+       ============================================================ */
+    const INDICE_ESTADO = { solicitado:0, aceptado:1, en_camino:2, en_progreso:2, terminado:3, cancelado:-1 };
+    const TEXTOS_ESTADO = {
+      solicitado: ['Buscando conductor', 'Esperando conductor', 'Tu solicitud está visible para los conductores cercanos.'],
+      aceptado:   ['Viaje aceptado', 'Viaje aceptado', 'El conductor tomó tu servicio y se prepara para recogerte.'],
+      en_camino:  ['Conductor en camino', 'Conductor en camino', 'El vehículo se dirige al punto de recojo.'],
+      en_progreso:['En curso', 'En curso hacia el destino', 'Vas a bordo. ¡Disfruta el trayecto con BIKAR!'],
+      terminado:  ['Viaje finalizado', '¡Has llegado a tu destino!', 'Viaje completado exitosamente. Gracias por usar BIKAR.'],
+      cancelado:  ['Cancelado', 'Viaje cancelado', 'Esta solicitud fue cancelada.']
+    };
+
+    function renderizarUI() {
       if (!viajeActual) return;
+      const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
 
-      const estado = (viajeActual.estado || 'solicitado').toLowerCase();
+      /* Ruta, servicio y tarifa */
+      $('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
+      $('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
+      const clave = normalizarClaveServicio(viajeActual.tipo_servicio || viajeActual.nombre_servicio);
+      $('txt-servicio').innerHTML = (ICONO_SERVICIO[clave] || SVG.ruta) + '<span>' +
+        esc(viajeActual.tipo_servicio || viajeActual.nombre_servicio || etiquetaServicio(clave)) + '</span>';
+      $('txt-tarifa').textContent = formatoMoneda(viajeActual.tarifa);
+      $('txt-distancia').textContent = viajeActual.distancia_km ? viajeActual.distancia_km + ' km' : '—';
 
-      // Actualización de Textos de Ruta y Tarifa
-      document.getElementById('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
-      document.getElementById('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
-      document.getElementById('txt-servicio').textContent = viajeActual.tipo_servicio || 'Servicio';
-      document.getElementById('txt-tarifa').textContent = formatoMoneda(viajeActual.tarifa);
+      const fecha = viajeActual.created_at || viajeActual.creado_en || viajeActual.fecha;
+      const d = fecha ? new Date(fecha) : null;
+      $('txt-fecha').textContent = d && !isNaN(d)
+        ? d.toLocaleDateString('es-CO', { day:'2-digit', month:'short' }) + ' · ' + d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' })
+        : '—';
 
-      // Stepper Visual
-      const pasos = ['solicitado', 'aceptado', 'en_camino', 'terminado'];
-      pasos.forEach((p, idx) => {
-        const el = document.getElementById(`step-${idx + 1}`);
-        if (!el) return;
-        el.classList.remove('active', 'completed');
-        if (estado === p || (p === 'en_camino' && estado === 'en_progreso')) {
-          el.classList.add('active');
-        } else if (pasos.indexOf(estado) > idx || estado === 'terminado') {
-          el.classList.add('completed');
-        }
+      const destinoMaps = (viajeActual.destino_lat != null && viajeActual.destino_lon != null)
+        ? viajeActual.destino_lat + ',' + viajeActual.destino_lon
+        : encodeURIComponent(viajeActual.destino_nombre || '');
+      linkMaps.href = 'https://www.google.com/maps/dir/?api=1&destination=' + destinoMaps;
+
+      /* Badge + textos */
+      const t = TEXTOS_ESTADO[estado] || TEXTOS_ESTADO.solicitado;
+      statusBadge.className = 'status-badge ' + estado;
+      statusTexto.textContent = estado.replace(/_/g, ' ');
+      statusTitulo.textContent = t[1];
+      statusDesc.textContent = t[2];
+      statusId.textContent = 'SOLICITUD #' + (viajeActual.id != null ? viajeActual.id : '—');
+
+      /* Stepper */
+      const idx = INDICE_ESTADO[estado] != null ? INDICE_ESTADO[estado] : 0;
+      pasos.forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+        el.classList.toggle('completed', i < idx);
       });
 
-      // Configuración según el ESTADO
-      statusBadge.className = `status-badge ${estado}`;
-      statusTexto.textContent = estado.replace('_', ' ');
-
-      if (estado === 'solicitado') {
-        statusTitulo.textContent = "Esperando conductor";
-        statusDesc.textContent = "Buscando al mejor conductor cercano a tu ubicación.";
-      } else if (estado === 'aceptado') {
-        statusTitulo.textContent = "Viaje Aceptado";
-        statusDesc.textContent = "El conductor ha tomado tu servicio y se prepara para recogerte.";
-      } else if (estado === 'en_camino') {
-        statusTitulo.textContent = "Conductor en camino";
-        statusDesc.textContent = "El vehículo va dirigiéndose hacia el punto de recojo.";
-      } else if (estado === 'en_progreso') {
-        statusTitulo.textContent = "En curso hacia el destino";
-        statusDesc.textContent = "Vas a bordo. ¡Disfruta el trayecto con BIKAR!";
-      } else if (estado === 'terminado') {
-        statusTitulo.textContent = "¡Has llegado a tu destino!";
-        statusDesc.textContent = "Viaje completado exitosamente.";
-      }
-
-      // Cargar Datos de la Contraparte (Conductor o Pasajero)
-      if (rolUsuario === 'pasajero') {
-        document.getElementById('titulo-persona').textContent = "Conductor Asignado";
-        if (viajeActual.conductor_id) {
-          cargarDatosConductor(viajeActual.conductor_id);
-        } else {
-          document.getElementById('persona-nombre').textContent = "Buscando conductor...";
-          document.getElementById('persona-sub').textContent = "Te avisaremos en cuanto alguien lo acepte.";
-        }
+      /* Contraparte: pasajero ve al conductor / conductor ve al pasajero */
+      if (rolUsuario === 'conductor') {
+        tituloPersona.textContent = 'Datos del pasajero';
+        if (viajeActual.pasajero_id != null) cargarPerfilPasajero(viajeActual.pasajero_id);
+        else pintarPersona({ rol:'pasajero', nombre:'Pasajero BIKAR', sub:'Sin datos registrados' });
       } else {
-        document.getElementById('titulo-persona').textContent = "Datos del Pasajero";
-        if (viajeActual.pasajero_id) {
-          cargarDatosPasajero(viajeActual.pasajero_id);
-        }
-        configurarBotonConductor(estado);
+        tituloPersona.textContent = 'Información del conductor';
+        if (viajeActual.conductor_id != null) cargarPerfilConductor(viajeActual.conductor_id);
+        else pintarPersona({ rol:'conductor', nombre:'Buscando conductor…', sub:'Te avisaremos en cuanto alguien acepte.' });
       }
+
+      configurarAcciones(estado);
     }
 
-    // CARGAR INFORMACIÓN DE PERFILES
-    async function cargarDatosConductor(idConductor) {
-      try {
-        const { data: usuario } = await supabaseClient.from('usuarios').select('*').eq('id', idConductor).maybeSingle();
-        const { data: doc } = await supabaseClient.from('documentos_conductor').select('*').eq('usuario_id', idConductor).maybeSingle();
-
-        if (usuario) {
-          document.getElementById('persona-nombre').textContent = `${usuario.nombre || ''} ${usuario.apellido || ''}`.trim() || 'Conductor BIKAR';
-          document.getElementById('persona-sub').textContent = usuario.telefono ? `???? ${usuario.telefono}` : 'Conductor verificado';
-          if (usuario.foto) document.getElementById('persona-foto').src = usuario.foto;
-        }
-
-        if (doc) {
-          document.getElementById('persona-extra').innerHTML = `
-            <div class="vehicle-tag">
-              ???? ${doc.marca || ''} ${doc.modelo || ''} · <span style="letter-spacing:1px; text-transform:uppercase;">${doc.placa || ''}</span>
-            </div>`;
-        }
-      } catch (e) { console.warn("Error leyendo perfil conductor:", e); }
-    }
-
-    async function cargarDatosPasajero(idPasajero) {
-      try {
-        const { data: usuario } = await supabaseClient.from('usuarios').select('*').eq('id', idPasajero).maybeSingle();
-        if (usuario) {
-          document.getElementById('persona-nombre').textContent = `${usuario.nombre || ''} ${usuario.apellido || ''}`.trim() || 'Pasajero BIKAR';
-          document.getElementById('persona-sub').textContent = usuario.telefono ? `???? ${usuario.telefono}` : 'Pasajero BIKAR';
-          if (usuario.foto) document.getElementById('persona-foto').src = usuario.foto;
-        }
-      } catch (e) { console.warn("Error leyendo perfil pasajero:", e); }
-    }
-
-    // LÓGICA DE BOTONES PARA CONDUCTOR
-    function configurarBotonConductor(estado) {
+    /* ============================================================
+       ACCIONES SEGÚN EL ROL
+       ============================================================ */
+    function boton(html, deshabilitado, onClick, peligro) {
+      btnSiguiente.className = 'btn-action' + (peligro ? ' btn-danger' : '');
+      btnSiguiente.innerHTML = html;
+      btnSiguiente.disabled = !!deshabilitado;
+      btnSiguiente.onclick = deshabilitado ? null : onClick;
+      btnInicio.style.display = 'none';
+      avisoRol.style.display = 'none';
       secAcciones.style.display = 'block';
+    }
 
-      if (estado === 'aceptado') {
-        btnSiguiente.textContent = "???? Conducir hacia el origen";
-        btnSiguiente.disabled = false;
-        btnSiguiente.onclick = () => cambiarEstadoViaje('en_camino');
-      } else if (estado === 'en_camino') {
-        btnSiguiente.textContent = "????‍♂️ Pasajero a bordo (Iniciar viaje)";
-        btnSiguiente.disabled = false;
-        btnSiguiente.onclick = () => cambiarEstadoViaje('en_progreso');
-      } else if (estado === 'en_progreso') {
-        btnSiguiente.textContent = "???? Finalizar y completar viaje";
-        btnSiguiente.disabled = false;
-        btnSiguiente.onclick = () => cambiarEstadoViaje('terminado');
-      } else if (estado === 'terminado') {
-        btnSiguiente.textContent = "✓ Viaje Finalizado";
-        btnSiguiente.disabled = true;
+    function configurarAcciones(estado) {
+      if (estado === 'terminado' || estado === 'cancelado') {
+        boton(SVG.check + '<span>Viaje ' + (estado === 'cancelado' ? 'cancelado' : 'finalizado') + '</span>', true, null, estado === 'cancelado');
+        btnInicio.style.display = 'flex';
+        return;
+      }
+
+      if (rolUsuario === 'conductor') {
+        const flujo = {
+          solicitado: ['Aceptar viaje', 'aceptado', false],
+          aceptado:   ['Conducir hacia el origen', 'en_camino', false],
+          en_camino:  ['Pasajero a bordo · iniciar viaje', 'en_progreso', false],
+          en_progreso:['Finalizar y completar viaje', 'terminado', false]
+        };
+        const paso = flujo[estado];
+        if (!paso) { secAcciones.style.display = 'none'; return; }
+        if (estado === 'solicitado') {
+          avisoRol.textContent = 'Este servicio aparece como disponible. Si lo tomas, quedarás asignado al viaje.';
+          avisoRol.style.display = 'block';
+        }
+        boton(SVG.siguiente + '<span>' + paso[0] + '</span>', false, () => cambiarEstadoViaje(paso[1]));
+        return;
+      }
+
+      /* Pasajero */
+      if (estado === 'solicitado') {
+        avisoRol.textContent = 'Aún no hay conductor asignado. Puedes cancelar sin costo mientras esperas.';
+        avisoRol.style.display = 'block';
+        boton('<span>Cancelar solicitud</span>', false, () => cancelarViaje(), true);
+      } else {
+        boton(SVG.ruta + '<span>Seguimiento activo del viaje</span>', true, null);
       }
     }
 
     async function cambiarEstadoViaje(nuevoEstado) {
       btnSiguiente.disabled = true;
-      btnSiguiente.textContent = "Actualizando...";
-
+      btnSiguiente.innerHTML = '<span>Actualizando…</span>';
       try {
-        const { error } = await supabaseClient
-          .from('viajes')
-          .update({ estado: nuevoEstado })
-          .eq('id', viajeId);
-
+        const cambios = { estado: nuevoEstado };
+        if (nuevoEstado === 'aceptado' && usuarioSesion && viajeActual.conductor_id == null) {
+          cambios.conductor_id = usuarioSesion.conductor_id || usuarioSesion.id;
+        }
+        const { error } = await db.from('viajes').update(cambios).eq('id', viajeId);
         if (error) throw error;
-        mostrarToast(`Estado actualizado a: ${nuevoEstado}`);
+        mostrarToast('Estado actualizado: ' + nuevoEstado.replace(/_/g, ' '));
+        viajeActual = Object.assign({}, viajeActual, cambios);
+        renderizarUI();
       } catch (e) {
-        mostrarToast("Error al actualizar el estado");
         console.error(e);
-      } finally {
-        btnSiguiente.disabled = false;
+        mostrarToast('Error al actualizar el estado');
+        renderizarUI();
       }
     }
 
-    document.getElementById('btn-volver').addEventListener('click', (e) => {
-      e.preventDefault();
-      window.history.back();
-    });
+    async function cancelarViaje() {
+      btnSiguiente.disabled = true;
+      btnSiguiente.innerHTML = '<span>Cancelando…</span>';
+      try {
+        const { error } = await db.from('viajes').update({ estado:'cancelado' }).eq('id', viajeId);
+        if (error) throw error;
+        mostrarToast('Solicitud cancelada');
+        viajeActual = Object.assign({}, viajeActual, { estado:'cancelado' });
+        renderizarUI();
+      } catch (e) {
+        console.error(e);
+        mostrarToast('No se pudo cancelar el viaje');
+        renderizarUI();
+      }
+    }
 
-    window.addEventListener('DOMContentLoaded', inicializar);
+    function estadoVacio(titulo, detalle) {
+      statusBadge.className = 'status-badge cancelado';
+      statusTexto.textContent = 'Sin datos';
+      statusTitulo.textContent = titulo;
+      statusDesc.textContent = detalle || 'Verifica el enlace o vuelve al inicio.';
+      secAcciones.style.display = 'none';
+      personaNombre.textContent = '—';
+      personaSub.textContent = '';
+      personaExtra.innerHTML = '';
+    }
+
+    /* ============================================================
+       TIEMPO REAL (con respaldo por sondeo)
+       ============================================================ */
+    function suscribirRealtime() {
+      if (!db || !viajeId) return;
+      try {
+        canalRealtime = db.channel('viaje-' + viajeId)
+          .on('postgres_changes',
+            { event:'*', schema:'public', table:'viajes', filter:'id=eq.' + viajeId },
+            (payload) => {
+              viajeActual = payload.new || viajeActual;
+              renderizarUI();
+              mostrarToast('El estado del viaje se actualizó');
+            })
+          .subscribe((status) => {
+            realtimeOK = (status === 'SUBSCRIBED');
+            if (!realtimeOK) iniciarRefresco();
+            else detenerRefresco();
+          });
+      } catch (e) {
+        console.warn('Realtime no disponible:', e);
+        iniciarRefresco();
+      }
+    }
+
+    function iniciarRefresco() {
+      if (timerRefresco) return;
+      timerRefresco = setInterval(() => obtenerDatosViaje(true), INTERVALO_REFRESCO);
+    }
+    function detenerRefresco() {
+      if (timerRefresco) { clearInterval(timerRefresco); timerRefresco = null; }
+    }
+
+    /* ============================================================
+       ARRANQUE
+       ============================================================ */
+    function inicializar() {
+      usuarioSesion = lsJSON(K_SESION);
+      /* Si no llegó ?rol=, se deduce de la sesión guardada */
+      if (!urlParams.get('rol') && usuarioSesion && usuarioSesion.tipo_usuario === 'conductor') rolUsuario = 'conductor';
+
+      personaFoto.src = avatarDe('B');
+      personaFoto.addEventListener('error', function () { this.src = avatarDe(personaNombre.textContent || 'B'); });
+
+      if (!db) {
+        estadoVacio('Sin conexión con el servidor', 'No se pudo inicializar Supabase. Revisa tu conexión a internet.');
+        return;
+      }
+      if (!viajeId) { estadoVacio('Sin viaje activo', 'No se especificó un código de viaje válido.'); return; }
+
+      renderCargando();
+      obtenerDatosViaje();
+      suscribirRealtime();
+      iniciarRefresco();          /* garantiza datos frescos aunque Realtime falle */
+    }
+
+    function renderCargando() {
+      personaNombre.innerHTML = '<span class="skeleton" style="width:150px;height:14px"></span>';
+      personaSub.innerHTML = '<span class="skeleton" style="width:190px;height:11px;display:block;margin-top:6px"></span>';
+    }
+
+    $('btn-refrescar').addEventListener('click', () => { obtenerDatosViaje(); mostrarToast('Actualizando…'); });
+    $('btn-volver').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (history.length > 1) history.back(); else location.href = 'index.html';
+    });
+    window.addEventListener('beforeunload', () => {
+      detenerRefresco();
+      if (canalRealtime && db && db.removeChannel) db.removeChannel(canalRealtime);
+    });
+    document.addEventListener('DOMContentLoaded', inicializar);
+  })();
   </script>
 </body>
 </html>
