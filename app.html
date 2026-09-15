@@ -831,12 +831,12 @@
     function normalizarClaveServicio(raw) {
       if (raw === null || raw === undefined || raw === '') return null;
       let c = String(raw).toLowerCase().trim();
-      try { c = c.normalize('NFD').replace(/[u0300-u036f]/g, ''); } catch (e) {}
-      c = c.replace(/[_-.]+/g, ' ').replace(/s+/g, ' ').trim();
-      if (/motos*deliver|delivery|domicili|paqueter|mensajer|reparto|envio|envu00edo/.test(c)) return 'moto_delivery';
-      if (/motos*taxi|mototaxi|bmotob/.test(c))                                    return 'moto_taxi';
+      try { c = c.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
+      c = c.replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
+      if (/moto\s*deliver|delivery|domicili|paqueter|mensajer|reparto|envio|env\u00edo/.test(c)) return 'moto_delivery';
+      if (/moto\s*taxi|mototaxi|\bmoto\b/.test(c))                                    return 'moto_taxi';
       if (/carga|mudanza|camion|furgon|encomienda/.test(c))                            return 'taxi_carga';
-      if (/taxis*auto|bautob|btaxib|bcarrob|bcocheb|sedan/.test(c))            return 'taxi_auto';
+      if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c))            return 'taxi_auto';
       return null;
     }
     function servicioPorClave(clave){ return CATALOGO_SERVICIOS.find(s => s.clave === clave) || null; }
@@ -1027,7 +1027,7 @@
     }
     function direccionCorta(result) {
       if (!result) return '';
-      if (result.name && !/^d+[-s]*$/.test(String(result.name))) {
+      if (result.name && !/^\d+[-\s]*$/.test(String(result.name))) {
         const ruta = componente(result.address_components, 'route');
         if (result.name !== ruta) return result.name;
       }
@@ -1587,7 +1587,7 @@
       if (typeof valor === 'object') return null;
       if (clave === 'password') return '••••••';
       const txt = String(valor);
-      if (/^d{4}-d{2}-d{2}T/.test(txt)) {
+      if (/^\d{4}-\d{2}-\d{2}T/.test(txt)) {
         const f = new Date(txt);
         if (!isNaN(f)) return f.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
       }
@@ -1611,7 +1611,7 @@
         if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
         const valor = valorLegible(clave, objeto[clave]);
         if (valor === null) return;
-        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/bw/g, (m) => m.toUpperCase());
+        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
         grid.appendChild(tarjetaDato(etiqueta, valor, i++));
       });
       if (i) {
@@ -1652,7 +1652,7 @@
         if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
         const valor = valorLegible(clave, cuenta[clave]);
         if (valor === null) return;
-        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/bw/g, (m) => m.toUpperCase());
+        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
         grid.appendChild(tarjetaDato(etiqueta, valor, i++));
       });
       if (i) cont.appendChild(grid);
@@ -1789,15 +1789,6 @@
               <span class="historial-fecha">${textoFecha(fechaDeViaje(v))}${v.distancia_km ? ' · ' + v.distancia_km + ' km' : ''}</span>
               <span class="estado-chip ${estado}">${estado}</span>
             </div>`;
-
-          /* Agregado del evento click correctamente referenciado */
-          card.addEventListener('click', () => {
-            if (estado === 'solicitado' || estado === 'aceptado' || estado === 'en_camino') {
-              const rol = modoActual === 'conductor' ? 'conductor' : 'pasajero';
-              window.location.href = `viaje.html?id=${v.id}&rol=${rol}`;
-            }
-          });
-
           cont.appendChild(card);
         });
         historialContenido.innerHTML = '';
@@ -1854,7 +1845,7 @@
         v.distancia_km ?? '', v.tarifa ?? '', v.estado || '', textoFecha(fechaDeViaje(v))
       ]);
       const escapar = (c) => '"' + String(c).replace(/"/g, '""') + '"';
-      const csv = 'uFEFF' + [columnas, ...filas].map(f => f.map(escapar).join(';')).join('rn');
+      const csv = '\uFEFF' + [columnas, ...filas].map(f => f.map(escapar).join(';')).join('\r\n');
       const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -2234,7 +2225,7 @@
       await solicitarViaje(servicioSeleccionado);
     });
 
-   /* ============================================================
+    /* ============================================================
        SOLICITAR VIAJE
        ============================================================ */
     async function solicitarViaje(servicio) {
@@ -2263,12 +2254,9 @@
 
       mostrarToast(`${servicio.etiqueta} solicitado`);
       cerrarPanelServicios();
-
-      // Redirección inmediata a la pantalla de espera del Pasajero
-      if (data && data.length > 0) {
-        const viajeId = data[0].id;
-        window.location.href = `viaje.html?id=${viajeId}&rol=pasajero`;
-      }
+      statusTextPasajero.innerHTML = `¡Viaje <b style="color:var(--primary-color)">${servicio.etiqueta}</b> solicitado! Buscando conductor…`;
+      btnPedirViaje.disabled = true;
+      btnPedirViaje.textContent = 'Solicitud enviada';
     }
 
     /* ============================================================
@@ -2372,9 +2360,7 @@
       }
 
       mostrarToast('¡Viaje aceptado con éxito!');
-
-      // REDIRECCIÓN INMEDIATA A LA PANTALLA DEL CONDUCTOR
-      window.location.href = `viaje.html?id=${viaje.id}&rol=conductor`;
+      cargarViajesSolicitados();
     }
 
     /* ============================================================
