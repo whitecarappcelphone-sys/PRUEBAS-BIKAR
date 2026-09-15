@@ -10,10 +10,7 @@
   <link rel="preconnect" href="https://maps.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ============================================================
-       BIKAR · PARTE 2/2 · MAPA, VIAJES Y TIEMPO REAL (Google Maps)
-       Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e
-       ============================================================ */
+    /* BIKAR · Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e */
     :root{
       --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#333; --primary-color:#4785A7;
       --primary-hover:#366986; --border-color:#ccc; --deep-blue:#134989; --muted-text:#666;
@@ -49,7 +46,7 @@
     @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
     @keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 
-    /* ================= MAPA (Google Maps) ================= */
+    /* MAPA (Google Maps) */
     #map{position:absolute;inset:0;width:100%;height:100vh;height:100dvh;z-index:1;background:var(--bg-color)}
     .gm-style .gm-style-iw-c{background:var(--glass-bg-strong)!important;border:1px solid var(--glass-border)!important;
       border-radius:14px!important;box-shadow:0 12px 34px rgba(0,0,0,.30)!important;padding:0!important;
@@ -62,7 +59,6 @@
     .gm-style .gm-style-cc{opacity:.7}
     .gmnoprint a,.gmnoprint span,.gm-style-cc{font-size:10px!important}
 
-    /* Popup del punto de partida */
     .popup-origen{position:relative;min-width:200px;max-width:250px;padding:12px 44px 12px 14px}
     .popup-origen-label{display:block;margin-bottom:4px;color:var(--primary-color);font-size:.62rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
     .popup-origen-address{display:block;color:var(--text-color);font-size:.82rem;line-height:1.32;font-weight:700}
@@ -71,14 +67,12 @@
       background:var(--field-bg);color:var(--primary-color);font-size:1.2rem;line-height:1;cursor:pointer;transition:background .2s,transform .2s}
     .popup-origen-change:hover{background:rgba(71,133,167,.14);transform:translate(1px,-50%)}
 
-    /* PERFIL */
     .perfil-superior{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;z-index:3000;width:46px;height:46px;border-radius:50%;overflow:hidden;
       border:2px solid var(--primary-color);box-shadow:0 8px 24px rgba(0,0,0,.25);background-color:var(--card-bg);cursor:pointer;transition:transform .2s,box-shadow .2s}
     .perfil-superior:hover{transform:scale(1.05)}
     .perfil-superior.activo{box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 5px rgba(71,133,167,.28)}
     #foto-perfil-header{width:100%;height:100%;object-fit:cover;display:block}
 
-    /* BOTÓN TEMA (sol / luna) */
     .btn-theme-toggle{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--glass-bg-strong);
       border:1px solid rgba(71,133,167,.5);color:var(--text-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
@@ -87,7 +81,6 @@
     .btn-theme-toggle svg{width:20px;height:20px;transition:transform .4s ease}
     .btn-theme-toggle:hover svg{transform:rotate(-20deg) scale(1.08)}
 
-    /* SELECTOR DE MODO (ahora solo muestra el nombre del usuario) */
     #mode-selector{position:absolute;top:calc(16px + env(safe-area-inset-top));left:70px;right:78px;z-index:2000;max-width:420px;animation:fadeIn .6s ease both}
     @media (min-width:620px){#mode-selector{left:50%;right:auto;width:420px;transform:translateX(-50%)}}
     .btn-secondary{width:100%;padding:12px 16px;background:var(--glass-bg-strong);color:var(--primary-color);border:1px solid rgba(71,133,167,.45);
@@ -101,7 +94,6 @@
     #btn-cambiar-modo.chip-usuario{cursor:default;color:var(--text-color);font-weight:700}
     #btn-cambiar-modo.chip-usuario:hover{transform:none;border-color:rgba(71,133,167,.45);box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 var(--glass-highlight)}
 
-    /* PANELES */
     .ui-panel{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:92%;max-width:420px;
       max-height:calc(92vh - 86px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       padding:22px 20px 20px;z-index:1000;text-align:center;
@@ -121,7 +113,6 @@
     .panel-subtitle,.status-text{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
     .status-text{line-height:1.4;margin:4px 0 14px}
 
-    /* CAMPOS */
     .input-group{position:relative;margin-bottom:12px;text-align:left}
     .input-group>input{width:100%;height:54px;padding:0 16px 0 50px;background-color:var(--field-bg);border:1px solid var(--field-border);
       border-radius:14px;color:var(--text-color);font-size:.95rem;outline:none;background-repeat:no-repeat;background-position:16px center;
@@ -131,7 +122,6 @@
     #input-destino{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
     #input-origen-modal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E")}
 
-    /* SUGERENCIAS */
     .lista-sugerencias{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
       border-radius:14px;max-height:240px;overflow-y:auto;z-index:2000;box-shadow:0 16px 40px rgba(0,0,0,.35);text-align:left;
       -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);-webkit-overflow-scrolling:touch}
@@ -147,7 +137,6 @@
     .powered-google{display:flex;justify-content:flex-end;align-items:center;gap:5px;padding:6px 12px;font-size:.6rem;color:var(--muted-text);
       border-top:1px solid var(--glass-border);letter-spacing:.04em}
 
-    /* BOTÓN PRINCIPAL */
     .btn-main{position:relative;width:100%;padding:15px 46px 15px 20px;border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:600;
       cursor:pointer;overflow:hidden;background:linear-gradient(90deg,#134989 0%,#366986 45%,#4785A7 100%);
       box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
@@ -160,7 +149,6 @@
     .btn-main:active{transform:translateY(0);filter:brightness(.92)}
     .btn-main:disabled{opacity:.6;cursor:progress;transform:none}
 
-    /* MODAL ORIGEN */
     .modal-origen{position:fixed;inset:0;z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:calc(78px + env(safe-area-inset-top)) 16px 24px;
       background:rgba(8,22,34,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:fadeIn .2s ease both}
     .modal-origen-dialog{position:relative;width:min(100%,380px);padding:18px;background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));
@@ -177,7 +165,6 @@
       background:rgba(71,133,167,.10);color:var(--primary-color);font-size:.78rem;font-weight:700;cursor:pointer}
     .btn-modal-gps:hover{background:rgba(71,133,167,.20)}
 
-    /* PANEL DE SERVICIOS */
     #panel-servicios{position:fixed;top:0;right:0;bottom:0;width:min(440px,94vw);max-width:100vw;z-index:4500;
       background:linear-gradient(180deg,var(--glass-bg-strong),var(--glass-bg));border-left:1px solid var(--glass-border);
       -webkit-backdrop-filter:blur(26px) saturate(160%);backdrop-filter:blur(26px) saturate(160%);
@@ -248,7 +235,6 @@
     .servicios-footer .btn-main{padding:16px 46px 16px 20px}
     .servicios-leyenda{text-align:center;font-size:.72rem;color:var(--muted-text);margin-top:10px;line-height:1.35}
 
-    /* CONDUCTOR */
     #ui-conductor{display:flex;flex-direction:column}
     #ui-conductor .panel-title,#ui-conductor .status-text{text-align:center}
     #contenedor-solicitudes{display:flex;flex-direction:column;gap:12px;padding:2px 2px 2px 0;transition:opacity .3s ease}
@@ -289,7 +275,6 @@
     .loading-pulse span:nth-child(2){animation-delay:.2s}
     .loading-pulse span:nth-child(3){animation-delay:.4s}
 
-    /* Toast */
     #toast{position:fixed;top:calc(80px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-20px);z-index:9000;
       padding:12px 20px;border-radius:14px;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
       -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 12px 32px rgba(0,0,0,.25);
@@ -299,9 +284,7 @@
     #toast .toast-icon{width:24px;height:24px;flex-shrink:0;border-radius:50%;background:var(--primary-color);color:#fff;
       display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800}
 
-    /* ============================================================
-       AÑADIDO · MENÚ FLOTANTE DEL PERFIL (4 botones pequeños)
-       ============================================================ */
+    /* MENÚ FLOTANTE DEL PERFIL */
     @keyframes menuItemIn{from{opacity:0;transform:translate(-16px,-18px) scale(.55)}to{opacity:1;transform:translate(0,0) scale(1)}}
     #menu-perfil{position:absolute;top:calc(68px + env(safe-area-inset-top));left:14px;z-index:3100;
       display:flex;flex-direction:column;align-items:flex-start;gap:7px;pointer-events:none}
@@ -326,9 +309,7 @@
     .menu-perfil-item.peligro .mi-ico{background:linear-gradient(135deg,#e05a5a,#a32626)}
     .menu-perfil-item.peligro:hover{border-color:#e05a5a;box-shadow:0 10px 26px rgba(224,90,90,.25),0 0 0 3px rgba(224,90,90,.12)}
 
-    /* ============================================================
-       AÑADIDO · MODALES GENÉRICOS (perfil / historial / confirmación)
-       ============================================================ */
+    /* MODALES GENÉRICOS */
     .modal-bikar{position:fixed;inset:0;z-index:5500;display:flex;align-items:center;justify-content:center;
       padding:calc(70px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));
       background:rgba(8,22,34,.42);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:fadeIn .2s ease both;overflow-y:auto}
@@ -348,7 +329,6 @@
     .modal-kicker{display:block;font-size:.6rem;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--primary-color);margin-bottom:4px}
     .modal-titulo{font-size:1.15rem;font-weight:800;letter-spacing:-.01em;margin-bottom:2px}
 
-    /* PERFIL */
     .perfil-hero{display:flex;align-items:center;gap:14px;margin:6px 0 16px}
     .perfil-hero-foto{width:74px;height:74px;border-radius:24px;object-fit:cover;flex-shrink:0;background:var(--field-bg);
       border:2px solid var(--primary-color);box-shadow:0 10px 26px rgba(71,133,167,.32)}
@@ -366,11 +346,10 @@
     .perfil-vacio{padding:18px;text-align:center;font-size:.82rem;color:var(--muted-text)}
     .perfil-zona-acciones{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
     .btn-mini{display:inline-flex;align-items:center;gap:6px;padding:10px 13px;border-radius:12px;cursor:pointer;font-size:.74rem;font-weight:800;
-      color:var(--primary-color);background:rgba(71,133,167,.12);border:1px solid rgba(71,133,167,.45);transition:all .2s}
+      color:var(--primary-color');background:rgba(71,133,167,.12);border:1px solid rgba(71,133,167,.45);transition:all .2s}
     .btn-mini:hover{background:rgba(71,133,167,.22);transform:translateY(-1px)}
     .btn-mini svg{width:14px;height:14px}
 
-    /* HISTORIAL */
     .historial-tabs{display:flex;gap:8px;margin:12px 0 10px;flex-shrink:0}
     .historial-tab{flex:1;padding:9px 10px;border-radius:12px;cursor:pointer;font-size:.76rem;font-weight:700;
       color:var(--muted-text);background:var(--field-bg);border:1px solid var(--field-border);transition:all .2s}
@@ -418,7 +397,6 @@
     .pago-fila-sub{font-size:.67rem;color:var(--muted-text);margin-top:2px}
     .pago-fila-valor{font-size:.92rem;font-weight:800;color:var(--primary-color);white-space:nowrap}
 
-    /* CONFIRMACIÓN PROPIA */
     .modal-bikar.confirmar-capa{z-index:8000;align-items:center}
     .confirmar-dialog{width:min(100%,340px);text-align:center;padding:24px 20px 18px}
     .confirmar-icono{width:54px;height:54px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -433,7 +411,6 @@
     .btn-conf-aceptar{color:#fff;border:none;background:linear-gradient(90deg,#a32626,#e05a5a);box-shadow:0 10px 24px rgba(224,90,90,.32)}
     .btn-conf-aceptar:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(224,90,90,.4)}
 
-    /* SELECTOR DE SERVICIO DEL CONDUCTOR */
     #selector-servicio-conductor{margin:0 0 14px;text-align:left}
     .ssc-label{display:block;font-size:.58rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-color);margin-bottom:6px}
     .ssc-pills{display:flex;flex-wrap:wrap;gap:6px}
@@ -444,9 +421,7 @@
     .ssc-pill.activo{color:#fff;background:linear-gradient(90deg,#134989,#4785A7);border-color:transparent}
     .ssc-pill.activo svg{color:#fff}
 
-    /* ============================================================
-       AÑADIDO · PANTALLA DE ACCESO (a donde vuelve al cerrar sesión)
-       ============================================================ */
+    /* PANTALLA DE ACCESO */
     #pantalla-acceso{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;
       padding:calc(24px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));
       background:radial-gradient(120% 90% at 50% 0%,rgba(19,73,137,.42),rgba(8,22,34,.88));
@@ -488,7 +463,6 @@
     .acceso-link{background:none;border:none;padding:0;cursor:pointer;font-size:.76rem;font-weight:800;color:var(--primary-color);text-decoration:underline}
     .acceso-link:hover{color:var(--primary-hover)}
 
-    /* REGISTRO */
     .registro-form{display:flex;flex-direction:column;gap:10px;text-align:left}
     .reg-label{display:block;font-size:.58rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-color);margin-bottom:5px}
     .reg-input{width:100%;height:48px;padding:0 14px;border-radius:13px;background:var(--field-bg);border:1px solid var(--field-border);
@@ -503,7 +477,7 @@
 </head>
 <body class="dark-mode">
 
-  <!-- ================= PANTALLA DE ACCESO (cierre de sesión vuelve aquí) ================= -->
+  <!-- PANTALLA DE ACCESO -->
   <div id="pantalla-acceso" class="oculto">
     <div class="acceso-dialog">
       <div class="acceso-logo">
@@ -545,12 +519,11 @@
     </div>
   </div>
 
-  <!-- ================= APP ================= -->
+  <!-- APP -->
   <div id="perfil-superior" class="perfil-superior oculto" title="Toca para ver tu menú">
     <img id="foto-perfil-header" src="" alt="Foto de Perfil">
   </div>
 
-  <!-- Menú flotante que se desprende desde la foto de perfil -->
   <nav id="menu-perfil" class="oculto" aria-label="Menú de usuario">
     <button type="button" class="menu-perfil-item" id="menu-item-perfil">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>
@@ -717,7 +690,7 @@
     </div>
   </div>
 
-  <!-- MODAL REGISTRO (genera los datos que verás en Perfil) -->
+  <!-- MODAL REGISTRO -->
   <div id="modal-registro" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="registro-titulo">
     <div class="modal-bikar-dialog" style="height:min(700px,100%)">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-registro" aria-label="Cerrar">×</button>
@@ -771,7 +744,7 @@
     </div>
   </div>
 
-  <!-- CONFIRMACIÓN PROPIA (sin alerta del navegador) -->
+  <!-- CONFIRMACIÓN PROPIA -->
   <div id="modal-confirmar" class="modal-bikar confirmar-capa oculto" role="alertdialog" aria-modal="true" aria-labelledby="confirmar-titulo">
     <div class="modal-bikar-dialog confirmar-dialog">
       <div class="confirmar-icono">
@@ -790,28 +763,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    /* ============================================================
-       CONFIGURACIÓN
-       ============================================================ */
+    /* CONFIGURACIÓN */
     const GOOGLE_MAPS_API_KEY = "AIzaSyAjIECrPNcpw4rEJhsPqqa1zxv-qYGOgRM";
-
     const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const LOGIN_URL = "index.html";              /* Página 1/2 (acceso) */
-    const LLAVE_SESION = "bikar_usuario";        /* Puente con el login */
-    const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo"; /* Respaldo local del registro */
-    const LLAVE_SERVICIO_CONDUCTOR = "bikar_servicio_conductor"; /* Servicio elegido por el conductor */
-    const PASAJERO_ID_PRUEBA = "5";
-    const CONDUCTOR_ID_PRUEBA = "10";
-    /* Foto por defecto del repositorio de GitHub (si falla, se genera un avatar con la inicial) */
+    const LOGIN_URL = "index.html";
+    const LLAVE_SESION = "bikar_usuario";
+    const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo";
+    const LLAVE_SERVICIO_CONDUCTOR = "bikar_servicio_conductor";
+    const PASAJERO_ID_PRUEBA = "5", CONDUCTOR_ID_PRUEBA = "10";
     const FOTO_REPO_GITHUB = "https://raw.githubusercontent.com/bikar-app/perfil/main/index.svg";
 
-    /* ============================================================
-       CATÁLOGO DE SERVICIOS · idéntico al <select id="doc-tipo-servicio">
-       del formulario de registro (Parte 1/2)
-       ============================================================ */
+    /* CATÁLOGO DE SERVICIOS */
     const ICONOS_SERVICIO = {
       taxi_auto: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M9 7V4h6v3"/></svg>`,
       moto_taxi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/><path d="M6 11h4"/></svg>`,
@@ -832,33 +797,23 @@
       if (raw === null || raw === undefined || raw === '') return null;
       let c = String(raw).toLowerCase().trim();
       try { c = c.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
-      c = c.replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
-      if (/moto\s*deliver|delivery|domicili|paqueter|mensajer|reparto|envio|env\u00edo/.test(c)) return 'moto_delivery';
-      if (/moto\s*taxi|mototaxi|\bmoto\b/.test(c))                                    return 'moto_taxi';
-      if (/carga|mudanza|camion|furgon|encomienda/.test(c))                            return 'taxi_carga';
-      if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c))            return 'taxi_auto';
+      c = c.replace(/[_\-./]+/g, ' ').replace(/\s+/g, ' ').trim();
+      if (/delivery|domicili|paqueter|mensajer|reparto|envio|enviar/.test(c))          return 'moto_delivery';
+      if (/mototaxi|motos?\s?taxi|\bmoto\b/.test(c))                                    return 'moto_taxi';
+      if (/carga|mudanza|camion|furgon|encomienda/.test(c))                             return 'taxi_carga';
+      if (/taxis?\s?auto|\bautob|\btaxi\b|\bcarro\b|\bcoche\b|\bsedan\b/.test(c))       return 'taxi_auto';
       return null;
     }
-    function servicioPorClave(clave){ return CATALOGO_SERVICIOS.find(s => s.clave === clave) || null; }
-    function etiquetaServicio(clave){ const s = servicioPorClave(clave); return s ? s.etiqueta : 'Servicio'; }
-    function iconoServicio(clave){ return ICONOS_SERVICIO[clave] || ICONOS_SERVICIO.default; }
+    const servicioPorClave = (clave) => CATALOGO_SERVICIOS.find(s => s.clave === clave) || null;
+    const etiquetaServicio = (clave) => { const s = servicioPorClave(clave); return s ? s.etiqueta : 'Servicio'; };
+    const iconoServicio = (clave) => ICONOS_SERVICIO[clave] || ICONOS_SERVICIO.default;
 
-    /* ============================================================
-       ESTADO
-       ============================================================ */
+    /* ESTADO */
     let modoActual = 'pasajero';
-    let origen = null;
-    let destino = null;
-    let origenNombre = 'Ubicación actual';
-    let origenDetalle = '';
-    let destinoNombre = '';
-    let destinoDetalle = '';
-    let distanciaKm = 0;
-    let duracionMin = 0;
-    let servicioSeleccionado = null;
-    let usuarioActual = null;
-    let claveServicioConductor = null;
-    let documentacionVehiculo = null;
+    let origen = null, destino = null;
+    let origenNombre = 'Ubicación actual', origenDetalle = '', destinoNombre = '', destinoDetalle = '';
+    let distanciaKm = 0, duracionMin = 0, servicioSeleccionado = null;
+    let usuarioActual = null, claveServicioConductor = null, documentacionVehiculo = null;
     let sesionYaVerificada = false;
 
     /* Google */
@@ -866,13 +821,12 @@
     let sessionTokenOrigen = null, sessionTokenDestino = null;
     let marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
     let popupOrigenDireccion = null, popupOrigenSub = null;
-    const timersBusqueda = { origen:null, destino:null };
+    const timersBusqueda = { origen: null, destino: null };
     const cacheDirecciones = new Map();
 
-    /* ============================================================
-       DOM
-       ============================================================ */
+    /* DOM */
     const $ = (id) => document.getElementById(id);
+    const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
     const btnCambiarModo = $('btn-cambiar-modo');
     const uiPasajero = $('ui-pasajero');
     const uiConductor = $('ui-conductor');
@@ -901,8 +855,6 @@
     const toastText = $('toast-text');
     const iconMoon = $('icon-moon');
     const iconSun = $('icon-sun');
-
-    /* DOM · añadidos */
     const menuPerfil = $('menu-perfil');
     const menuItemPerfil = $('menu-item-perfil');
     const menuItemHistorial = $('menu-item-historial');
@@ -920,9 +872,7 @@
     const selectorServicioConductor = $('selector-servicio-conductor');
     const sscPills = $('ssc-pills');
 
-    /* ============================================================
-       ESTILOS DEL MAPA (claro premium / oscuro)
-       ============================================================ */
+    /* ESTILOS DEL MAPA (claro premium / oscuro) */
     const ESTILO_CLARO = [
       {elementType:'geometry',stylers:[{color:'#f5f7fa'}]},
       {elementType:'labels.icon',stylers:[{visibility:'off'}]},
@@ -950,7 +900,7 @@
       {elementType:'labels.icon',stylers:[{visibility:'off'}]},
       {elementType:'labels.text.fill',stylers:[{color:'#9aa5ad'}]},
       {elementType:'labels.text.stroke',stylers:[{color:'#121212'}]},
-      {featureType:'administrative',elementType:'geometry',stylers:[{color:'#2c3a44'}]},
+      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#2c3a44'}]},
       {featureType:'administrative.land_parcel',stylers:[{visibility:'off'}]},
       {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#7f8b93'}]},
       {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1d2b23'}]},
@@ -965,16 +915,12 @@
       {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#4785A7'}]}
     ];
 
-    /* ============================================================
-       CARGA DE GOOGLE MAPS
-       ============================================================ */
+    /* CARGA DE GOOGLE MAPS */
     function cargarGoogleMaps() {
       const s = document.createElement('script');
       s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places,geometry&language=es&region=PE&callback=iniciarMapa`;
       s.async = true; s.defer = true;
-      s.onerror = () => {
-        statusTextPasajero.textContent = 'No se pudo cargar Google Maps. Revisa tu conexión.';
-      };
+      s.onerror = () => { statusTextPasajero.textContent = 'No se pudo cargar Google Maps. Revisa tu conexión.'; };
       document.head.appendChild(s);
     }
 
@@ -1018,9 +964,7 @@
       verificarSesionGuardada();
     };
 
-    /* ============================================================
-       GEOCODIFICACIÓN
-       ============================================================ */
+    /* GEOCODIFICACIÓN */
     function componente(components, tipo) {
       const c = (components || []).find(x => x.types.includes(tipo));
       return c ? c.short_name : '';
@@ -1071,9 +1015,7 @@
       });
     }
 
-    /* ============================================================
-       MARCADOR / POPUP DE ORIGEN
-       ============================================================ */
+    /* MARCADOR / POPUP DE ORIGEN */
     function contenidoPopupOrigen() {
       const cont = document.createElement('div');
       cont.className = 'popup-origen';
@@ -1155,12 +1097,10 @@
         await establecerOrigen(coords, null, null, false);
       }, () => {
         statusTextPasajero.textContent = 'GPS desactivado. Usa "Cambiar punto de partida" para escribir tu dirección.';
-      }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+      }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
     }
 
-    /* ============================================================
-       RUTA REAL (Google Directions) + TARIFA
-       ============================================================ */
+    /* RUTA REAL (Google Directions) + TARIFA */
     function calcularRuta() {
       if (!origen || !destino) return;
       directionsService.route({
@@ -1175,7 +1115,7 @@
           duracionMin = Math.max(2, Math.round(leg.duration.value / 60));
           const bounds = new google.maps.LatLngBounds();
           bounds.extend(origen); bounds.extend(destino);
-          map.fitBounds(bounds, { top:120, bottom:300, left:60, right:60 });
+          map.fitBounds(bounds, { top: 120, bottom: 300, left: 60, right: 60 });
         } else {
           distanciaKm = google.maps.geometry.spherical.computeDistanceBetween(
             new google.maps.LatLng(origen), new google.maps.LatLng(destino)) / 1000;
@@ -1183,19 +1123,17 @@
         }
         const desde = Math.min(...CATALOGO_SERVICIOS.map(s => tarifaDe(s)));
         statusTextPasajero.innerHTML =
-          `<b style="color:var(--primary-color)">${distanciaKm.toFixed(1)} km</b> · ${duracionMin} min · desde <b>S/ ${(desde/1000).toFixed(2)}</b>`;
+          `<b style="color:var(--primary-color)">${distanciaKm.toFixed(1)} km</b> · ${duracionMin} min · desde <b>S/ ${(desde / 1000).toFixed(2)}</b>`;
         btnPedirViaje.textContent = 'Ver servicios disponibles';
         btnPedirViaje.disabled = false;
         mostrarPopupOrigen();
       });
     }
 
-    function tarifaDe(servicio){ return Math.round((servicio.base + distanciaKm * servicio.porKm) / 100) * 100; }
-    function formatoMoneda(v){ return '$' + Number(v).toLocaleString('es-CO'); }
+    const tarifaDe = (servicio) => Math.round((servicio.base + distanciaKm * servicio.porKm) / 100) * 100;
+    const formatoMoneda = (v) => '$' + Number(v).toLocaleString('es-CO');
 
-    /* ============================================================
-       AUTOCOMPLETADO (Google Places)
-       ============================================================ */
+    /* AUTOCOMPLETADO (Google Places) */
     const SVG_PIN = `<svg class="sugerencia-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
 
     function pieGoogle() {
@@ -1220,9 +1158,7 @@
           language: 'es',
           sessionToken: tipo === 'origen' ? sessionTokenOrigen : sessionTokenDestino
         };
-        if (origen) {
-          peticion.locationBias = new google.maps.Circle({ center: origen, radius: 40000 });
-        }
+        if (origen) peticion.locationBias = new google.maps.Circle({ center: origen, radius: 40000 });
 
         autocompleteService.getPlacePredictions(peticion, (preds, status) => {
           contenedor.innerHTML = '';
@@ -1246,1141 +1182,1033 @@
         });
       }, 260);
     }
-
-    function obtenerDetallePlace(placeId, tipo, callback) {
-      placesService.getDetails({
-        placeId,
-        fields: ['geometry','name','formatted_address','address_components'],
-        language: 'es',
-        sessionToken: tipo === 'origen' ? sessionTokenOrigen : sessionTokenDestino
-      }, (place, status) => {
-        if (tipo === 'origen') sessionTokenOrigen = null; else sessionTokenDestino = null;
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.geometry) {
-          mostrarToast('No se pudo obtener esa dirección', '!'); return;
-        }
-        const coords = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
-        callback(coords, direccionCorta(place), direccionDetalle(place), place.formatted_address);
-      });
+    /* DETALLE DE LUGAR (Google Places) */
+function obtenerDetallePlace(placeId, tipo, callback) {
+  placesService.getDetails({
+    placeId, fields: ['geometry','name','formatted_address','address_components'],
+    language: 'es',
+    sessionToken: tipo === 'origen' ? sessionTokenOrigen : sessionTokenDestino
+  }, (place, status) => {
+    if (tipo === 'origen') sessionTokenOrigen = null; else sessionTokenDestino = null;
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.geometry) {
+      mostrarToast('No se pudo obtener esa dirección', '!'); return;
     }
+    callback({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }, direccionCorta(place), direccionDetalle(place), place.formatted_address);
+  });
+}
 
-    inputDestino.addEventListener('input', () => {
-      buscarSugerencias(inputDestino.value, sugerenciasDestino, 'destino', (coords, corta, detalle, completa) => {
-        inputDestino.value = completa || [corta, detalle].filter(Boolean).join(', ');
-        establecerDestino(coords, corta, detalle, true);
-      });
-    });
+on(inputDestino, 'input', () => {
+  buscarSugerencias(inputDestino.value, sugerenciasDestino, 'destino', (coords, corta, detalle, completa) => {
+    inputDestino.value = completa || [corta, detalle].filter(Boolean).join(', ');
+    establecerDestino(coords, corta, detalle, true);
+  });
+});
+on(inputOrigenModal, 'input', () => {
+  buscarSugerencias(inputOrigenModal.value, sugerenciasOrigen, 'origen', (coords, corta, detalle) => {
+    establecerOrigen(coords, corta, detalle, true);
+    map.setZoom(16);
+    cerrarModalOrigen();
+    mostrarToast('Punto de partida actualizado');
+  });
+});
 
-    inputOrigenModal.addEventListener('input', () => {
-      buscarSugerencias(inputOrigenModal.value, sugerenciasOrigen, 'origen', (coords, corta, detalle) => {
-        establecerOrigen(coords, corta, detalle, true);
-        map.setZoom(16);
-        cerrarModalOrigen();
-        mostrarToast('Punto de partida actualizado');
-      });
-    });
+/* MODAL DE ORIGEN */
+function abrirModalOrigen() {
+  modalOrigen.classList.remove('oculto');
+  inputOrigenModal.value = '';
+  sugerenciasOrigen.innerHTML = '';
+  setTimeout(() => inputOrigenModal.focus(), 60);
+}
+function cerrarModalOrigen() {
+  modalOrigen.classList.add('oculto');
+  inputOrigenModal.value = '';
+  sugerenciasOrigen.innerHTML = '';
+  mostrarPopupOrigen();
+}
+on($('btn-cerrar-modal-origen'), 'click', cerrarModalOrigen);
+on($('btn-cancelar-modal-origen'), 'click', cerrarModalOrigen);
+on($('btn-usar-gps'), 'click', () => { obtenerUbicacionActual(true); cerrarModalOrigen(); });
+on(modalOrigen, 'click', (e) => { if (e.target === modalOrigen) cerrarModalOrigen(); });
 
-    /* ============================================================
-       MODAL DE ORIGEN
-       ============================================================ */
-    function abrirModalOrigen() {
-      modalOrigen.classList.remove('oculto');
-      inputOrigenModal.value = '';
-      sugerenciasOrigen.innerHTML = '';
-      setTimeout(() => inputOrigenModal.focus(), 60);
+on(document, 'keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!modalConfirmar.classList.contains('oculto')) { resolverConfirmacion(false); return; }
+  if (!modalRegistro.classList.contains('oculto')) { modalRegistro.classList.add('oculto'); return; }
+  if (!modalPerfil.classList.contains('oculto')) { modalPerfil.classList.add('oculto'); return; }
+  if (!modalHistorial.classList.contains('oculto')) { modalHistorial.classList.add('oculto'); return; }
+  if (!menuPerfil.classList.contains('oculto')) { cerrarMenuPerfil(); return; }
+  if (!modalOrigen.classList.contains('oculto')) cerrarModalOrigen();
+  else if (panelServicios.classList.contains('visible')) cerrarPanelServicios();
+});
+
+/* TEMA (sol / luna) */
+function alternarTema() {
+  document.body.classList.toggle('dark-mode');
+  actualizarIconoTema();
+  if (map) map.setOptions({ styles: document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO });
+  setTimeout(mostrarPopupOrigen, 120);
+}
+function actualizarIconoTema() {
+  const oscuro = document.body.classList.contains('dark-mode');
+  iconMoon.classList.toggle('oculto', oscuro);
+  iconSun.classList.toggle('oculto', !oscuro);
+}
+actualizarIconoTema();
+on($('btn-theme-toggle'), 'click', alternarTema);
+
+/* TOAST */
+let toastTimer;
+function mostrarToast(mensaje, icono = '✓') {
+  toastText.textContent = mensaje;
+  toast.querySelector('.toast-icon').textContent = icono;
+  toast.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
+}
+
+/* UTILIDADES DE USUARIO / SESIÓN */
+const esLaMismaPagina = (url) => {
+  const actual = location.pathname.split('/').pop() || 'index.html';
+  return actual === url || (actual === '' && url === 'index.html');
+};
+function nombreUsuario(u) {
+  if (!u) return 'Usuario BIKAR';
+  const compuesto = [u.nombre || u.nombres, u.apellido || u.apellidos].filter(Boolean).join(' ').trim();
+  return compuesto || u.nombre_comercio || u.nombre_establecimiento || u.usuario || u.correo || u.email || 'Usuario BIKAR';
+}
+function avatarPorDefecto(nombre) {
+  const letra = (String(nombre || 'B').trim().charAt(0) || 'B').toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#134989"/><stop offset="1" stop-color="#4785A7"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Inter,Arial" font-size="46" font-weight="800" fill="#ffffff">${letra}</text></svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+const fotoDeUsuario = (u) => u ? (u.foto || u.foto_url || u.avatar || u.imagen || u.foto_perfil || FOTO_REPO_GITHUB) : avatarPorDefecto('B');
+const limpiarNulos = (obj) => Object.fromEntries(Object.entries(obj || {}).filter(([, v]) => v !== null && v !== undefined && v !== ''));
+function mezclarDatos(base, extra) {
+  const r = { ...(base || {}) };
+  Object.entries(extra || {}).forEach(([k, v]) => { if (v === null || v === undefined || v === '') return; r[k] = v; });
+  return r;
+}
+const guardarSesion = () => { try { localStorage.setItem(LLAVE_SESION, JSON.stringify(usuarioActual || {})); } catch (e) {} };
+
+/* Consultas compartidas a Supabase (tabla usuarios / documentos_conductor) */
+async function encontrarUsuarioBD(u) {
+  try {
+    const { data, error } = await supabaseClient.from('usuarios').select('*').limit(500);
+    if (error || !data || !data.length) return null;
+    return data.find(f =>
+      (f.id != null && u.id != null && String(f.id) === String(u.id)) ||
+      (f.correo && u.correo && String(f.correo).toLowerCase() === String(u.correo).toLowerCase()) ||
+      (f.usuario && u.usuario && String(f.usuario).toLowerCase() === String(u.usuario).toLowerCase()) ||
+      (f.email && u.correo && String(f.email).toLowerCase() === String(u.correo).toLowerCase())) || null;
+  } catch (e) { console.warn('No se pudo leer usuarios:', e); return null; }
+}
+async function buscarDocConductor(u) {
+  try {
+    const { data, error } = await supabaseClient.from('documentos_conductor').select('*').limit(300);
+    if (error || !data || !data.length) return null;
+    const idNum = u.conductor_id || u.id || u.Id;
+    return data.find(f =>
+      (f.usuario_id != null && String(f.usuario_id) === String(u.id)) ||
+      (f.conductor_id != null && String(f.conductor_id) === String(idNum)) ||
+      (f.correo && u.correo && String(f.correo).toLowerCase() === String(u.correo).toLowerCase())) || null;
+  } catch (e) { console.warn('No se pudo leer documentos_conductor:', e); return null; }
+}
+
+function verificarSesionGuardada() {
+  if (sesionYaVerificada) return;
+  sesionYaVerificada = true;
+  const sesion = localStorage.getItem(LLAVE_SESION);
+  if (!sesion) {
+    if (esLaMismaPagina(LOGIN_URL)) { mostrarPantallaAcceso(); return; }
+    window.location.href = LOGIN_URL; return;
+  }
+  try {
+    usuarioActual = JSON.parse(sesion);
+    enriquecerUsuario().finally(() => aplicarSesionUsuario(usuarioActual));
+  } catch (e) {
+    console.error('Error al cargar sesión:', e);
+    if (esLaMismaPagina(LOGIN_URL)) { mostrarPantallaAcceso(); return; }
+    window.location.href = LOGIN_URL;
+  }
+}
+
+/* Trae de Supabase la ficha completa del usuario y su documentación
+   para que PERFIL muestre exactamente lo del formulario de registro */
+async function enriquecerUsuario() {
+  if (!usuarioActual) return;
+  const u = usuarioActual;
+
+  let docLocal = null;
+  try { docLocal = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null'); } catch (e) {}
+
+  const filaBD = await encontrarUsuarioBD(u);
+  const docBD = await buscarDocConductor(u);
+  documentacionVehiculo = docBD || docLocal || null;
+
+  const mezcla = mezclarDatos(mezclarDatos(limpiarNulos(filaBD || {}), limpiarNulos(docLocal || {})), limpiarNulos(u));
+  if (filaBD && filaBD.id !== undefined && mezcla.id === undefined) mezcla.id = filaBD.id;
+  mezcla.foto = u.foto || u.foto_url || (filaBD && (filaBD.foto || filaBD.foto_url)) || (docBD && (docBD.foto || docBD.foto_url)) || '';
+  usuarioActual = mezcla;
+  guardarSesion();
+}
+
+async function aplicarSesionUsuario(usuario) {
+  if (!usuario) {
+    if (esLaMismaPagina(LOGIN_URL)) { mostrarPantallaAcceso(); return; }
+    window.location.href = LOGIN_URL; return;
+  }
+
+  fotoPerfilHeader.src = fotoDeUsuario(usuario);
+  perfilSuperior.classList.remove('oculto');
+
+  if (usuario.tipo_usuario === 'conductor') {
+    modoActual = 'conductor';
+    actualizarChipUsuario();
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.remove('oculto');
+    await resolverServicioDelConductor();
+    pintarSelectorServicioConductor();
+    cargarViajesSolicitados();
+  } else {
+    modoActual = 'pasajero';
+    actualizarChipUsuario();
+    uiConductor.classList.add('oculto');
+    uiPasajero.classList.remove('oculto');
+    if (usuario.tipo_usuario === 'comercio' && !uiPasajero.querySelector('.comercio-info')) {
+      uiPasajero.insertAdjacentHTML('afterbegin',
+        `<div class="comercio-info"><b>Comercio activo:</b> ${usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento'} · ${usuario.categoria || 'Categoría no registrada'}</div>`);
     }
-    function cerrarModalOrigen() {
-      modalOrigen.classList.add('oculto');
-      inputOrigenModal.value = '';
-      sugerenciasOrigen.innerHTML = '';
-      mostrarPopupOrigen();
+  }
+  actualizarChipUsuario();
+}
+
+/* MENÚ FLOTANTE DEL PERFIL */
+function actualizarChipUsuario() {
+  btnCambiarModo.textContent = nombreUsuario(usuarioActual);
+  btnCambiarModo.title = modoActual === 'conductor' ? 'Modo Conductor activo' : 'Modo Pasajero activo';
+  const txt = menuItemModo.querySelector('.mi-txt');
+  if (txt) txt.textContent = modoActual === 'conductor' ? 'Modo Pasajero' : 'Modo Conductor';
+}
+function abrirMenuPerfil() {
+  menuPerfil.classList.remove('oculto');
+  perfilSuperior.classList.add('activo');
+  menuPerfil.querySelectorAll('.menu-perfil-item').forEach((el) => {
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+  });
+}
+function cerrarMenuPerfil() {
+  menuPerfil.classList.add('oculto');
+  perfilSuperior.classList.remove('activo');
+}
+const alternarMenuPerfil = () => menuPerfil.classList.contains('oculto') ? abrirMenuPerfil() : cerrarMenuPerfil();
+
+on(perfilSuperior, 'click', (e) => { e.stopPropagation(); alternarMenuPerfil(); });
+on(document, 'click', (e) => {
+  if (menuPerfil.classList.contains('oculto')) return;
+  if (menuPerfil.contains(e.target) || perfilSuperior.contains(e.target)) return;
+  cerrarMenuPerfil();
+});
+on(menuItemPerfil, 'click', () => { cerrarMenuPerfil(); abrirModalPerfil(); });
+on(menuItemHistorial, 'click', () => { cerrarMenuPerfil(); abrirModalHistorial(); });
+on(menuItemModo, 'click', async () => { cerrarMenuPerfil(); await alternarModo(); });
+on(menuItemSalir, 'click', async () => {
+  cerrarMenuPerfil();
+  const ok = await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión');
+  if (ok) cerrarSesion();
+});
+
+function cerrarSesion() {
+  try { localStorage.removeItem(LLAVE_SESION); } catch (e) {}
+  usuarioActual = null;
+  documentacionVehiculo = null;
+  claveServicioConductor = null;
+  cerrarPanelServicios();
+  cerrarMenuPerfil();
+  modalPerfil.classList.add('oculto');
+  modalHistorial.classList.add('oculto');
+  contenedorSolicitudes.innerHTML = '';
+  if (esLaMismaPagina(LOGIN_URL)) {
+    /* vuelve a la pantalla de acceso de BIKAR (sin recargar la app) */
+    $('acceso-usuario').value = '';
+    $('acceso-clave').value = '';
+    $('acceso-error').classList.remove('visible');
+    pantallaAcceso.classList.remove('oculto');
+    perfilSuperior.classList.add('oculto');
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.add('oculto');
+    btnCambiarModo.textContent = 'BIKAR';
+    mostrarToast('Sesión cerrada', '✓');
+    setTimeout(() => { try { $('acceso-usuario').focus(); } catch (e) {} }, 200);
+  } else {
+    window.location.href = LOGIN_URL;
+  }
+}
+
+/* CONFIRMACIÓN PROPIA (sin alerta del navegador) */
+let resolverConfirmacionActual = null;
+function resolverConfirmacion(valor) {
+  modalConfirmar.classList.add('oculto');
+  if (resolverConfirmacionActual) { const r = resolverConfirmacionActual; resolverConfirmacionActual = null; r(valor); }
+}
+function confirmarBikar(titulo, mensaje, textoAceptar) {
+  $('confirmar-titulo').textContent = titulo;
+  $('confirmar-mensaje').textContent = mensaje;
+  $('confirmar-aceptar').textContent = textoAceptar || 'Aceptar';
+  modalConfirmar.classList.remove('oculto');
+  return new Promise((resolve) => { resolverConfirmacionActual = resolve; });
+}
+on($('confirmar-cancelar'), 'click', () => resolverConfirmacion(false));
+on($('confirmar-aceptar'), 'click', () => resolverConfirmacion(true));
+on(modalConfirmar, 'click', (e) => { if (e.target === modalConfirmar) resolverConfirmacion(false); });
+
+/* MODAL DE PERFIL · datos del formulario de registro + foto */
+const ETIQUETAS_PERFIL = {
+  id:'ID', usuario:'Usuario', nombre:'Nombre', nombres:'Nombres', apellido:'Apellido', apellidos:'Apellidos',
+  correo:'Correo', email:'Correo', telefono:'Teléfono', celular:'Celular', whatsapp:'WhatsApp',
+  documento:'Documento', dni:'DNI', cedula:'Cédula', nit:'NIT', ruc:'RUC',
+  direccion:'Dirección', barrio:'Barrio', ciudad:'Ciudad', departamento:'Departamento', pais:'País',
+  fecha_nacimiento:'Fecha de nacimiento', genero:'Género', tipo_usuario:'Tipo de cuenta',
+  tipo_servicio:'Servicio', servicio:'Servicio', placa:'Placa', marca:'Marca', modelo:'Modelo',
+  color:'Color', anio:'Año', año:'Año', cilindraje:'Cilindraje', licencia:'Licencia',
+  soat:'SOAT', tecnomecanica:'Tecnomecánica', tarjeta_propiedad:'Tarjeta de propiedad',
+  nombre_comercio:'Comercio', nombre_establecimiento:'Establecimiento', categoria:'Categoría',
+  horario:'Horario', descripcion:'Descripción', estado:'Estado', verificado:'Verificado',
+  created_at:'Registro', creado_en:'Registro', fecha_registro:'Registro', password:'Contraseña'
+};
+const CLAVES_OCULTAS = ['foto','foto_url','avatar','imagen','foto_perfil','password','contrasena','contraseña','clave','token','pass','hash','docvehiculo'];
+
+function valorLegible(clave, valor) {
+  if (valor === null || valor === undefined || valor === '') return null;
+  if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
+  if (typeof valor === 'object') return null;
+  if (clave === 'password') return '••••••';
+  const txt = String(valor);
+  if (/^\d{4}-\d{2}-\d{2}T/.test(txt)) {
+    const f = new Date(txt);
+    if (!isNaN(f.getTime())) return f.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  return txt;
+}
+function tarjetaDato(label, valor, indice) {
+  const div = document.createElement('div');
+  div.className = 'perfil-dato';
+  div.style.animationDelay = (indice * 0.035) + 's';
+  const l = document.createElement('span'); l.className = 'perfil-dato-label'; l.textContent = label;
+  const v = document.createElement('span'); v.className = 'perfil-dato-valor'; v.textContent = valor;
+  div.append(l, v);
+  return div;
+}
+const etiquetaClave = (clave) => ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+function construirGrupo(titulo, objeto) {
+  const wrap = document.createDocumentFragment();
+  const grid = document.createElement('div');
+  grid.className = 'perfil-datos';
+  let i = 0;
+  Object.entries(objeto || {}).forEach(([clave, valor]) => {
+    if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
+    const legible = valorLegible(clave, valor);
+    if (legible === null) return;
+    grid.appendChild(tarjetaDato(etiquetaClave(clave), legible, i++));
+  });
+  if (i) {
+    const t = document.createElement('div');
+    t.className = 'perfil-seccion-titulo';
+    t.textContent = titulo;
+    wrap.append(t, grid);
+  }
+  return wrap;
+}
+
+async function abrirModalPerfil() {
+  if (!usuarioActual) return;
+  const u = usuarioActual;
+
+  $('perfil-foto-grande').src = fotoDeUsuario(u);
+  $('perfil-nombre-grande').textContent = nombreUsuario(u);
+  const rol = String(u.tipo_usuario || 'pasajero');
+  let textoRol = rol.charAt(0).toUpperCase() + rol.slice(1);
+  if (rol === 'conductor' && u.tipo_servicio) {
+    const clave = normalizarClaveServicio(u.tipo_servicio);
+    textoRol += ' · ' + (clave ? etiquetaServicio(clave) : u.tipo_servicio);
+  }
+  $('perfil-rol-badge').textContent = textoRol;
+
+  const cont = $('perfil-datos');
+  const extra = $('perfil-extra');
+  cont.innerHTML = '';
+  extra.innerHTML = '';
+
+  /* Datos de la cuenta (lo que se generó en el formulario de registro) */
+  const grid = document.createElement('div');
+  grid.className = 'perfil-datos';
+  let i = 0;
+  Object.entries(u).forEach(([clave, valor]) => {
+    if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
+    const legible = valorLegible(clave, valor);
+    if (legible === null) return;
+    grid.appendChild(tarjetaDato(etiquetaClave(clave), legible, i++));
+  });
+  if (i) cont.appendChild(grid);
+  else cont.innerHTML = '<div class="perfil-vacio">No hay datos guardados de tu registro.</div>';
+
+  /* Comercio */
+  if (u.tipo_usuario === 'comercio') {
+    extra.appendChild(construirGrupo('Datos del comercio', limpiarNulos({
+      nombre_comercio: u.nombre_comercio, nombre_establecimiento: u.nombre_establecimiento,
+      categoria: u.categoria, horario: u.horario, descripcion: u.descripcion, direccion: u.direccion
+    })));
+  }
+
+  /* Documentación del vehículo (conductores) */
+  let doc = documentacionVehiculo;
+  if (!doc) { try { doc = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null'); } catch (e) {} }
+  if (!doc && (u.tipo_usuario === 'conductor' || modoActual === 'conductor')) doc = await buscarDocConductor(u);
+  if (doc) {
+    documentacionVehiculo = doc;
+    extra.appendChild(construirGrupo('Documentación del vehículo', doc));
+  }
+
+  modalPerfil.classList.remove('oculto');
+}
+
+/* Cierre genérico de modales (botón X + clic fuera) */
+[['cerrar-modal-perfil', modalPerfil], ['cerrar-modal-historial', modalHistorial], ['cerrar-modal-registro', modalRegistro]].forEach(([id, modal]) => {
+  on($(id), 'click', () => modal.classList.add('oculto'));
+  on(modal, 'click', (e) => { if (e.target === modal) modal.classList.add('oculto'); });
+});
+on($('btn-perfil-historial'), 'click', () => { modalPerfil.classList.add('oculto'); abrirModalHistorial(); });
+on($('btn-perfil-tema'), 'click', alternarTema);
+on(fotoPerfilHeader, 'error', () => { fotoPerfilHeader.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
+on($('perfil-foto-grande'), 'error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
+
+/* HISTORIAL DE SERVICIOS Y PAGOS */
+let vistaHistorial = 'servicios';
+let historialViajes = [];
+let historialCargando = false;
+
+function fechaDeViaje(v) {
+  const f = v.created_at || v.creado_en || v.fecha || v.fecha_creacion || v.fecha_solicitud;
+  if (!f) return null;
+  const d = new Date(f);
+  return isNaN(d) ? null : d;
+}
+function textoFecha(d) {
+  if (!d) return 'Sin fecha';
+  return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) + ' · ' +
+         d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+}
+function dentroDePeriodo(d, periodo) {
+  if (periodo === 'todo' || !d) return true;
+  const ahora = new Date();
+  if (periodo === 'hoy') return d.toDateString() === ahora.toDateString();
+  if (periodo === 'semana') return (ahora - d) <= 7 * 24 * 3600 * 1000;
+  if (periodo === 'mes') return d.getMonth() === ahora.getMonth() && d.getFullYear() === ahora.getFullYear();
+  return true;
+}
+const viajesFiltrados = () => historialViajes.filter(v => dentroDePeriodo(fechaDeViaje(v), filtroPeriodo.value));
+const esConductorContexto = () => modoActual === 'conductor' || (usuarioActual && usuarioActual.tipo_usuario === 'conductor');
+
+async function cargarHistorial() {
+  historialCargando = true;
+  historialContenido.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
+    <div class="loading-pulse" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
+    Cargando tu historial…</div>`;
+
+  const u = usuarioActual || {};
+  const esConductor = esConductorContexto();
+  const idUsuario = esConductor ? (u.conductor_id || u.id || u.Id || CONDUCTOR_ID_PRUEBA) : (u.id || u.Id || PASAJERO_ID_PRUEBA);
+
+  try {
+    let consulta = supabaseClient.from('viajes').select('*').order('id', { ascending: false }).limit(300);
+    consulta = esConductor ? consulta.eq('conductor_id', idUsuario) : consulta.eq('pasajero_id', idUsuario);
+    const { data, error } = await consulta;
+    if (error) throw error;
+    historialViajes = data || [];
+  } catch (e) {
+    historialViajes = [];
+    historialContenido.innerHTML = `<div class="perfil-vacio">No se pudo cargar el historial.<br><small>${(e && e.message) || ''}</small></div>`;
+    historialCargando = false;
+    return;
+  }
+  historialCargando = false;
+  renderizarHistorial();
+}
+
+function renderizarHistorial() {
+  if (historialCargando) return;
+  const esConductor = esConductorContexto();
+  tabPagos.textContent = esConductor ? 'Mis ingresos' : 'Mis pagos';
+  $('historial-titulo').textContent = esConductor ? 'Servicios tomados' : 'Historial de servicios';
+  const lista = viajesFiltrados();
+
+  if (vistaHistorial === 'servicios') {
+    if (!lista.length) {
+      historialContenido.innerHTML = `<div class="perfil-vacio">No hay servicios en el periodo seleccionado.</div>`;
+      return;
     }
-    $('btn-cerrar-modal-origen').addEventListener('click', cerrarModalOrigen);
-    $('btn-cancelar-modal-origen').addEventListener('click', cerrarModalOrigen);
-    $('btn-usar-gps').addEventListener('click', () => { obtenerUbicacionActual(true); cerrarModalOrigen(); });
-    modalOrigen.addEventListener('click', (e) => { if (e.target === modalOrigen) cerrarModalOrigen(); });
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape') return;
-      if (!modalConfirmar.classList.contains('oculto')) { resolverConfirmacion(false); return; }
-      if (!modalRegistro.classList.contains('oculto')) { modalRegistro.classList.add('oculto'); return; }
-      if (!modalPerfil.classList.contains('oculto')) { modalPerfil.classList.add('oculto'); return; }
-      if (!modalHistorial.classList.contains('oculto')) { modalHistorial.classList.add('oculto'); return; }
-      if (!menuPerfil.classList.contains('oculto')) { cerrarMenuPerfil(); return; }
-      if (!modalOrigen.classList.contains('oculto')) cerrarModalOrigen();
-      else if (panelServicios.classList.contains('visible')) cerrarPanelServicios();
-    });
-
-    /* ============================================================
-       TEMA (sol / luna)
-       ============================================================ */
-    function alternarTema() {
-      document.body.classList.toggle('dark-mode');
-      actualizarIconoTema();
-      if (map) map.setOptions({ styles: document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO });
-      setTimeout(mostrarPopupOrigen, 120);
-    }
-    function actualizarIconoTema() {
-      const oscuro = document.body.classList.contains('dark-mode');
-      iconMoon.classList.toggle('oculto', oscuro);
-      iconSun.classList.toggle('oculto', !oscuro);
-    }
-    actualizarIconoTema();
-    $('btn-theme-toggle').addEventListener('click', alternarTema);
-
-    /* ============================================================
-       TOAST
-       ============================================================ */
-    let toastTimer;
-    function mostrarToast(mensaje, icono = '✓') {
-      toastText.textContent = mensaje;
-      toast.querySelector('.toast-icon').textContent = icono;
-      toast.classList.add('visible');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
-    }
-
-    /* ============================================================
-       UTILIDADES DE USUARIO / SESIÓN
-       ============================================================ */
-    function esLaMismaPagina(url) {
-      const actual = (location.pathname.split('/').pop() || 'index.html');
-      return actual === url || (actual === '' && url === 'index.html');
-    }
-    function nombreUsuario(u) {
-      if (!u) return 'Usuario BIKAR';
-      const compuesto = [u.nombre || u.nombres, u.apellido || u.apellidos].filter(Boolean).join(' ').trim();
-      return compuesto || u.nombre_comercio || u.nombre_establecimiento || u.usuario || u.correo || u.email || 'Usuario BIKAR';
-    }
-    function avatarPorDefecto(nombre) {
-      const letra = (String(nombre || 'B').trim().charAt(0) || 'B').toUpperCase();
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#134989"/><stop offset="1" stop-color="#4785A7"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Inter,Arial" font-size="46" font-weight="800" fill="#ffffff">${letra}</text></svg>`;
-      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
-    }
-    function fotoDeUsuario(u) {
-      if (!u) return avatarPorDefecto('B');
-      return u.foto || u.foto_url || u.avatar || u.imagen || u.foto_perfil || FOTO_REPO_GITHUB || avatarPorDefecto(nombreUsuario(u));
-    }
-    function limpiarNulos(obj) {
-      const r = {};
-      Object.keys(obj || {}).forEach(k => {
-        const v = obj[k];
-        if (v === null || v === undefined || v === '') return;
-        r[k] = v;
-      });
-      return r;
-    }
-    function mezclarDatos(base, extra) {
-      const r = { ...(base || {}) };
-      Object.keys(extra || {}).forEach(k => {
-        const v = extra[k];
-        if (v === null || v === undefined || v === '') return;
-        r[k] = v;
-      });
-      return r;
-    }
-    function guardarSesion() {
-      try { localStorage.setItem(LLAVE_SESION, JSON.stringify(usuarioActual || {})); } catch (e) {}
-    }
-
-    function verificarSesionGuardada() {
-      if (sesionYaVerificada) return;
-      sesionYaVerificada = true;
-      const sesion = localStorage.getItem(LLAVE_SESION);
-      if (!sesion) {
-        if (esLaMismaPagina(LOGIN_URL)) { mostrarPantallaAcceso(); return; }
-        window.location.href = LOGIN_URL; return;
-      }
-      try {
-        usuarioActual = JSON.parse(sesion);
-        enriquecerUsuario().finally(() => aplicarSesionUsuario(usuarioActual));
-      } catch (e) {
-        console.error('Error al cargar sesión:', e);
-        if (esLaMismaPagina(LOGIN_URL)) { mostrarPantallaAcceso(); return; }
-        window.location.href = LOGIN_URL;
-      }
-    }
-
-    /* Trae de Supabase la ficha completa del usuario y su documentación,
-       para que la sección PERFIL muestre exactamente lo del formulario de registro */
-    async function enriquecerUsuario() {
-      if (!usuarioActual) return;
-      const u = usuarioActual;
-
-      /* respaldo local del registro */
-      let docLocal = null;
-      try { docLocal = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null'); } catch (e) { docLocal = null; }
-
-      /* ficha en la tabla usuarios */
-      let filaBD = null;
-      try {
-        const { data, error } = await supabaseClient.from('usuarios').select('*').limit(500);
-        if (!error && data && data.length) {
-          filaBD = data.find(f =>
-            (f.id !== undefined && f.id !== null && String(f.id) === String(u.id)) ||
-            (f.correo && u.correo && String(f.correo).toLowerCase() === String(u.correo).toLowerCase()) ||
-            (f.usuario && u.usuario && String(f.usuario).toLowerCase() === String(u.usuario).toLowerCase()) ||
-            (f.email && u.correo && String(f.email).toLowerCase() === String(u.correo).toLowerCase()));
-        }
-      } catch (e) { console.warn('No se pudo leer usuarios:', e); }
-
-      /* documentación del conductor */
-      let docBD = null;
-      try {
-        const { data, error } = await supabaseClient.from('documentos_conductor').select('*').limit(300);
-        if (!error && data && data.length) {
-          const idNum = u.conductor_id || u.id || u.Id;
-          docBD = data.find(f =>
-            (f.usuario_id !== undefined && f.usuario_id !== null && String(f.usuario_id) === String(u.id)) ||
-            (f.conductor_id !== undefined && f.conductor_id !== null && String(f.conductor_id) === String(idNum)) ||
-            (f.correo && u.correo && String(f.correo).toLowerCase() === String(u.correo).toLowerCase()));
-        }
-      } catch (e) { console.warn('No se pudo leer documentos_conductor:', e); }
-
-      documentacionVehiculo = docBD || docLocal || null;
-
-      const base = mezclarDatos(limpiarNulos(filaBD || {}), limpiarNulos(docLocal || {}));
-      const mezcla = mezclarDatos(base, limpiarNulos(u));
-      if (filaBD && filaBD.id !== undefined && mezcla.id === undefined) mezcla.id = filaBD.id;
-      mezcla.foto = u.foto || u.foto_url || (filaBD && (filaBD.foto || filaBD.foto_url)) || (docBD && (docBD.foto || docBD.foto_url)) || '';
-      usuarioActual = mezcla;
-      guardarSesion();
-    }
-
-    async function aplicarSesionUsuario(usuario) {
-      if (!usuario) {
-        if (esLaMismaPagina(LOGIN_URL)) { mostrarPantallaAcceso(); return; }
-        window.location.href = LOGIN_URL; return;
-      }
-
-      const foto = fotoDeUsuario(usuario);
-      fotoPerfilHeader.src = foto;
-      perfilSuperior.classList.remove('oculto');
-
-      if (usuario.tipo_usuario === 'conductor') {
-        modoActual = 'conductor';
-        actualizarChipUsuario();
-        uiPasajero.classList.add('oculto');
-        uiConductor.classList.remove('oculto');
-        await resolverServicioDelConductor();
-        pintarSelectorServicioConductor();
-        cargarViajesSolicitados();
-      } else {
-        modoActual = 'pasajero';
-        actualizarChipUsuario();
-        uiConductor.classList.add('oculto');
-        uiPasajero.classList.remove('oculto');
-        if (usuario.tipo_usuario === 'comercio' && !uiPasajero.querySelector('.comercio-info')) {
-          uiPasajero.insertAdjacentHTML('afterbegin',
-            `<div class="comercio-info"><b>Comercio activo:</b> ${usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento'} · ${usuario.categoria || 'Categoría no registrada'}</div>`);
-        }
-      }
-      actualizarChipUsuario();
-    }
-
-    /* ============================================================
-       MENÚ FLOTANTE DEL PERFIL
-       ============================================================ */
-    function actualizarChipUsuario() {
-      btnCambiarModo.textContent = nombreUsuario(usuarioActual);
-      btnCambiarModo.title = modoActual === 'conductor' ? 'Modo Conductor activo' : 'Modo Pasajero activo';
-      const txt = menuItemModo.querySelector('.mi-txt');
-      if (txt) txt.textContent = modoActual === 'conductor' ? 'Modo Pasajero' : 'Modo Conductor';
-    }
-    function abrirMenuPerfil() {
-      menuPerfil.classList.remove('oculto');
-      perfilSuperior.classList.add('activo');
-      menuPerfil.querySelectorAll('.menu-perfil-item').forEach((el) => {
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = '';
-      });
-    }
-    function cerrarMenuPerfil(){
-      menuPerfil.classList.add('oculto');
-      perfilSuperior.classList.remove('activo');
-    }
-    function alternarMenuPerfil(){ menuPerfil.classList.contains('oculto') ? abrirMenuPerfil() : cerrarMenuPerfil(); }
-
-    perfilSuperior.addEventListener('click', (e) => { e.stopPropagation(); alternarMenuPerfil(); });
-    document.addEventListener('click', (e) => {
-      if (menuPerfil.classList.contains('oculto')) return;
-      if (menuPerfil.contains(e.target) || perfilSuperior.contains(e.target)) return;
-      cerrarMenuPerfil();
-    });
-
-    menuItemPerfil.addEventListener('click', () => { cerrarMenuPerfil(); abrirModalPerfil(); });
-    menuItemHistorial.addEventListener('click', () => { cerrarMenuPerfil(); abrirModalHistorial(); });
-    menuItemModo.addEventListener('click', async () => { cerrarMenuPerfil(); await alternarModo(); });
-    menuItemSalir.addEventListener('click', async () => {
-      cerrarMenuPerfil();
-      const ok = await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión');
-      if (!ok) return;
-      cerrarSesion();
-    });
-
-    function cerrarSesion() {
-      try { localStorage.removeItem(LLAVE_SESION); } catch (e) {}
-      usuarioActual = null;
-      documentacionVehiculo = null;
-      claveServicioConductor = null;
-      cerrarPanelServicios();
-      cerrarMenuPerfil();
-      modalPerfil.classList.add('oculto');
-      modalHistorial.classList.add('oculto');
-      contenedorSolicitudes.innerHTML = '';
-      if (esLaMismaPagina(LOGIN_URL)) {
-        /* vuelve a la pantalla de acceso de BIKAR (sin recargar la app) */
-        $('acceso-usuario').value = '';
-        $('acceso-clave').value = '';
-        $('acceso-error').classList.remove('visible');
-        pantallaAcceso.classList.remove('oculto');
-        perfilSuperior.classList.add('oculto');
-        uiPasajero.classList.add('oculto');
-        uiConductor.classList.add('oculto');
-        btnCambiarModo.textContent = 'BIKAR';
-        mostrarToast('Sesión cerrada', '✓');
-        setTimeout(() => { try { $('acceso-usuario').focus(); } catch (e) {} }, 200);
-      } else {
-        window.location.href = LOGIN_URL;
-      }
-    }
-
-    /* ============================================================
-       CONFIRMACIÓN PROPIA (sin alerta del navegador / sin dominio)
-       ============================================================ */
-    let resolverConfirmacionActual = null;
-    function resolverConfirmacion(valor) {
-      modalConfirmar.classList.add('oculto');
-      if (resolverConfirmacionActual) { const r = resolverConfirmacionActual; resolverConfirmacionActual = null; r(valor); }
-    }
-    function confirmarBikar(titulo, mensaje, textoAceptar) {
-      $('confirmar-titulo').textContent = titulo;
-      $('confirmar-mensaje').textContent = mensaje;
-      $('confirmar-aceptar').textContent = textoAceptar || 'Aceptar';
-      modalConfirmar.classList.remove('oculto');
-      return new Promise((resolve) => { resolverConfirmacionActual = resolve; });
-    }
-    $('confirmar-cancelar').addEventListener('click', () => resolverConfirmacion(false));
-    $('confirmar-aceptar').addEventListener('click', () => resolverConfirmacion(true));
-    modalConfirmar.addEventListener('click', (e) => { if (e.target === modalConfirmar) resolverConfirmacion(false); });
-
-    /* ============================================================
-       MODAL DE PERFIL · datos del formulario de registro + foto
-       ============================================================ */
-    const ETIQUETAS_PERFIL = {
-      id:'ID', usuario:'Usuario', nombre:'Nombre', nombres:'Nombres', apellido:'Apellido', apellidos:'Apellidos',
-      correo:'Correo', email:'Correo', telefono:'Teléfono', celular:'Celular', whatsapp:'WhatsApp',
-      documento:'Documento', dni:'DNI', cedula:'Cédula', nit:'NIT', ruc:'RUC',
-      direccion:'Dirección', barrio:'Barrio', ciudad:'Ciudad', departamento:'Departamento', pais:'País',
-      fecha_nacimiento:'Fecha de nacimiento', genero:'Género', tipo_usuario:'Tipo de cuenta',
-      tipo_servicio:'Servicio', servicio:'Servicio', placa:'Placa', marca:'Marca', modelo:'Modelo',
-      color:'Color', anio:'Año', año:'Año', cilindraje:'Cilindraje', licencia:'Licencia',
-      soat:'SOAT', tecnomecanica:'Tecnomecánica', tarjeta_propiedad:'Tarjeta de propiedad',
-      nombre_comercio:'Comercio', nombre_establecimiento:'Establecimiento', categoria:'Categoría',
-      horario:'Horario', descripcion:'Descripción', estado:'Estado', verificado:'Verificado',
-      created_at:'Registro', creado_en:'Registro', fecha_registro:'Registro', password:'Contraseña'
-    };
-    const CLAVES_OCULTAS = ['foto','foto_url','avatar','imagen','foto_perfil','password','contrasena','contraseña','clave','token','pass','hash','docvehiculo'];
-
-    function valorLegible(clave, valor) {
-      if (valor === null || valor === undefined || valor === '') return null;
-      if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
-      if (typeof valor === 'object') return null;
-      if (clave === 'password') return '••••••';
-      const txt = String(valor);
-      if (/^\d{4}-\d{2}-\d{2}T/.test(txt)) {
-        const f = new Date(txt);
-        if (!isNaN(f)) return f.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
-      }
-      return txt;
-    }
-    function tarjetaDato(label, valor, indice) {
-      const div = document.createElement('div');
-      div.className = 'perfil-dato';
-      div.style.animationDelay = (indice * 0.035) + 's';
-      const l = document.createElement('span'); l.className = 'perfil-dato-label'; l.textContent = label;
-      const v = document.createElement('span'); v.className = 'perfil-dato-valor'; v.textContent = valor;
-      div.append(l, v);
-      return div;
-    }
-    function construirGrupo(titulo, objeto, prefijo) {
-      const wrap = document.createDocumentFragment();
-      let i = 0;
-      const grid = document.createElement('div');
-      grid.className = 'perfil-datos';
-      Object.keys(objeto || {}).forEach((clave) => {
-        if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
-        const valor = valorLegible(clave, objeto[clave]);
-        if (valor === null) return;
-        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
-        grid.appendChild(tarjetaDato(etiqueta, valor, i++));
-      });
-      if (i) {
-        const t = document.createElement('div');
-        t.className = 'perfil-seccion-titulo';
-        t.textContent = titulo;
-        wrap.append(t, grid);
-      }
-      return wrap;
-    }
-
-    async function abrirModalPerfil() {
-      if (!usuarioActual) return;
-      const u = usuarioActual;
-
-      $('perfil-foto-grande').src = fotoDeUsuario(u);
-      $('perfil-nombre-grande').textContent = nombreUsuario(u);
-      const rol = String(u.tipo_usuario || 'pasajero');
-      let textoRol = rol.charAt(0).toUpperCase() + rol.slice(1);
-      if (rol === 'conductor' && u.tipo_servicio) {
-        const clave = normalizarClaveServicio(u.tipo_servicio);
-        textoRol += ' · ' + (clave ? etiquetaServicio(clave) : u.tipo_servicio);
-      }
-      $('perfil-rol-badge').textContent = textoRol;
-
-      const cont = $('perfil-datos');
-      const extra = $('perfil-extra');
-      cont.innerHTML = '';
-      extra.innerHTML = '';
-
-      /* Datos de la cuenta (lo que se generó en el formulario de registro) */
-      const cuenta = {};
-      Object.keys(u).forEach((k) => { cuenta[k] = u[k]; });
-      const grid = document.createElement('div');
-      grid.className = 'perfil-datos';
-      let i = 0;
-      Object.keys(cuenta).forEach((clave) => {
-        if (CLAVES_OCULTAS.includes(clave.toLowerCase())) return;
-        const valor = valorLegible(clave, cuenta[clave]);
-        if (valor === null) return;
-        const etiqueta = ETIQUETAS_PERFIL[clave] || clave.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
-        grid.appendChild(tarjetaDato(etiqueta, valor, i++));
-      });
-      if (i) cont.appendChild(grid);
-      else cont.innerHTML = '<div class="perfil-vacio">No hay datos guardados de tu registro.</div>';
-
-      /* Comercio */
-      if (u.tipo_usuario === 'comercio') {
-        const comercio = { nombre_comercio:u.nombre_comercio, nombre_establecimiento:u.nombre_establecimiento,
-                           categoria:u.categoria, horario:u.horario, descripcion:u.descripcion, direccion:u.direccion };
-        extra.appendChild(construirGrupo('Datos del comercio', limpiarNulos(comercio)));
-      }
-
-      /* Documentación del vehículo (conductores) */
-      let doc = documentacionVehiculo;
-      if (!doc) { try { doc = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null'); } catch (e) { doc = null; } }
-      if (!doc && (u.tipo_usuario === 'conductor' || modoActual === 'conductor')) {
-        try {
-          const { data, error } = await supabaseClient.from('documentos_conductor').select('*').limit(300);
-          if (!error && data && data.length) {
-            const idNum = u.conductor_id || u.id || u.Id;
-            doc = data.find(f =>
-              (f.usuario_id !== undefined && f.usuario_id !== null && String(f.usuario_id) === String(u.id)) ||
-              (f.conductor_id !== undefined && f.conductor_id !== null && String(f.conductor_id) === String(idNum)) ||
-              (f.correo && u.correo && String(f.correo).toLowerCase() === String(u.correo).toLowerCase())) || null;
-          }
-        } catch (e) { console.warn('documentos_conductor:', e); }
-      }
-      if (doc) {
-        documentacionVehiculo = doc;
-        extra.appendChild(construirGrupo('Documentación del vehículo', doc));
-      }
-
-      modalPerfil.classList.remove('oculto');
-    }
-    $('cerrar-modal-perfil').addEventListener('click', () => modalPerfil.classList.add('oculto'));
-    modalPerfil.addEventListener('click', (e) => { if (e.target === modalPerfil) modalPerfil.classList.add('oculto'); });
-    $('btn-perfil-historial').addEventListener('click', () => { modalPerfil.classList.add('oculto'); abrirModalHistorial(); });
-    $('btn-perfil-tema').addEventListener('click', () => { alternarTema(); });
-
-    fotoPerfilHeader.addEventListener('error', () => { fotoPerfilHeader.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
-    $('perfil-foto-grande').addEventListener('error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
-
-    /* ============================================================
-       HISTORIAL DE SERVICIOS Y PAGOS
-       ============================================================ */
-    let vistaHistorial = 'servicios';
-    let historialViajes = [];
-    let historialCargando = false;
-
-    function fechaDeViaje(v) {
-      const f = v.created_at || v.creado_en || v.fecha || v.fecha_creacion || v.fecha_solicitud;
-      if (!f) return null;
-      const d = new Date(f);
-      return isNaN(d) ? null : d;
-    }
-    function textoFecha(d) {
-      if (!d) return 'Sin fecha';
-      return d.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' }) + ' · ' +
-             d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
-    }
-    function dentroDePeriodo(d, periodo) {
-      if (periodo === 'todo') return true;
-      if (!d) return true;
-      const ahora = new Date();
-      if (periodo === 'hoy') return d.toDateString() === ahora.toDateString();
-      if (periodo === 'semana') return (ahora - d) <= 7 * 24 * 3600 * 1000;
-      if (periodo === 'mes') return d.getMonth() === ahora.getMonth() && d.getFullYear() === ahora.getFullYear();
-      return true;
-    }
-    function viajesFiltrados() {
-      const p = filtroPeriodo.value;
-      return historialViajes.filter(v => dentroDePeriodo(fechaDeViaje(v), p));
-    }
-    function esConductorContexto() {
-      return modoActual === 'conductor' || (usuarioActual && usuarioActual.tipo_usuario === 'conductor');
-    }
-
-    async function cargarHistorial() {
-      historialCargando = true;
-      historialContenido.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
-        <div class="loading-pulse" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
-        Cargando tu historial…</div>`;
-
-      const u = usuarioActual || {};
-      const esConductor = esConductorContexto();
-      const idUsuario = esConductor
-        ? (u.conductor_id || u.id || u.Id || CONDUCTOR_ID_PRUEBA)
-        : (u.id || u.Id || PASAJERO_ID_PRUEBA);
-
-      try {
-        let consulta = supabaseClient.from('viajes').select('*').order('id', { ascending:false }).limit(300);
-        consulta = esConductor ? consulta.eq('conductor_id', idUsuario) : consulta.eq('pasajero_id', idUsuario);
-        const { data, error } = await consulta;
-        if (error) throw error;
-        historialViajes = data || [];
-      } catch (e) {
-        historialViajes = [];
-        historialContenido.innerHTML = `<div class="perfil-vacio">No se pudo cargar el historial.<br><small>${(e && e.message) || ''}</small></div>`;
-        historialCargando = false;
-        return;
-      }
-      historialCargando = false;
-      renderizarHistorial();
-    }
-
-    function renderizarHistorial() {
-      if (historialCargando) return;
-      const esConductor = esConductorContexto();
-      tabPagos.textContent = esConductor ? 'Mis ingresos' : 'Mis pagos';
-      $('historial-titulo').textContent = esConductor ? 'Servicios tomados' : 'Historial de servicios';
-      const lista = viajesFiltrados();
-
-      if (vistaHistorial === 'servicios') {
-        if (!lista.length) {
-          historialContenido.innerHTML = `<div class="perfil-vacio">No hay servicios en el periodo seleccionado.</div>`;
-          return;
-        }
-        const cont = document.createElement('div');
-        cont.className = 'historial-lista';
-        lista.forEach((v, i) => {
-          const clave = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) || 'default';
-          const estado = String(v.estado || 'solicitado').toLowerCase();
-          const card = document.createElement('div');
-          card.className = 'historial-card';
-          card.style.animationDelay = (i * 0.04) + 's';
-          card.innerHTML = `
-            <div class="historial-card-top">
-              <span class="historial-servicio">${iconoServicio(clave)} ${v.tipo_servicio || v.nombre_servicio || 'Servicio'}</span>
-              <span class="historial-precio">${formatoMoneda(v.tarifa || 0)}</span>
-            </div>
-            <div class="historial-ruta"><span>A ·</span> ${v.origen_nombre || 'Origen'}</div>
-            <div class="historial-ruta"><span>B ·</span> ${v.destino_nombre || 'Destino'}</div>
-            <div class="historial-pie">
-              <span class="historial-fecha">${textoFecha(fechaDeViaje(v))}${v.distancia_km ? ' · ' + v.distancia_km + ' km' : ''}</span>
-              <span class="estado-chip ${estado}">${estado}</span>
-            </div>`;
-          cont.appendChild(card);
-        });
-        historialContenido.innerHTML = '';
-        historialContenido.appendChild(cont);
-        return;
-      }
-
-      /* Vista de pagos / ingresos */
-      const total = lista.reduce((acc, v) => acc + Number(v.tarifa || 0), 0);
-      const cantidad = lista.length;
-      const promedio = cantidad ? Math.round(total / cantidad) : 0;
-      const etiquetaPeriodo = { hoy:'hoy', semana:'últimos 7 días', mes:'este mes', todo:'todo el historial' }[filtroPeriodo.value] || '';
-
-      const wrap = document.createElement('div');
-      const kpis = document.createElement('div');
-      kpis.className = 'pagos-resumen';
-      kpis.innerHTML = `
-        <div class="pago-kpi" style="animation-delay:.02s"><span class="pago-kpi-label">${esConductor ? 'Ganado' : 'Pagado'}</span><span class="pago-kpi-valor">${formatoMoneda(total)}</span></div>
-        <div class="pago-kpi" style="animation-delay:.08s"><span class="pago-kpi-label">Servicios</span><span class="pago-kpi-valor">${cantidad}</span></div>
-        <div class="pago-kpi" style="animation-delay:.14s"><span class="pago-kpi-label">Promedio</span><span class="pago-kpi-valor">${formatoMoneda(promedio)}</span></div>`;
-      wrap.appendChild(kpis);
-      wrap.insertAdjacentHTML('beforeend', `<p class="historial-fecha" style="margin:-4px 0 10px 2px">Mostrando ${etiquetaPeriodo}</p>`);
-
-      if (!cantidad) {
-        wrap.insertAdjacentHTML('beforeend', `<div class="perfil-vacio">Sin movimientos en el periodo seleccionado.</div>`);
-      } else {
-        const filas = document.createElement('div');
-        filas.className = 'historial-lista';
-        lista.forEach((v, i) => {
-          const fila = document.createElement('div');
-          fila.className = 'pago-fila';
-          fila.style.animationDelay = (i * 0.035) + 's';
-          fila.innerHTML = `
-            <div class="pago-fila-info">
-              <div class="pago-fila-tit">${v.tipo_servicio || v.nombre_servicio || 'Servicio'} · #${v.id ?? '—'}</div>
-              <div class="pago-fila-sub">${textoFecha(fechaDeViaje(v))} · ${String(v.estado || 'solicitado')}</div>
-            </div>
-            <div class="pago-fila-valor">${esConductor ? '+' : '-'} ${formatoMoneda(v.tarifa || 0)}</div>`;
-          filas.appendChild(fila);
-        });
-        wrap.appendChild(filas);
-      }
-
-      historialContenido.innerHTML = '';
-      historialContenido.appendChild(wrap);
-    }
-
-    function descargarHistorial() {
-      const lista = viajesFiltrados();
-      if (!lista.length) { mostrarToast('No hay datos para descargar', '!'); return; }
-      const columnas = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa','estado','fecha'];
-      const filas = lista.map((v) => [
-        v.id ?? '', v.tipo_servicio || v.nombre_servicio || '', v.origen_nombre || '', v.destino_nombre || '',
-        v.distancia_km ?? '', v.tarifa ?? '', v.estado || '', textoFecha(fechaDeViaje(v))
-      ]);
-      const escapar = (c) => '"' + String(c).replace(/"/g, '""') + '"';
-      const csv = '\uFEFF' + [columnas, ...filas].map(f => f.map(escapar).join(';')).join('\r\n');
-      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `bikar_${vistaHistorial}_${filtroPeriodo.value}_${new Date().toISOString().slice(0,10)}.csv`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1200);
-      mostrarToast('Archivo descargado');
-    }
-
-    function abrirModalHistorial() {
-      if (!usuarioActual) { mostrarToast('Inicia sesión para ver tu historial', '!'); return; }
-      vistaHistorial = 'servicios';
-      tabServicios.classList.add('activo');
-      tabPagos.classList.remove('activo');
-      modalHistorial.classList.remove('oculto');
-      cargarHistorial();
-    }
-    $('cerrar-modal-historial').addEventListener('click', () => modalHistorial.classList.add('oculto'));
-    modalHistorial.addEventListener('click', (e) => { if (e.target === modalHistorial) modalHistorial.classList.add('oculto'); });
-    tabServicios.addEventListener('click', () => {
-      vistaHistorial = 'servicios';
-      tabServicios.classList.add('activo'); tabPagos.classList.remove('activo');
-      renderizarHistorial();
-    });
-    tabPagos.addEventListener('click', () => {
-      vistaHistorial = 'pagos';
-      tabPagos.classList.add('activo'); tabServicios.classList.remove('activo');
-      renderizarHistorial();
-    });
-    filtroPeriodo.addEventListener('change', renderizarHistorial);
-    $('btn-descargar-historial').addEventListener('click', descargarHistorial);
-
-    /* ============================================================
-       PANTALLA DE ACCESO · login con los datos del registro
-       ============================================================ */
-    function mostrarPantallaAcceso() {
-      pantallaAcceso.classList.remove('oculto');
-      perfilSuperior.classList.add('oculto');
-      uiPasajero.classList.add('oculto');
-      uiConductor.classList.add('oculto');
-      btnCambiarModo.textContent = 'BIKAR';
-    }
-    function ocultarPantallaAcceso() { pantallaAcceso.classList.add('oculto'); }
-    function errorAcceso(msg) {
-      const e = $('acceso-error');
-      e.textContent = msg;
-      e.classList.add('visible');
-    }
-    async function buscarUsuarioEnBD(identificador) {
-      const { data, error } = await supabaseClient.from('usuarios').select('*').limit(500);
-      if (error) return { error, fila: null };
-      const clave = String(identificador || '').toLowerCase().trim();
-      const fila = (data || []).find(f => [
-        f.correo, f.email, f.usuario, f.user, f.telefono, f.celular, f.nombre_comercio
-      ].some(v => v && String(v).toLowerCase().trim() === clave));
-      return { error: null, fila };
-    }
-
-    async function iniciarSesion(usuario, mensaje) {
-      usuarioActual = usuario;
-      guardarSesion();
-      ocultarPantallaAcceso();
-      await enriquecerUsuario();
-      await aplicarSesionUsuario(usuarioActual);
-      if (mensaje) mostrarToast(mensaje);
-    }
-
-    $('form-acceso').addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const identificador = $('acceso-usuario').value.trim();
-      const clave = $('acceso-clave').value;
-      $('acceso-error').classList.remove('visible');
-      if (!identificador) { errorAcceso('Escribe tu correo, usuario o teléfono.'); return; }
-
-      const btn = $('btn-acceso');
-      btn.disabled = true; btn.textContent = 'Verificando…';
-      let resultado = { error: null, fila: null };
-      try { resultado = await buscarUsuarioEnBD(identificador); } catch (e) { resultado = { error: e, fila: null }; }
-      btn.disabled = false; btn.textContent = 'Ingresar';
-
-      if (resultado.error) {
-        errorAcceso('No se pudo validar el acceso en este momento. Intenta con el acceso rápido.');
-        return;
-      }
-      if (!resultado.fila) {
-        errorAcceso('No encontramos una cuenta con esos datos. Puedes registrarte o usar el acceso rápido.');
-        return;
-      }
-      const guardada = resultado.fila.password || resultado.fila.contrasena || resultado.fila.clave || resultado.fila.pass;
-      if (guardada && String(guardada) !== clave) {
-        errorAcceso('La contraseña no coincide. Inténtalo de nuevo.');
-        return;
-      }
-      await iniciarSesion(limpiarNulos(resultado.fila), '¡Bienvenido, ' + nombreUsuario(resultado.fila).split(' ')[0] + '!');
-    });
-
-    $('btn-ver-clave').addEventListener('click', () => {
-      const i = $('acceso-clave');
-      i.type = i.type === 'password' ? 'text' : 'password';
-      i.focus();
-    });
-    $('demo-pasajero').addEventListener('click', async () => {
-      await iniciarSesion({
-        id: PASAJERO_ID_PRUEBA, nombre: 'Pasajero', apellido: 'BIKAR', usuario: 'pasajero',
-        correo: 'pasajero@bikar.com', tipo_usuario: 'pasajero', foto: FOTO_REPO_GITHUB
-      }, 'Modo pasajero activo');
-    });
-    $('demo-conductor').addEventListener('click', async () => {
-      await iniciarSesion({
-        id: CONDUCTOR_ID_PRUEBA, conductor_id: CONDUCTOR_ID_PRUEBA, nombre: 'Conductor', apellido: 'BIKAR',
-        usuario: 'conductor', correo: 'conductor@bikar.com', tipo_usuario: 'conductor',
-        tipo_servicio: 'Taxi Auto', placa: 'ABC-123', marca: 'Toyota', modelo: 'Corolla',
-        color: 'Blanco', licencia: 'LIC-2026', foto: FOTO_REPO_GITHUB
-      }, 'Modo conductor activo');
-    });
-    $('btn-ir-registro').addEventListener('click', () => {
-      $('acceso-error').classList.remove('visible');
-      modalRegistro.classList.remove('oculto');
-    });
-    $('cerrar-modal-registro').addEventListener('click', () => modalRegistro.classList.add('oculto'));
-    modalRegistro.addEventListener('click', (e) => { if (e.target === modalRegistro) modalRegistro.classList.add('oculto'); });
-
-    /* Muestra/oculta campos según el tipo de cuenta */
-    $('reg-tipo').addEventListener('change', () => {
-      const tipo = $('reg-tipo').value;
-      $('reg-zona-servicio').classList.toggle('oculto', tipo !== 'conductor');
-      $('reg-zona-comercio').classList.toggle('oculto', tipo !== 'comercio');
-    });
-
-    $('form-registro').addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const nombre = $('reg-nombre').value.trim();
-      const correo = $('reg-correo').value.trim();
-      if (!nombre || !correo) { mostrarToast('Nombre y correo son obligatorios', '!'); return; }
-      const tipo = $('reg-tipo').value;
-      const servicioClave = $('reg-servicio').value;
-
-      const registro = limpiarNulos({
-        nombre,
-        apellido: $('reg-apellido').value.trim(),
-        correo,
-        telefono: $('reg-telefono').value.trim(),
-        password: $('reg-clave').value,
-        tipo_usuario: tipo,
-        tipo_servicio: tipo === 'conductor' ? (servicioClave ? etiquetaServicio(servicioClave) : '') : '',
-        nombre_comercio: tipo === 'comercio' ? $('reg-comercio').value.trim() : '',
-        categoria: tipo === 'comercio' ? $('reg-categoria').value.trim() : '',
-        foto: $('reg-foto').value.trim() || FOTO_REPO_GITHUB,
-        fecha_registro: new Date().toISOString()
-      });
-
-      let guardado = registro;
-      try {
-        const { data, error } = await supabaseClient.from('usuarios').insert([registro]).select();
-        if (!error && data && data.length) guardado = data[0];
-        else if (error) console.warn('No se pudo guardar en usuarios:', error.message);
-      } catch (e) { console.warn('Registro local:', e); }
-
-      if (!guardado.id) guardado.id = 'local-' + Date.now();
-      if (tipo === 'conductor' && servicioClave) {
-        const doc = { tipo_servicio: etiquetaServicio(servicioClave), usuario_id: guardado.id, marca: '', modelo: '', placa: '' };
-        documentacionVehiculo = doc;
-        try { localStorage.setItem(LLAVE_DOCUMENTACION, JSON.stringify(doc)); } catch (e) {}
-        try { localStorage.setItem(LLAVE_SERVICIO_CONDUCTOR, servicioClave); } catch (e) {}
-      }
-
-      modalRegistro.classList.add('oculto');
-      await iniciarSesion(guardado, 'Cuenta creada. ¡Bienvenido a BIKAR!');
-    });
-
-    /* ============================================================
-       TIPO DE SERVICIO DEL CONDUCTOR
-       ============================================================ */
-    async function resolverServicioDelConductor() {
-      claveServicioConductor = null;
-      const u = usuarioActual || {};
-
-      /* 1) En la sesión */
-      let bruto = u.tipo_servicio || u.servicio || null;
-
-      /* 2) Respaldo local del formulario de registro */
-      if (!bruto) {
-        try {
-          const doc = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null');
-          if (doc && doc.tipo_servicio) bruto = doc.tipo_servicio;
-        } catch (e) {}
-      }
-
-      /* 3) Elección guardada en el mapa */
-      if (!bruto) {
-        try { bruto = localStorage.getItem(LLAVE_SERVICIO_CONDUCTOR) || null; } catch (e) {}
-      }
-
-      /* 4) En Supabase: tabla documentos_conductor */
-      if (!bruto) {
-        try {
-          const { data, error } = await supabaseClient.from('documentos_conductor').select('tipo_servicio,usuario_id,conductor_id,correo').limit(300);
-          if (!error && data && data.length) {
-            const idNum = u.conductor_id || u.id || u.Id;
-            const fila = data.find(f =>
-              (f.usuario_id !== undefined && f.usuario_id !== null && String(f.usuario_id) === String(u.id)) ||
-              (f.conductor_id !== undefined && f.conductor_id !== null && String(f.conductor_id) === String(idNum)) ||
-              (f.correo && u.correo && String(f.correo).toLowerCase() === String(u.correo).toLowerCase()));
-            if (fila) bruto = fila.tipo_servicio;
-          }
-        } catch (e) { console.warn('No se pudo leer documentos_conductor:', e); }
-      }
-
-      claveServicioConductor = normalizarClaveServicio(bruto);
-
-      if (claveServicioConductor) {
-        if (u) { u.tipo_servicio = etiquetaServicio(claveServicioConductor); guardarSesion(); }
-        try { localStorage.setItem(LLAVE_SERVICIO_CONDUCTOR, claveServicioConductor); } catch (e) {}
-      }
-    }
-
-    /* Selector de servicio del conductor (solo si no hay uno registrado) */
-    function pintarSelectorServicioConductor() {
-      sscPills.innerHTML = '';
-      CATALOGO_SERVICIOS.forEach(s => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'ssc-pill' + (claveServicioConductor === s.clave ? ' activo' : '');
-        b.innerHTML = `${iconoServicio(s.clave)}<span>${s.etiqueta}</span>`;
-        b.addEventListener('click', () => elegirServicioConductor(s.clave));
-        sscPills.appendChild(b);
-      });
-    }
-    async function elegirServicioConductor(clave) {
-      claveServicioConductor = clave;
-      const s = servicioPorClave(clave);
-      if (usuarioActual) { usuarioActual.tipo_servicio = s ? s.etiqueta : clave; guardarSesion(); }
-      try { localStorage.setItem(LLAVE_SERVICIO_CONDUCTOR, clave); } catch (e) {}
-      pintarSelectorServicioConductor();
-      actualizarChipUsuario();
-      await cargarViajesSolicitados();
-      mostrarToast('Servicio: ' + (s ? s.etiqueta : clave));
-    }
-
-    /* ============================================================
-       CAMBIO DE MODO (desde el menú de perfil)
-       ============================================================ */
-    async function alternarModo() {
-      if (!usuarioActual) { mostrarToast('Inicia sesión primero', '!'); return; }
-      if (modoActual === 'pasajero') {
-        modoActual = 'conductor';
-        actualizarChipUsuario();
-        uiPasajero.classList.add('oculto');
-        uiConductor.classList.remove('oculto');
-        cerrarPanelServicios();
-        if (!claveServicioConductor) await resolverServicioDelConductor();
-        pintarSelectorServicioConductor();
-        cargarViajesSolicitados();
-      } else {
-        modoActual = 'pasajero';
-        actualizarChipUsuario();
-        uiConductor.classList.add('oculto');
-        uiPasajero.classList.remove('oculto');
-      }
-    }
-
-    /* ============================================================
-       PANEL DE SERVICIOS (pasajero)
-       ============================================================ */
-    btnPedirViaje.addEventListener('click', () => {
-      if (!origen || !destino) { mostrarToast('Selecciona origen y destino', '!'); return; }
-      abrirPanelServicios();
-    });
-
-    async function abrirPanelServicios() {
-      resumenOrigen.childNodes[0].nodeValue = origenNombre || 'Ubicación actual';
-      resumenOrigenSub.textContent = origenDetalle || '';
-      resumenDestino.childNodes[0].nodeValue = destinoNombre || 'Destino seleccionado';
-      resumenDestinoSub.textContent = destinoDetalle || '';
-      resumenDistancia.textContent = `${distanciaKm.toFixed(1)} km`;
-      resumenDuracion.textContent = `${duracionMin} min`;
-
-      panelServicios.classList.remove('oculto','cerrando');
-      backdropServicios.classList.remove('oculto');
-      void panelServicios.offsetWidth;
-      panelServicios.classList.add('visible');
-      backdropServicios.classList.add('visible');
-      panelServicios.setAttribute('aria-hidden','false');
-
-      await cargarServiciosDisponibles();
-    }
-
-    function cerrarPanelServicios() {
-      if (!panelServicios.classList.contains('visible')) return;
-      panelServicios.classList.remove('visible');
-      panelServicios.classList.add('cerrando');
-      backdropServicios.classList.remove('visible');
-      setTimeout(() => {
-        panelServicios.classList.remove('cerrando');
-        panelServicios.setAttribute('aria-hidden','true');
-      }, 420);
-      servicioSeleccionado = null;
-      btnConfirmarServicio.disabled = true;
-      btnConfirmarServicio.textContent = 'Selecciona un servicio';
-    }
-    $('btn-cerrar-servicios').addEventListener('click', cerrarPanelServicios);
-    backdropServicios.addEventListener('click', cerrarPanelServicios);
-
-    /* Consulta qué tipos de servicio tienen conductores registrados */
-    async function cargarServiciosDisponibles() {
-      serviciosLista.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
-        <div class="loading-pulse" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
-        Buscando conductores disponibles…</div>`;
-
-      const conteo = {};
-      try {
-        const { data, error } = await supabaseClient.from('documentos_conductor').select('tipo_servicio');
-        if (!error && data) {
-          data.forEach((fila) => {
-            const clave = normalizarClaveServicio(fila.tipo_servicio);
-            if (clave) conteo[clave] = (conteo[clave] || 0) + 1;
-          });
-        }
-      } catch (e) { console.warn('No se pudo consultar documentos_conductor:', e); }
-
-      const hayDatos = Object.keys(conteo).length > 0;
-      const disponibles = hayDatos
-        ? CATALOGO_SERVICIOS.filter(s => conteo[s.clave])
-        : CATALOGO_SERVICIOS;
-
-      serviciosLista.innerHTML = '';
-      servicioSeleccionado = null;
-      btnConfirmarServicio.disabled = true;
-      btnConfirmarServicio.textContent = 'Selecciona un servicio';
-
-      if (!disponibles.length) {
-        serviciosLista.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
-          No hay conductores disponibles en este momento.</div>`;
-        return;
-      }
-
-      disponibles.forEach((servicio) => {
-        const tarifa = tarifaDe(servicio);
-        const n = conteo[servicio.clave] || 0;
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'servicio-card';
-        card.dataset.clave = servicio.clave;
-        card.innerHTML = `
-          <div class="servicio-icono">${iconoServicio(servicio.clave)}</div>
-          <div class="servicio-info">
-            <div class="servicio-nombre">${servicio.etiqueta}</div>
-            <div class="servicio-desc">${servicio.desc}</div>
-            <div>
-              <span class="servicio-tiempo">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                ${servicio.espera}
-              </span>
-              ${n ? `<span class="servicio-conductores">● ${n} disponible${n>1?'s':''}</span>` : ''}
-            </div>
-          </div>
-          <div class="servicio-precio">
-            <div class="servicio-precio-valor">${formatoMoneda(tarifa)}</div>
-            <div class="servicio-precio-etiqueta">Tarifa</div>
-          </div>`;
-        card.addEventListener('click', () => {
-          serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
-          card.classList.add('seleccionado');
-          servicioSeleccionado = { ...servicio, tarifa };
-          btnConfirmarServicio.disabled = false;
-          btnConfirmarServicio.textContent = `Confirmar ${servicio.etiqueta} · ${formatoMoneda(tarifa)}`;
-        });
-        serviciosLista.appendChild(card);
-      });
-    }
-
-    btnConfirmarServicio.addEventListener('click', async () => {
-      if (!servicioSeleccionado) return;
-      btnConfirmarServicio.disabled = true;
-      btnConfirmarServicio.textContent = 'Solicitando…';
-      await solicitarViaje(servicioSeleccionado);
-    });
-
-    /* ============================================================
-       SOLICITAR VIAJE
-       ============================================================ */
-    async function solicitarViaje(servicio) {
-      const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
-      const registro = {
-        pasajero_id: pasajeroId,
-        origen_lat: origen.lat, origen_lon: origen.lng,
-        destino_lat: destino.lat, destino_lon: destino.lng,
-        origen_nombre: [origenNombre, origenDetalle].filter(Boolean).join(', '),
-        destino_nombre: [destinoNombre, destinoDetalle].filter(Boolean).join(', '),
-        tipo_servicio: servicio.etiqueta,
-        nombre_servicio: servicio.etiqueta,
-        tarifa: servicio.tarifa,
-        distancia_km: Math.round(distanciaKm * 10) / 10,
-        estado: 'solicitado'
-      };
-
-      const { data, error } = await supabaseClient.from('viajes').insert([registro]).select();
-
-      if (error) {
-        mostrarToast('Error: ' + error.message, '!');
-        btnConfirmarServicio.disabled = false;
-        btnConfirmarServicio.textContent = `Confirmar ${servicio.etiqueta} · ${formatoMoneda(servicio.tarifa)}`;
-        return;
-      }
-
-      mostrarToast(`${servicio.etiqueta} solicitado`);
-      cerrarPanelServicios();
-      statusTextPasajero.innerHTML = `¡Viaje <b style="color:var(--primary-color)">${servicio.etiqueta}</b> solicitado! Buscando conductor…`;
-      btnPedirViaje.disabled = true;
-      btnPedirViaje.textContent = 'Solicitud enviada';
-    }
-
-    /* ============================================================
-       PANEL CONDUCTOR · SOLO LOS VIAJES DE SU TIPO DE SERVICIO
-       ============================================================ */
-    async function cargarViajesSolicitados() {
-      if (modoActual !== 'conductor') return;
-
-      const etiquetaCategoria = claveServicioConductor ? etiquetaServicio(claveServicioConductor) : null;
-      selectorServicioConductor.classList.toggle('oculto', !!claveServicioConductor);
-      pintarSelectorServicioConductor();
-
-      statusTextConductor.textContent = etiquetaCategoria
-        ? `Mostrando solicitudes de ${etiquetaCategoria}…`
-        : 'Elige tu servicio para ver solicitudes…';
-
-      contenedorSolicitudes.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted-text)">
-        <div class="loading-pulse" style="justify-content:center;margin-bottom:8px"><span></span><span></span><span></span></div>
-        Cargando viajes pendientes…</div>`;
-
-      const { data, error } = await supabaseClient
-        .from('viajes')
-        .select('*')
-        .eq('estado', 'solicitado')
-        .order('id', { ascending: false });
-
-      if (error) {
-        statusTextConductor.textContent = 'Error al cargar viajes: ' + error.message;
-        contenedorSolicitudes.innerHTML = '';
-        return;
-      }
-
-      let viajes = data || [];
-      if (claveServicioConductor) {
-        viajes = viajes.filter(v => {
-          const claveViaje = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio);
-          return claveViaje === claveServicioConductor;
-        });
-      }
-
-      if (viajes.length === 0) {
-        statusTextConductor.textContent = etiquetaCategoria
-          ? `No hay solicitudes pendientes de ${etiquetaCategoria}.`
-          : 'No hay solicitudes pendientes en este momento.';
-        contenedorSolicitudes.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted-text);font-size:.85rem">
-          Esperando nuevas solicitudes ${etiquetaCategoria ? 'para ' + etiquetaCategoria : 'para tu categoría'}...
+    const cont = document.createElement('div');
+    cont.className = 'historial-lista';
+    lista.forEach((v, i) => {
+      const clave = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) || 'default';
+      const estado = String(v.estado || 'solicitado').toLowerCase();
+      const card = document.createElement('div');
+      card.className = 'historial-card';
+      card.style.animationDelay = (i * 0.04) + 's';
+      card.innerHTML = `
+        <div class="historial-card-top">
+          <span class="historial-servicio">${iconoServicio(clave)} ${v.tipo_servicio || v.nombre_servicio || 'Servicio'}</span>
+          <span class="historial-precio">${formatoMoneda(v.tarifa || 0)}</span>
+        </div>
+        <div class="historial-ruta"><span>A ·</span> ${v.origen_nombre || 'Origen'}</div>
+        <div class="historial-ruta"><span>B ·</span> ${v.destino_nombre || 'Destino'}</div>
+        <div class="historial-pie">
+          <span class="historial-fecha">${textoFecha(fechaDeViaje(v))}${v.distancia_km ? ' · ' + v.distancia_km + ' km' : ''}</span>
+          <span class="estado-chip ${estado}">${estado}</span>
         </div>`;
-        return;
-      }
+      on(card, 'click', () => {
+        if (estado === 'solicitado' || estado === 'aceptado' || estado === 'en_camino') {
+          const rol = modoActual === 'conductor' ? 'conductor' : 'pasajero';
+          window.location.href = `viaje.html?id=${v.id}&rol=${rol}`;
+        }
+      });
+      cont.appendChild(card);
+    });
+    historialContenido.innerHTML = '';
+    historialContenido.appendChild(cont);
+    return;
+  }
 
-      statusTextConductor.textContent = `${viajes.length} viaje(s) de ${etiquetaCategoria || 'tu categoría'} disponible(s)`;
-      contenedorSolicitudes.innerHTML = '';
+  /* Vista de pagos / ingresos */
+  const total = lista.reduce((acc, v) => acc + Number(v.tarifa || 0), 0);
+  const cantidad = lista.length;
+  const promedio = cantidad ? Math.round(total / cantidad) : 0;
+  const etiquetaPeriodo = { hoy: 'hoy', semana: 'últimos 7 días', mes: 'este mes', todo: 'todo el historial' }[filtroPeriodo.value] || '';
 
-      viajes.forEach((viaje) => {
-        const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
-        const card = document.createElement('div');
-        card.className = 'tarjeta-viaje';
-        card.innerHTML = `
-          <div class="viaje-header">
-            <span class="viaje-tipo-badge">${iconoServicio(clave)} ${viaje.tipo_servicio || 'Servicio'}</span>
-            <div class="viaje-precio-badge">${formatoMoneda(viaje.tarifa || 0)}<small>TARIFA</small></div>
-          </div>
-          <div class="viaje-ruta">
-            <div class="viaje-punto">
-              <span class="viaje-punto-dot origen">A</span>
-              <div class="viaje-punto-text">${viaje.origen_nombre || 'Origen'}<span class="viaje-punto-sub">Punto de recojo</span></div>
-            </div>
-            <div class="viaje-linea-conector"></div>
-            <div class="viaje-punto">
-              <span class="viaje-punto-dot destino">B</span>
-              <div class="viaje-punto-text">${viaje.destino_nombre || 'Destino'}<span class="viaje-punto-sub">Punto de entrega</span></div>
-            </div>
-          </div>
-          <div class="viaje-footer">
-            <span class="viaje-distancia">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              ${viaje.distancia_km ? viaje.distancia_km + ' km' : 'Distancia N/D'}
-            </span>
-            <div class="viaje-cta">
-              <button type="button" class="btn-main btn-aceptar-viaje" data-id="${viaje.id}">Aceptar Viaje</button>
-            </div>
-          </div>
-        `;
+  const wrap = document.createElement('div');
+  const kpis = document.createElement('div');
+  kpis.className = 'pagos-resumen';
+  kpis.innerHTML = `
+    <div class="pago-kpi" style="animation-delay:.02s"><span class="pago-kpi-label">${esConductor ? 'Ganado' : 'Pagado'}</span><span class="pago-kpi-valor">${formatoMoneda(total)}</span></div>
+    <div class="pago-kpi" style="animation-delay:.08s"><span class="pago-kpi-label">Servicios</span><span class="pago-kpi-valor">${cantidad}</span></div>
+    <div class="pago-kpi" style="animation-delay:.14s"><span class="pago-kpi-label">Promedio</span><span class="pago-kpi-valor">${formatoMoneda(promedio)}</span></div>`;
+  wrap.appendChild(kpis);
+  wrap.insertAdjacentHTML('beforeend', `<p class="historial-fecha" style="margin:-4px 0 10px 2px">Mostrando ${etiquetaPeriodo}</p>`);
 
-        card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
-        contenedorSolicitudes.appendChild(card);
+  if (!cantidad) {
+    wrap.insertAdjacentHTML('beforeend', `<div class="perfil-vacio">Sin movimientos en el periodo seleccionado.</div>`);
+  } else {
+    const filas = document.createElement('div');
+    filas.className = 'historial-lista';
+    lista.forEach((v, i) => {
+      const fila = document.createElement('div');
+      fila.className = 'pago-fila';
+      fila.style.animationDelay = (i * 0.035) + 's';
+      fila.innerHTML = `
+        <div class="pago-fila-info">
+          <div class="pago-fila-tit">${v.tipo_servicio || v.nombre_servicio || 'Servicio'} · #${v.id ?? '—'}</div>
+          <div class="pago-fila-sub">${textoFecha(fechaDeViaje(v))} · ${String(v.estado || 'solicitado')}</div>
+        </div>
+        <div class="pago-fila-valor">${esConductor ? '+' : '-'} ${formatoMoneda(v.tarifa || 0)}</div>`;
+      filas.appendChild(fila);
+    });
+    wrap.appendChild(filas);
+  }
+
+  historialContenido.innerHTML = '';
+  historialContenido.appendChild(wrap);
+}
+
+function descargarHistorial() {
+  const lista = viajesFiltrados();
+  if (!lista.length) { mostrarToast('No hay datos para descargar', '!'); return; }
+  const columnas = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa','estado','fecha'];
+  const filas = lista.map((v) => [
+    v.id ?? '', v.tipo_servicio || v.nombre_servicio || '', v.origen_nombre || '', v.destino_nombre || '',
+    v.distancia_km ?? '', v.tarifa ?? '', v.estado || '', textoFecha(fechaDeViaje(v))
+  ]);
+  const escapar = (c) => '"' + String(c).replace(/"/g, '""') + '"';
+  const csv = '\uFEFF' + [columnas, ...filas].map(f => f.map(escapar).join(';')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `bikar_${vistaHistorial}_${filtroPeriodo.value}_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1200);
+  mostrarToast('Archivo descargado');
+}
+
+function abrirModalHistorial() {
+  if (!usuarioActual) { mostrarToast('Inicia sesión para ver tu historial', '!'); return; }
+  vistaHistorial = 'servicios';
+  tabServicios.classList.add('activo');
+  tabPagos.classList.remove('activo');
+  modalHistorial.classList.remove('oculto');
+  cargarHistorial();
+}
+function cambiarVistaHistorial(vista) {
+  vistaHistorial = vista;
+  const servicios = vista === 'servicios';
+  tabServicios.classList.toggle('activo', servicios);
+  tabPagos.classList.toggle('activo', !servicios);
+  renderizarHistorial();
+}
+on(tabServicios, 'click', () => cambiarVistaHistorial('servicios'));
+on(tabPagos, 'click', () => cambiarVistaHistorial('pagos'));
+on(filtroPeriodo, 'change', renderizarHistorial);
+on($('btn-descargar-historial'), 'click', descargarHistorial);
+
+/* PANTALLA DE ACCESO · login con los datos del registro */
+function mostrarPantallaAcceso() {
+  pantallaAcceso.classList.remove('oculto');
+  perfilSuperior.classList.add('oculto');
+  uiPasajero.classList.add('oculto');
+  uiConductor.classList.add('oculto');
+  btnCambiarModo.textContent = 'BIKAR';
+}
+const ocultarPantallaAcceso = () => pantallaAcceso.classList.add('oculto');
+function errorAcceso(msg) {
+  const e = $('acceso-error');
+  e.textContent = msg;
+  e.classList.add('visible');
+}
+async function buscarUsuarioEnBD(identificador) {
+  const { data, error } = await supabaseClient.from('usuarios').select('*').limit(500);
+  if (error) return { error, fila: null };
+  const clave = String(identificador || '').toLowerCase().trim();
+  const fila = (data || []).find(f => [f.correo, f.email, f.usuario, f.user, f.telefono, f.celular, f.nombre_comercio]
+    .some(v => v && String(v).toLowerCase().trim() === clave));
+  return { error: null, fila };
+}
+
+async function iniciarSesion(usuario, mensaje) {
+  usuarioActual = usuario;
+  guardarSesion();
+  ocultarPantallaAcceso();
+  await enriquecerUsuario();
+  await aplicarSesionUsuario(usuarioActual);
+  if (mensaje) mostrarToast(mensaje);
+}
+
+on($('form-acceso'), 'submit', async (ev) => {
+  ev.preventDefault();
+  const identificador = $('acceso-usuario').value.trim();
+  const clave = $('acceso-clave').value;
+  $('acceso-error').classList.remove('visible');
+  if (!identificador) { errorAcceso('Escribe tu correo, usuario o teléfono.'); return; }
+
+  const btn = $('btn-acceso');
+  btn.disabled = true; btn.textContent = 'Verificando…';
+  let resultado = { error: null, fila: null };
+  try { resultado = await buscarUsuarioEnBD(identificador); } catch (e) { resultado = { error: e, fila: null }; }
+  btn.disabled = false; btn.textContent = 'Ingresar';
+
+  if (resultado.error) { errorAcceso('No se pudo validar el acceso en este momento. Intenta con el acceso rápido.'); return; }
+  if (!resultado.fila) { errorAcceso('No encontramos una cuenta con esos datos. Puedes registrarte o usar el acceso rápido.'); return; }
+  const guardada = resultado.fila.password || resultado.fila.contrasena || resultado.fila.clave || resultado.fila.pass;
+  if (guardada && String(guardada) !== clave) { errorAcceso('La contraseña no coincide. Inténtalo de nuevo.'); return; }
+  await iniciarSesion(limpiarNulos(resultado.fila), '¡Bienvenido, ' + nombreUsuario(resultado.fila).split(' ')[0] + '!');
+});
+
+on($('btn-ver-clave'), 'click', () => {
+  const i = $('acceso-clave');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  i.focus();
+});
+on($('demo-pasajero'), 'click', async () => {
+  await iniciarSesion({
+    id: PASAJERO_ID_PRUEBA, nombre: 'Pasajero', apellido: 'BIKAR', usuario: 'pasajero',
+    correo: 'pasajero@bikar.com', tipo_usuario: 'pasajero', foto: FOTO_REPO_GITHUB
+  }, 'Modo pasajero activo');
+});
+on($('demo-conductor'), 'click', async () => {
+  await iniciarSesion({
+    id: CONDUCTOR_ID_PRUEBA, conductor_id: CONDUCTOR_ID_PRUEBA, nombre: 'Conductor', apellido: 'BIKAR',
+    usuario: 'conductor', correo: 'conductor@bikar.com', tipo_usuario: 'conductor',
+    tipo_servicio: 'Taxi Auto', placa: 'ABC-123', marca: 'Toyota', modelo: 'Corolla',
+    color: 'Blanco', licencia: 'LIC-2026', foto: FOTO_REPO_GITHUB
+  }, 'Modo conductor activo');
+});
+on($('btn-ir-registro'), 'click', () => {
+  $('acceso-error').classList.remove('visible');
+  modalRegistro.classList.remove('oculto');
+});
+
+/* Muestra/oculta campos según el tipo de cuenta */
+on($('reg-tipo'), 'change', () => {
+  const tipo = $('reg-tipo').value;
+  $('reg-zona-servicio').classList.toggle('oculto', tipo !== 'conductor');
+  $('reg-zona-comercio').classList.toggle('oculto', tipo !== 'comercio');
+});
+
+on($('form-registro'), 'submit', async (ev) => {
+  ev.preventDefault();
+  const nombre = $('reg-nombre').value.trim();
+  const correo = $('reg-correo').value.trim();
+  if (!nombre || !correo) { mostrarToast('Nombre y correo son obligatorios', '!'); return; }
+  const tipo = $('reg-tipo').value;
+  const servicioClave = $('reg-servicio').value;
+
+  const registro = limpiarNulos({
+    nombre,
+    apellido: $('reg-apellido').value.trim(),
+    correo,
+    telefono: $('reg-telefono').value.trim(),
+    password: $('reg-clave').value,
+    tipo_usuario: tipo,
+    tipo_servicio: tipo === 'conductor' ? (servicioClave ? etiquetaServicio(servicioClave) : '') : '',
+    nombre_comercio: tipo === 'comercio' ? $('reg-comercio').value.trim() : '',
+    categoria: tipo === 'comercio' ? $('reg-categoria').value.trim() : '',
+    foto: $('reg-foto').value.trim() || FOTO_REPO_GITHUB,
+    fecha_registro: new Date().toISOString()
+  });
+
+  let guardado = registro;
+  try {
+    const { data, error } = await supabaseClient.from('usuarios').insert([registro]).select();
+    if (!error && data && data.length) guardado = data[0];
+    else if (error) console.warn('No se pudo guardar en usuarios:', error.message);
+  } catch (e) { console.warn('Registro local:', e); }
+
+  if (!guardado.id) guardado.id = 'local-' + Date.now();
+  if (tipo === 'conductor' && servicioClave) {
+    const doc = { tipo_servicio: etiquetaServicio(servicioClave), usuario_id: guardado.id, marca: '', modelo: '', placa: '' };
+    documentacionVehiculo = doc;
+    try {
+      localStorage.setItem(LLAVE_DOCUMENTACION, JSON.stringify(doc));
+      localStorage.setItem(LLAVE_SERVICIO_CONDUCTOR, servicioClave);
+    } catch (e) {}
+  }
+
+  modalRegistro.classList.add('oculto');
+  await iniciarSesion(guardado, 'Cuenta creada. ¡Bienvenido a BIKAR!');
+});
+
+/* TIPO DE SERVICIO DEL CONDUCTOR */
+async function resolverServicioDelConductor() {
+  claveServicioConductor = null;
+  const u = usuarioActual || {};
+
+  /* 1) En la sesión → 2) Respaldo local → 3) Elección guardada → 4) Supabase */
+  let bruto = u.tipo_servicio || u.servicio || null;
+  if (!bruto) {
+    try {
+      const doc = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null');
+      if (doc && doc.tipo_servicio) bruto = doc.tipo_servicio;
+    } catch (e) {}
+  }
+  if (!bruto) { try { bruto = localStorage.getItem(LLAVE_SERVICIO_CONDUCTOR) || null; } catch (e) {} }
+  if (!bruto) {
+    const fila = await buscarDocConductor(u);
+    if (fila) bruto = fila.tipo_servicio;
+  }
+
+  claveServicioConductor = normalizarClaveServicio(bruto);
+  if (claveServicioConductor) {
+    if (u) { u.tipo_servicio = etiquetaServicio(claveServicioConductor); guardarSesion(); }
+    try { localStorage.setItem(LLAVE_SERVICIO_CONDUCTOR, claveServicioConductor); } catch (e) {}
+  }
+}
+
+/* Selector de servicio del conductor (solo si no hay uno registrado) */
+function pintarSelectorServicioConductor() {
+  sscPills.innerHTML = '';
+  CATALOGO_SERVICIOS.forEach(s => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ssc-pill' + (claveServicioConductor === s.clave ? ' activo' : '');
+    b.innerHTML = `${iconoServicio(s.clave)}<span>${s.etiqueta}</span>`;
+    on(b, 'click', () => elegirServicioConductor(s.clave));
+    sscPills.appendChild(b);
+  });
+}
+async function elegirServicioConductor(clave) {
+  claveServicioConductor = clave;
+  const s = servicioPorClave(clave);
+  if (usuarioActual) { usuarioActual.tipo_servicio = s ? s.etiqueta : clave; guardarSesion(); }
+  try { localStorage.setItem(LLAVE_SERVICIO_CONDUCTOR, clave); } catch (e) {}
+  pintarSelectorServicioConductor();
+  actualizarChipUsuario();
+  await cargarViajesSolicitados();
+  mostrarToast('Servicio: ' + (s ? s.etiqueta : clave));
+}
+
+/* CAMBIO DE MODO (desde el menú de perfil) */
+async function alternarModo() {
+  if (!usuarioActual) { mostrarToast('Inicia sesión primero', '!'); return; }
+  const aConductor = modoActual === 'pasajero';
+  modoActual = aConductor ? 'conductor' : 'pasajero';
+  actualizarChipUsuario();
+  uiPasajero.classList.toggle('oculto', aConductor);
+  uiConductor.classList.toggle('oculto', !aConductor);
+  if (aConductor) {
+    cerrarPanelServicios();
+    if (!claveServicioConductor) await resolverServicioDelConductor();
+    pintarSelectorServicioConductor();
+    cargarViajesSolicitados();
+  }
+}
+
+/* PANEL DE SERVICIOS (pasajero) */
+on(btnPedirViaje, 'click', () => {
+  if (!origen || !destino) { mostrarToast('Selecciona origen y destino', '!'); return; }
+  abrirPanelServicios();
+});
+
+async function abrirPanelServicios() {
+  resumenOrigen.childNodes[0].nodeValue = origenNombre || 'Ubicación actual';
+  resumenOrigenSub.textContent = origenDetalle || '';
+  resumenDestino.childNodes[0].nodeValue = destinoNombre || 'Destino seleccionado';
+  resumenDestinoSub.textContent = destinoDetalle || '';
+  resumenDistancia.textContent = `${distanciaKm.toFixed(1)} km`;
+  resumenDuracion.textContent = `${duracionMin} min`;
+
+  panelServicios.classList.remove('oculto', 'cerrando');
+  backdropServicios.classList.remove('oculto');
+  void panelServicios.offsetWidth;
+  panelServicios.classList.add('visible');
+  backdropServicios.classList.add('visible');
+  panelServicios.setAttribute('aria-hidden', 'false');
+
+  await cargarServiciosDisponibles();
+}
+
+function cerrarPanelServicios() {
+  if (!panelServicios.classList.contains('visible')) return;
+  panelServicios.classList.remove('visible');
+  panelServicios.classList.add('cerrando');
+  backdropServicios.classList.remove('visible');
+  setTimeout(() => {
+    panelServicios.classList.remove('cerrando');
+    panelServicios.setAttribute('aria-hidden', 'true');
+  }, 420);
+  servicioSeleccionado = null;
+  btnConfirmarServicio.disabled = true;
+  btnConfirmarServicio.textContent = 'Selecciona un servicio';
+}
+on($('btn-cerrar-servicios'), 'click', cerrarPanelServicios);
+on(backdropServicios, 'click', cerrarPanelServicios);
+
+/* Consulta qué tipos de servicio tienen conductores registrados */
+async function cargarServiciosDisponibles() {
+  serviciosLista.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
+    <div class="loading-pulse" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
+    Buscando conductores disponibles…</div>`;
+
+  const conteo = {};
+  try {
+    const { data, error } = await supabaseClient.from('documentos_conductor').select('tipo_servicio');
+    if (!error && data) {
+      data.forEach((fila) => {
+        const clave = normalizarClaveServicio(fila.tipo_servicio);
+        if (clave) conteo[clave] = (conteo[clave] || 0) + 1;
       });
     }
+  } catch (e) { console.warn('No se pudo consultar documentos_conductor:', e); }
 
-    async function aceptarViaje(viaje) {
-      const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+  const disponibles = Object.keys(conteo).length
+    ? CATALOGO_SERVICIOS.filter(s => conteo[s.clave])
+    : CATALOGO_SERVICIOS;
 
-      const { error } = await supabaseClient
-        .from('viajes')
-        .update({ estado: 'aceptado', conductor_id: conductorId })
-        .eq('id', viaje.id);
+  serviciosLista.innerHTML = '';
+  servicioSeleccionado = null;
+  btnConfirmarServicio.disabled = true;
+  btnConfirmarServicio.textContent = 'Selecciona un servicio';
 
-      if (error) {
-        mostrarToast('Error al aceptar viaje: ' + error.message, '!');
-        return;
-      }
+  if (!disponibles.length) {
+    serviciosLista.innerHTML = `<div style="padding:26px;text-align:center;color:var(--muted-text);font-size:.85rem">
+      No hay conductores disponibles en este momento.</div>`;
+    return;
+  }
 
-      mostrarToast('¡Viaje aceptado con éxito!');
-      cargarViajesSolicitados();
-    }
-
-    /* ============================================================
-       SINCRONIZACIÓN EN TIEMPO REAL (Supabase Realtime)
-       ============================================================ */
-    function suscribirRealtime() {
-      supabaseClient
-        .channel('public:viajes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'viajes' }, () => {
-          if (modoActual === 'conductor') cargarViajesSolicitados();
-          if (!modalHistorial.classList.contains('oculto')) cargarHistorial();
-        })
-        .subscribe();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      cargarGoogleMaps();
-      suscribirRealtime();
-      verificarSesionGuardada();
+  disponibles.forEach((servicio) => {
+    const tarifa = tarifaDe(servicio);
+    const n = conteo[servicio.clave] || 0;
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'servicio-card';
+    card.dataset.clave = servicio.clave;
+    card.innerHTML = `
+      <div class="servicio-icono">${iconoServicio(servicio.clave)}</div>
+      <div class="servicio-info">
+        <div class="servicio-nombre">${servicio.etiqueta}</div>
+        <div class="servicio-desc">${servicio.desc}</div>
+        <div>
+          <span class="servicio-tiempo">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            ${servicio.espera}
+          </span>
+          ${n ? `<span class="servicio-conductores">● ${n} disponible${n > 1 ? 's' : ''}</span>` : ''}
+        </div>
+      </div>
+      <div class="servicio-precio">
+        <div class="servicio-precio-valor">${formatoMoneda(tarifa)}</div>
+        <div class="servicio-precio-etiqueta">Tarifa</div>
+      </div>`;
+    on(card, 'click', () => {
+      serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
+      card.classList.add('seleccionado');
+      servicioSeleccionado = { ...servicio, tarifa };
+      btnConfirmarServicio.disabled = false;
+      btnConfirmarServicio.textContent = `Confirmar ${servicio.etiqueta} · ${formatoMoneda(tarifa)}`;
     });
+    serviciosLista.appendChild(card);
+  });
+}
+
+on(btnConfirmarServicio, 'click', async () => {
+  if (!servicioSeleccionado) return;
+  btnConfirmarServicio.disabled = true;
+  btnConfirmarServicio.textContent = 'Solicitando…';
+  await solicitarViaje(servicioSeleccionado);
+});
+
+/* SOLICITAR VIAJE */
+async function solicitarViaje(servicio) {
+  const pasajeroId = usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA;
+  const registro = {
+    pasajero_id: pasajeroId,
+    origen_lat: origen.lat, origen_lon: origen.lng,
+    destino_lat: destino.lat, destino_lon: destino.lng,
+    origen_nombre: [origenNombre, origenDetalle].filter(Boolean).join(', '),
+    destino_nombre: [destinoNombre, destinoDetalle].filter(Boolean).join(', '),
+    tipo_servicio: servicio.etiqueta,
+    nombre_servicio: servicio.etiqueta,
+    tarifa: servicio.tarifa,
+    distancia_km: Math.round(distanciaKm * 10) / 10,
+    estado: 'solicitado'
+  };
+
+  const { data, error } = await supabaseClient.from('viajes').insert([registro]).select();
+  if (error) {
+    mostrarToast('Error: ' + error.message, '!');
+    btnConfirmarServicio.disabled = false;
+    btnConfirmarServicio.textContent = `Confirmar ${servicio.etiqueta} · ${formatoMoneda(servicio.tarifa)}`;
+    return;
+  }
+
+  mostrarToast(`${servicio.etiqueta} solicitado`);
+  cerrarPanelServicios();
+
+  /* Redirección inmediata a la pantalla de espera del pasajero */
+  if (data && data.length > 0) window.location.href = `viaje.html?id=${data[0].id}&rol=pasajero`;
+}
+
+/* PANEL CONDUCTOR · SOLO LOS VIAJES DE SU TIPO DE SERVICIO */
+async function cargarViajesSolicitados() {
+  if (modoActual !== 'conductor') return;
+
+  const etiquetaCategoria = claveServicioConductor ? etiquetaServicio(claveServicioConductor) : null;
+  selectorServicioConductor.classList.toggle('oculto', !!claveServicioConductor);
+  pintarSelectorServicioConductor();
+
+  statusTextConductor.textContent = etiquetaCategoria
+    ? `Mostrando solicitudes de ${etiquetaCategoria}…`
+    : 'Elige tu servicio para ver solicitudes…';
+
+  contenedorSolicitudes.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted-text)">
+    <div class="loading-pulse" style="justify-content:center;margin-bottom:8px"><span></span><span></span><span></span></div>
+    Cargando viajes pendientes…</div>`;
+
+  const { data, error } = await supabaseClient
+    .from('viajes')
+    .select('*')
+    .eq('estado', 'solicitado')
+    .order('id', { ascending: false });
+
+  if (error) {
+    statusTextConductor.textContent = 'Error al cargar viajes: ' + error.message;
+    contenedorSolicitudes.innerHTML = '';
+    return;
+  }
+
+  let viajes = data || [];
+  if (claveServicioConductor) {
+    viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
+  }
+
+  if (viajes.length === 0) {
+    statusTextConductor.textContent = etiquetaCategoria
+      ? `No hay solicitudes pendientes de ${etiquetaCategoria}.`
+      : 'No hay solicitudes pendientes en este momento.';
+    contenedorSolicitudes.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted-text);font-size:.85rem">
+      Esperando nuevas solicitudes ${etiquetaCategoria ? 'para ' + etiquetaCategoria : 'para tu categoría'}...
+    </div>`;
+    return;
+  }
+
+  statusTextConductor.textContent = `${viajes.length} viaje(s) de ${etiquetaCategoria || 'tu categoría'} disponible(s)`;
+  contenedorSolicitudes.innerHTML = '';
+
+  viajes.forEach((viaje) => {
+    const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
+    const card = document.createElement('div');
+    card.className = 'tarjeta-viaje';
+    card.innerHTML = `
+      <div class="viaje-header">
+        <span class="viaje-tipo-badge">${iconoServicio(clave)} ${viaje.tipo_servicio || 'Servicio'}</span>
+        <div class="viaje-precio-badge">${formatoMoneda(viaje.tarifa || 0)}<small>TARIFA</small></div>
+      </div>
+      <div class="viaje-ruta">
+        <div class="viaje-punto">
+          <span class="viaje-punto-dot origen">A</span>
+          <div class="viaje-punto-text">${viaje.origen_nombre || 'Origen'}<span class="viaje-punto-sub">Punto de recojo</span></div>
+        </div>
+        <div class="viaje-linea-conector"></div>
+        <div class="viaje-punto">
+          <span class="viaje-punto-dot destino">B</span>
+          <div class="viaje-punto-text">${viaje.destino_nombre || 'Destino'}<span class="viaje-punto-sub">Punto de entrega</span></div>
+        </div>
+      </div>
+      <div class="viaje-footer">
+        <span class="viaje-distancia">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          ${viaje.distancia_km ? viaje.distancia_km + ' km' : 'Distancia N/D'}
+        </span>
+        <div class="viaje-cta">
+          <button type="button" class="btn-main btn-aceptar-viaje" data-id="${viaje.id}">Aceptar Viaje</button>
+        </div>
+      </div>`;
+    on(card.querySelector('.btn-aceptar-viaje'), 'click', () => aceptarViaje(viaje));
+    contenedorSolicitudes.appendChild(card);
+  });
+}
+
+async function aceptarViaje(viaje) {
+  const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
+
+  const { error } = await supabaseClient
+    .from('viajes')
+    .update({ estado: 'aceptado', conductor_id: conductorId })
+    .eq('id', viaje.id);
+
+  if (error) { mostrarToast('Error al aceptar viaje: ' + error.message, '!'); return; }
+  mostrarToast('¡Viaje aceptado con éxito!');
+  /* Redirección inmediata a la pantalla del conductor */
+  window.location.href = `viaje.html?id=${viaje.id}&rol=conductor`;
+}
+
+/* SINCRONIZACIÓN EN TIEMPO REAL (Supabase Realtime) */
+function suscribirRealtime() {
+  supabaseClient
+    .channel('public:viajes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'viajes' }, () => {
+      if (modoActual === 'conductor') cargarViajesSolicitados();
+      if (!modalHistorial.classList.contains('oculto')) cargarHistorial();
+    })
+    .subscribe();
+}
+
+/* INICIO */
+function iniciar() {
+  cargarGoogleMaps();
+  suscribirRealtime();
+  verificarSesionGuardada();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+else iniciar();
   </script>
 </body>
 </html>
