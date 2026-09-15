@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIKAR · Estado del Viaje</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --muted-text: #6b7280;
+      --primary-color: #134989;
+      --primary-hover: #275c98;
+      --border-color: #e5e7eb;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-blue: #3b82f6;
+      --shadow: 0 10px 30px -5px rgba(0,0,0,0.08);
+      --radius: 18px;
+    }
+
+    body.dark-theme {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --text-color: #f0f6fc;
+      --muted-text: #8b949e;
+      --border-color: #30363d;
+      --shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+
+    header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
+    .brand { font-size: 1.25rem; font-weight: 800; color: var(--primary-color); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn-icon { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+
+    main { flex: 1; max-width: 600px; width: 100%; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+    .status-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); text-align: center; }
+    .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .status-badge.solicitado { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .status-badge.aceptado { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+    .status-badge.en_camino, .status-badge.en_progreso { background: rgba(19, 73, 137, 0.15); color: var(--primary-color); }
+    .status-badge.terminado { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+    .pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } 100% { opacity: 1; transform: scale(1); } }
+
+    .stepper { display: flex; justify-content: space-between; position: relative; margin: 20px 0 10px; }
+    .stepper::before { content: ''; position: absolute; top: 14px; left: 10%; right: 10%; height: 2px; background: var(--border-color); z-index: 1; }
+    .step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 25%; }
+    .step-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--card-bg); border: 2px solid var(--border-color); display: grid; place-items: center; font-size: 0.75rem; font-weight: bold; color: var(--muted-text); }
+    .step.active .step-icon { border-color: var(--primary-color); background: var(--primary-color); color: #fff; }
+    .step.completed .step-icon { border-color: var(--accent-green); background: var(--accent-green); color: #fff; }
+    .step-text { font-size: 0.7rem; color: var(--muted-text); font-weight: 600; text-align: center; }
+
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+    .card-title { font-size: 0.85rem; text-transform: uppercase; color: var(--muted-text); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 14px; }
+
+    .profile-box { display: flex; align-items: center; gap: 16px; }
+    .profile-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
+    .profile-info { flex: 1; }
+    .profile-name { font-size: 1.1rem; font-weight: 700; }
+    .profile-sub { font-size: 0.85rem; color: var(--muted-text); margin-top: 2px; }
+
+    .vehicle-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(19, 73, 137, 0.08); color: var(--primary-color); border-radius: 8px; font-weight: 700; font-size: 0.8rem; margin-top: 6px; }
+
+    .route-box { display: flex; flex-direction: column; gap: 12px; }
+    .route-point { display: flex; align-items: flex-start; gap: 12px; }
+    .dot { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: bold; color: white; flex-shrink: 0; margin-top: 2px; }
+    .dot.a { background: var(--primary-color); }
+    .dot.b { background: var(--accent-green); }
+    .route-detail { font-size: 0.9rem; font-weight: 600; }
+    .route-sub { font-size: 0.78rem; color: var(--muted-text); margin-top: 1px; }
+
+    .btn-action { width: 100%; padding: 16px; border: none; border-radius: 14px; background: var(--primary-color); color: white; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s, transform 0.1s; }
+    .btn-action:hover { background: var(--primary-hover); }
+    .btn-action:active { transform: scale(0.98); }
+    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f2937; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: transform 0.3s ease; z-index: 100; }
+    .toast.visible { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="#" id="btn-volver" class="brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      BIKAR
+    </a>
+    <button class="btn-icon" id="btn-tema" title="Cambiar tema">????</button>
+  </header>
+
+  <main>
+    <!-- Card de Estado Generales -->
+    <section class="status-card">
+      <div id="status-badge" class="status-badge solicitado">
+        <span class="pulse-dot"></span>
+        <span id="status-texto">Buscando conductor</span>
+      </div>
+      <h2 id="status-titulo" style="font-size:1.3rem; font-weight:800;">Solicitud enviada</h2>
+      <p id="status-desc" style="font-size:0.85rem; color:var(--muted-text); margin-top:4px;">Tu solicitud está visible para conductores cercanos.</p>
+
+      <div class="stepper">
+        <div class="step active" id="step-1">
+          <div class="step-icon">1</div>
+          <span class="step-text">Solicitado</span>
+        </div>
+        <div class="step" id="step-2">
+          <div class="step-icon">2</div>
+          <span class="step-text">Aceptado</span>
+        </div>
+        <div class="step" id="step-3">
+          <div class="step-icon">3</div>
+          <span class="step-text">En Curso</span>
+        </div>
+        <div class="step" id="step-4">
+          <div class="step-icon">4</div>
+          <span class="step-text">Finalizado</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card de la Contraparte (Pasajero o Conductor según el rol) -->
+    <section class="card" id="card-persona">
+      <div class="card-title" id="titulo-persona">Información del Conductor</div>
+      <div class="profile-box">
+        <img id="persona-foto" src="https://raw.githubusercontent.com/BikarApp/bikar/main/avatar-default.png" alt="Foto" class="profile-img">
+        <div class="profile-info">
+          <div class="profile-name" id="persona-nombre">Esperando conductor...</div>
+          <div class="profile-sub" id="persona-sub">Se asignará en cuanto un conductor acepte</div>
+          <div id="persona-extra"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detalle de la Ruta y Tarifa -->
+    <section class="card">
+      <div class="card-title">Detalles del Viaje</div>
+      <div class="route-box">
+        <div class="route-point">
+          <span class="dot a">A</span>
+          <div>
+            <div class="route-detail" id="txt-origen">Origen...</div>
+            <div class="route-sub">Punto de recojo</div>
+          </div>
+        </div>
+        <div class="route-point">
+          <span class="dot b">B</span>
+          <div>
+            <div class="route-detail" id="txt-destino">Destino...</div>
+            <div class="route-sub">Punto de entrega</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span style="font-size:0.8rem; color:var(--muted-text);">Servicio</span>
+          <div id="txt-servicio" style="font-weight:700; font-size:0.95rem;">-</div>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:0.8rem; color:var(--muted-text);">Tarifa total</span>
+          <div id="txt-tarifa" style="font-weight:800; font-size:1.2rem; color:var(--primary-color);">$0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Botón de Acción Dinámico (Conductor) -->
+    <section id="sec-acciones" style="display:none;">
+      <button id="btn-siguiente-estado" class="btn-action">Conducir hacia el origen</button>
+    </section>
+  </main>
+
+  <div id="toast" class="toast">Notificación</div>
+
+  <script>
+    // CONFIGURACIÓN DE SUPABASE (Toma las mismas credenciales de tu app)
+    const SUPABASE_URL = "https://TU_SUPABASE_PROJECT_URL.supabase.co"; 
+    const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY"; 
+    
+    // Si ya tienes un cliente global inicializado localmente lo tomará
+    let supabaseClient = window.supabaseClient || (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null);
+
+    // Parámetros URL y Estado Local
+    const urlParams = new URLSearchParams(window.location.search);
+    const viajeId = urlParams.get('id');
+    const rolUsuario = urlParams.get('rol') || 'pasajero'; // 'pasajero' o 'conductor'
+
+    let viajeActual = null;
+
+    // Elementos DOM
+    const statusBadge = document.getElementById('status-badge');
+    const statusTexto = document.getElementById('status-texto');
+    const statusTitulo = document.getElementById('status-titulo');
+    const statusDesc = document.getElementById('status-desc');
+    const btnSiguiente = document.getElementById('btn-siguiente-estado');
+    const secAcciones = document.getElementById('sec-acciones');
+
+    // MODO OSCURO
+    const btnTema = document.getElementById('btn-tema');
+    function aplicarTema(dark) {
+      document.body.classList.toggle('dark-theme', dark);
+      btnTema.textContent = dark ? '☀️' : '????';
+      localStorage.setItem('bikar_tema', dark ? 'oscuro' : 'claro');
+    }
+    btnTema.addEventListener('click', () => aplicarTema(!document.body.classList.contains('dark-theme')));
+    if (localStorage.getItem('bikar_tema') === 'oscuro') aplicarTema(true);
+
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('visible');
+      setTimeout(() => t.classList.remove('visible'), 3000);
+    }
+
+    function formatoMoneda(valor) {
+      return '$' + Number(valor || 0).toLocaleString('es-CO');
+    }
+
+    // CARGAR Y ESCUCHAR CAMBIOS EN REALTIME
+    async function inicializar() {
+      if (!viajeId) {
+        statusTitulo.textContent = "Sin viaje activo";
+        statusDesc.textContent = "No se especificó un código de viaje válido.";
+        return;
+      }
+
+      await obtenerDatosViaje();
+      suscribirRealtime();
+    }
+
+    async function obtenerDatosViaje() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('viajes')
+          .select('*')
+          .eq('id', viajeId)
+          .single();
+
+        if (error) throw error;
+        viajeActual = data;
+        renderizarUI();
+      } catch (e) {
+        console.error("Error al obtener el viaje:", e);
+      }
+    }
+
+    function suscribirRealtime() {
+      supabaseClient
+        .channel(`viaje-${viajeId}`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'viajes', filter: `id=eq.${viajeId}` }, (payload) => {
+          viajeActual = payload.new;
+          renderizarUI();
+          mostrarToast("¡El estado del viaje ha sido actualizado!");
+        })
+        .subscribe();
+    }
+
+    async function renderizarUI() {
+      if (!viajeActual) return;
+
+      const estado = (viajeActual.estado || 'solicitado').toLowerCase();
+
+      // Actualización de Textos de Ruta y Tarifa
+      document.getElementById('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
+      document.getElementById('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
+      document.getElementById('txt-servicio').textContent = viajeActual.tipo_servicio || 'Servicio';
+      document.getElementById('txt-tarifa').textContent = formatoMoneda(viajeActual.tarifa);
+
+      // Stepper Visual
+      const pasos = ['solicitado', 'aceptado', 'en_camino', 'terminado'];
+      pasos.forEach((p, idx) => {
+        const el = document.getElementById(`step-${idx + 1}`);
+        if (!el) return;
+        el.classList.remove('active', 'completed');
+        if (estado === p || (p === 'en_camino' && estado === 'en_progreso')) {
+          el.classList.add('active');
+        } else if (pasos.indexOf(estado) > idx || estado === 'terminado') {
+          el.classList.add('completed');
+        }
+      });
+
+      // Configuración según el ESTADO
+      statusBadge.className = `status-badge ${estado}`;
+      statusTexto.textContent = estado.replace('_', ' ');
+
+      if (estado === 'solicitado') {
+        statusTitulo.textContent = "Esperando conductor";
+        statusDesc.textContent = "Buscando al mejor conductor cercano a tu ubicación.";
+      } else if (estado === 'aceptado') {
+        statusTitulo.textContent = "Viaje Aceptado";
+        statusDesc.textContent = "El conductor ha tomado tu servicio y se prepara para recogerte.";
+      } else if (estado === 'en_camino') {
+        statusTitulo.textContent = "Conductor en camino";
+        statusDesc.textContent = "El vehículo va dirigiéndose hacia el punto de recojo.";
+      } else if (estado === 'en_progreso') {
+        statusTitulo.textContent = "En curso hacia el destino";
+        statusDesc.textContent = "Vas a bordo. ¡Disfruta el trayecto con BIKAR!";
+      } else if (estado === 'terminado') {
+        statusTitulo.textContent = "¡Has llegado a tu destino!";
+        statusDesc.textContent = "Viaje completado exitosamente.";
+      }
+
+      // Cargar Datos de la Contraparte (Conductor o Pasajero)
+      if (rolUsuario === 'pasajero') {
+        document.getElementById('titulo-persona').textContent = "Conductor Asignado";
+        if (viajeActual.conductor_id) {
+          cargarDatosConductor(viajeActual.conductor_id);
+        } else {
+          document.getElementById('persona-nombre').textContent = "Buscando conductor...";
+          document.getElementById('persona-sub').textContent = "Te avisaremos en cuanto alguien lo acepte.";
+        }
+      } else {
+        document.getElementById('titulo-persona').textContent = "Datos del Pasajero";
+        if (viajeActual.pasajero_id) {
+          cargarDatosPasajero(viajeActual.pasajero_id);
+        }
+        configurarBotonConductor(estado);
+      }
+    }
+
+    // CARGAR INFORMACIÓN DE PERFILES
+    async function cargarDatosConductor(idConductor) {
+      try {
+        const { data: usuario } = await supabaseClient.from('usuarios').select('*').eq('id', idConductor).maybeSingle();
+        const { data: doc } = await supabaseClient.from('documentos_conductor').select('*').eq('usuario_id', idConductor).maybeSingle();
+
+        if (usuario) {
+          document.getElementById('persona-nombre').textContent = `${usuario.nombre || ''} ${usuario.apellido || ''}`.trim() || 'Conductor BIKAR';
+          document.getElementById('persona-sub').textContent = usuario.telefono ? `???? ${usuario.telefono}` : 'Conductor verificado';
+          if (usuario.foto) document.getElementById('persona-foto').src = usuario.foto;
+        }
+
+        if (doc) {
+          document.getElementById('persona-extra').innerHTML = `
+            <div class="vehicle-tag">
+              ???? ${doc.marca || ''} ${doc.modelo || ''} · <span style="letter-spacing:1px; text-transform:uppercase;">${doc.placa || ''}</span>
+            </div>`;
+        }
+      } catch (e) { console.warn("Error leyendo perfil conductor:", e); }
+    }
+
+    async function cargarDatosPasajero(idPasajero) {
+      try {
+        const { data: usuario } = await supabaseClient.from('usuarios').select('*').eq('id', idPasajero).maybeSingle();
+        if (usuario) {
+          document.getElementById('persona-nombre').textContent = `${usuario.nombre || ''} ${usuario.apellido || ''}`.trim() || 'Pasajero BIKAR';
+          document.getElementById('persona-sub').textContent = usuario.telefono ? `???? ${usuario.telefono}` : 'Pasajero BIKAR';
+          if (usuario.foto) document.getElementById('persona-foto').src = usuario.foto;
+        }
+      } catch (e) { console.warn("Error leyendo perfil pasajero:", e); }
+    }
+
+    // LÓGICA DE BOTONES PARA CONDUCTOR
+    function configurarBotonConductor(estado) {
+      secAcciones.style.display = 'block';
+
+      if (estado === 'aceptado') {
+        btnSiguiente.textContent = "???? Conducir hacia el origen";
+        btnSiguiente.disabled = false;
+        btnSiguiente.onclick = () => cambiarEstadoViaje('en_camino');
+      } else if (estado === 'en_camino') {
+        btnSiguiente.textContent = "????‍♂️ Pasajero a bordo (Iniciar viaje)";
+        btnSiguiente.disabled = false;
+        btnSiguiente.onclick = () => cambiarEstadoViaje('en_progreso');
+      } else if (estado === 'en_progreso') {
+        btnSiguiente.textContent = "???? Finalizar y completar viaje";
+        btnSiguiente.disabled = false;
+        btnSiguiente.onclick = () => cambiarEstadoViaje('terminado');
+      } else if (estado === 'terminado') {
+        btnSiguiente.textContent = "✓ Viaje Finalizado";
+        btnSiguiente.disabled = true;
+      }
+    }
+
+    async function cambiarEstadoViaje(nuevoEstado) {
+      btnSiguiente.disabled = true;
+      btnSiguiente.textContent = "Actualizando...";
+
+      try {
+        const { error } = await supabaseClient
+          .from('viajes')
+          .update({ estado: nuevoEstado })
+          .eq('id', viajeId);
+
+        if (error) throw error;
+        mostrarToast(`Estado actualizado a: ${nuevoEstado}`);
+      } catch (e) {
+        mostrarToast("Error al actualizar el estado");
+        console.error(e);
+      } finally {
+        btnSiguiente.disabled = false;
+      }
+    }
+
+    document.getElementById('btn-volver').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.history.back();
+    });
+
+    window.addEventListener('DOMContentLoaded', inicializar);
+  </script>
+</body>
+</html>
