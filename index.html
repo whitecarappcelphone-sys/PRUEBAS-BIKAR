@@ -3,29 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BIKAR · Acceso</title>
-
-  <!-- PWA y Configuración para Android / iOS -->
   <meta name="theme-color" content="#121212">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BIKAR">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>BIKAR · Acceso</title>
   <link rel="manifest" href="manifest.json">
-
-  <!-- Previsualización en WhatsApp y Redes Sociales (Open Graph) -->
-  <meta property="og:title" content="BIKAR · Acceso">
-  <meta property="og:description" content="Seguridad, Comodidad y Confianza. Accede a BIKAR.">
-  <meta property="og:image" content="icon-512.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="512">
-  <meta property="og:image:height" content="512">
-  <meta property="og:type" content="website">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -263,6 +243,9 @@
     .doc-quitar{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.06);color:#fff;font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
     .doc-quitar:hover{background:rgba(231,76,60,.25);border-color:rgba(231,76,60,.60)}
+    #modal-instalar-pwa .panel-title::before {
+  display: none !important;
+}
   </style>
 </head>
 <body class="dark-mode">
@@ -485,9 +468,36 @@
       </p>
     </form>
   </div>
+  <!-- ALERTA DE INSTALACIÓN PWA -->
+  <div id="modal-instalar-pwa" class="ui-panel oculto" style="z-index:3500; top:50%; bottom:auto; transform:translate(-50%, -50%);">
+    <div style="display:flex; justify-content:center; margin-bottom:12px;">
+      <img src="icon-192.png" alt="BIKAR Logo" style="width:60px; height:60px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35); border: 1px solid rgba(71,133,167,0.4);">
+    </div>
+    <h3 class="panel-title" style="color:#ffffff !important;">Instalar BIKAR</h3>
+    
+    <!-- Instrucciones exclusivas para iPhone / iPad -->
+    <div id="pwa-instrucciones-ios" class="oculto" style="text-align:left; background:rgba(255,255,255,0.06); padding:12px 14px; border-radius:14px; margin-bottom:16px; font-size:0.82rem; color:#f8f9fa; border:1px solid rgba(71,133,167,0.3);">
+      <p style="font-weight:600; margin-bottom:6px; color:var(--primary-color);">Para instalar en tu iPhone / iPad:</p>
+      <ol style="padding-left:18px; line-height:1.5;">
+        <li>Presiona el botón <strong>Compartir</strong> <span style="font-size:1.1rem; vertical-align:middle;">⎋</span> en la barra inferior.</li>
+        <li>Busca y selecciona <strong>"Agregar al inicio"</strong> ➕.</li>
+      </ol>
+    </div>
 
+    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
+    <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px;">Ahora no</button>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    /* ================= SERVICE WORKER (PWA) ================= */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado:', reg.scope))
+          .catch(err => console.error('Error en Service Worker:', err));
+      });
+    }
+    
     /* ================= SUPABASE ================= */
     const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
@@ -992,6 +1002,62 @@
         if (usuarioActual) irAlApp();
       } catch (e) { console.error("Error al cargar sesión:", e); }
     })();
+    /* ================= LÓGICA DE INSTALACIÓN PWA ================= */
+    let deferredPrompt = null;
+    const modalInstalar = document.getElementById('modal-instalar-pwa');
+    const btnInstalar = document.getElementById('btn-instalar-pwa');
+    const btnCerrarInstalar = document.getElementById('btn-cerrar-instalar-pwa');
+    const instruccionesIos = document.getElementById('pwa-instrucciones-ios');
+    const textoInstalar = document.getElementById('pwa-instalar-texto');
+
+    // Verificar si la app ya está instalada y ejecutándose en pantalla completa
+    const esPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    // Detectar si el usuario está en iOS (iPhone / iPad)
+    const esIos = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
+
+    if (!esPwa) {
+      // 1. Android / Chrome
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        mostrarAlertaInstalacion();
+      });
+
+      // 2. iPhone / iOS (Safari no lanza beforeinstallprompt)
+      if (esIos) {
+        setTimeout(() => {
+          instruccionesIos.classList.remove('oculto');
+          btnInstalar.classList.add('oculto'); // Oculta el botón nativo ya que en iOS no existe
+          textoInstalar.innerText = "Agrega BIKAR a tu pantalla de inicio para acceder rápidamente.";
+          mostrarAlertaInstalacion();
+        }, 1200);
+      }
+    }
+
+    function mostrarAlertaInstalacion() {
+      // Solo mostrar si el usuario no cerró la alerta durante esta sesión
+      if (!sessionStorage.getItem('bikar_pwa_dismissed')) {
+        modalInstalar.classList.remove('oculto');
+      }
+    }
+
+    btnInstalar.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          console.log('El usuario aceptó la instalación');
+        }
+        deferredPrompt = null;
+      }
+      modalInstalar.classList.add('oculto');
+    });
+
+    btnCerrarInstalar.addEventListener('click', () => {
+      modalInstalar.classList.add('oculto');
+      sessionStorage.setItem('bikar_pwa_dismissed', 'true');
+    });
   </script>
 </body>
 </html>
