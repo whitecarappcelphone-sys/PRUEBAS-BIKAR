@@ -292,7 +292,7 @@
     <h3 id="login-titulo" class="panel-title">Iniciar sesión</h3>
     <p class="panel-subtitle">Ingresa tus datos para continuar</p>
     <form id="form-login">
-      <div class="input-group"><input type="text" id="login-dni" placeholder="Número de Documento (DNI / CE)" required autocomplete="username"></div>
+      <div class="input-group"><input type="email" id="login-dni" placeholder="Correo electrónico" required autocomplete="username"></div>
       <div class="input-group"><input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password"></div>
       <button type="submit" id="btn-login" class="btn-main">Iniciar sesión</button>
       <button type="button" id="btn-cancelar-login" class="btn-secondary" style="margin-top:8px">Volver</button>
@@ -827,26 +827,39 @@
       btnLogin.disabled = true;
       btnLogin.innerText = "Verificando...";
 
-      try {
+try {
+        // 1. Primero autenticamos en Supabase (funciona con el Correo ingresado)
+        let emailParaLogin = dni;
+
+        // Si ingresó un DNI (solo números) en lugar de correo, intentamos autenticar directamente
+        const { data: authResult, error: errAuth } = await supabaseClient.auth.signInWithPassword({ 
+          email: emailParaLogin, 
+          password: pwd 
+        });
+
+        if (errAuth) {
+          alert("Credenciales incorrectas o error de acceso: " + errAuth.message);
+          return;
+        }
+
+        // 2. Ya autenticados, obtenemos la información del usuario de la tabla
         const { data: usuarios, error: errUsuario } = await supabaseClient
           .from('usuarios')
           .select('*')
-          .or(`numero_documento.eq.${dni},email.eq.${dni}`)
+          .eq('auth_user_id', authResult.user.id)
           .limit(1);
 
-        if (errUsuario) { alert("Error al buscar el usuario: " + errUsuario.message); return; }
-        if (!usuarios || usuarios.length === 0) { alert("No se encontró usuario con ese documento o correo."); return; }
+        if (errUsuario || !usuarios || usuarios.length === 0) {
+          alert("No se encontró la ficha del usuario registrada.");
+          return;
+        }
 
         const usuario = usuarios[0];
 
         if (usuario.tipo_usuario && rolSeleccionado && usuario.tipo_usuario !== rolSeleccionado) {
-          alert("No existe una cuenta con ese documento para este rol.");
+          alert("Tu cuenta no corresponde al rol seleccionado (" + rolSeleccionado.toUpperCase() + ").");
           return;
         }
-        if (!usuario.email) { alert("Esta cuenta no tiene un correo asociado."); return; }
-
-        const { error: errAuth } = await supabaseClient.auth.signInWithPassword({ email: usuario.email, password: pwd });
-        if (errAuth) { alert("Contraseña incorrecta o error de acceso: " + errAuth.message); return; }
 
         if (usuario.tipo_usuario === 'conductor' && !usuario.conductor_id) {
           const { data: cond } = await supabaseClient
@@ -859,6 +872,7 @@
         modalLogin.classList.add('oculto');
         mostrarAlerta(`¡Bienvenido de nuevo, ${usuario.nombre || 'Usuario'}!`);
         irAlApp();
+      }
       } catch (err) {
         console.error(err);
         alert("Ocurrió un error al iniciar sesión: " + err.message);
