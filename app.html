@@ -473,7 +473,21 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const APP_URL = "app.html";            /* Destino tras el acceso */
     const LLAVE_SESION = "bikar_usuario";  /* Puente entre las 2 páginas */
-
+        /* ================= FUNCIÓN CERRAR SESIÓN ================= */
+    window.cerrarSesion = async function() {
+      try {
+        // 1. Cerramos la sesión en Supabase
+        await supabaseClient.auth.signOut();
+      } catch (err) {
+        console.warn("Error al cerrar sesión en Supabase:", err);
+      }
+      // 2. Limpiamos el localStorage
+      localStorage.removeItem(LLAVE_SESION);
+      localStorage.removeItem("bikar_documentacion_vehiculo"); // Por seguridad
+      
+      // 3. Redirigimos al index.html real
+      window.location.href = "index.html";
+    };
     /* ================= ESTADO ================= */
     let rolSeleccionado = null;
     let fotoBase64 = null;
@@ -962,14 +976,19 @@
       setTimeout(() => { window.location.href = APP_URL; }, 400);
     }
 
-    /* Si ya hay sesión activa, entra directo a la app */
+        /* Si NO hay sesión activa, redirige a index.html. Si la hay, carga los datos. */
     (function verificarSesionGuardada() {
       const sesionGuardada = localStorage.getItem(LLAVE_SESION);
-      if (!sesionGuardada) return;
+      if (!sesionGuardada) {
+        window.location.href = "index.html"; // Te expulsa al login real
+        return;
+      }
       try {
         usuarioActual = JSON.parse(sesionGuardada);
-        if (usuarioActual) irAlApp();
-      } catch (e) { console.error("Error al cargar sesión:", e); }
+      } catch (e) { 
+        console.error("Error al cargar sesión:", e); 
+        window.location.href = "index.html";
+      }
     })();
   </script>
 </body>
