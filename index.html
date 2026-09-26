@@ -15,22 +15,30 @@
        Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e
        ============================================================ */
     :root{
-      --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#333; --primary-color:#4785A7;
-      --primary-hover:#366986; --border-color:#ccc; --deep-blue:#134989; --muted-text:#666;
-      --glass-bg:rgba(255,255,255,.72); --glass-bg-strong:rgba(255,255,255,.90);
-      --glass-border:rgba(19,73,137,.14); --glass-highlight:rgba(255,255,255,.95);
-      --field-bg:rgba(255,255,255,.80); --field-border:rgba(19,73,137,.16);
+      --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#1e293b; --primary-color:#4785A7;
+      --primary-hover:#366986; --border-color:#ccc; --deep-blue:#134989; --muted-text:#64748b;
+      --glass-bg:rgba(255,255,255,.78); --glass-bg-strong:rgba(255,255,255,.94);
+      --glass-border:rgba(19,73,137,.18); --glass-highlight:rgba(255,255,255,.95);
+      --field-bg:rgba(255,255,255,.88); --field-border:rgba(19,73,137,.20);
       --glow:rgba(71,133,167,.32); --glow-strong:rgba(71,133,167,.55);
       --shadow:0 24px 60px rgba(19,73,137,.16); --grid-line:rgba(71,133,167,.12);
+      --modal-box-bg:rgba(255,255,255,.88);
+      --modal-box-title:#134989;
+      --legal-box-bg:rgba(240,244,248,.92);
+      --legal-text-color:#2c3e50;
     }
     body.dark-mode{
       --bg-color:#121212; --card-bg:#1e1e1e; --text-color:#f8f9fa; --border-color:#444;
       --muted-text:rgba(248,249,250,.60);
-      --glass-bg:rgba(30,30,30,.62); --glass-bg-strong:rgba(30,30,30,.86);
+      --glass-bg:rgba(30,30,30,.62); --glass-bg-strong:rgba(250, 250, 250, 0.04);
       --glass-border:rgba(255,255,255,.09); --glass-highlight:rgba(255,255,255,.10);
       --field-bg:rgba(18,18,18,.62); --field-border:rgba(255,255,255,.08);
       --glow:rgba(71,133,167,.42); --glow-strong:rgba(71,133,167,.65);
       --shadow:0 30px 70px rgba(0,0,0,.55); --grid-line:rgba(71,133,167,.10);
+      --modal-box-bg:rgba(20,20,20,.68);
+      --modal-box-title:#ffffff;
+      --legal-box-bg:rgba(10,14,20,.65);
+      --legal-text-color:rgba(248,249,250,.85);
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
     html,body{width:100%;height:100%;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);transition:background-color .3s,color .3s;-webkit-font-smoothing:antialiased}
@@ -48,6 +56,7 @@
     @keyframes mecanografiar{from{width:0}to{width:100%}}
     @keyframes parpadeoCursor{from,to{border-color:transparent}50%{border-color:var(--primary-color)}}
     @keyframes opcionesAsomar{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes bounceArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 
     /* BOTÓN TEMA */
     .btn-theme-toggle{position:absolute;top:calc(60px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
@@ -112,9 +121,9 @@
     .panel-title::before{content:"BIKAR";display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--primary-color);margin-bottom:6px}
     .panel-subtitle{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
     #modal-registro,#modal-login{top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:2600;width:88%;max-width:360px;
-      background:rgba(20,20,20,.58)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      background:var(--modal-box-bg)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
       max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;
-      box-shadow:0 0 0 200vmax rgba(0,0,0,.25),0 15px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
+      box-shadow:0 0 0 200vmax rgba(0,0,0,.25),0 15px 40px rgba(0,0,0,.35),inset 0 1px 0 var(--glass-highlight);
       animation:modalIn .5s cubic-bezier(.2,.8,.2,1) both;scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent}
     #form-registro,#form-login{text-align:left}
     #form-registro .btn-main,#form-login .btn-main{margin-top:6px}
@@ -129,6 +138,15 @@
     .input-group>select{padding-left:16px;cursor:pointer}
     .input-group>input::placeholder{color:var(--muted-text)}
     .input-group>input:focus,.input-group>select:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.22),0 0 26px rgba(71,133,167,.18)}
+
+    /* CONTRASEÑAS CON OJITO */
+    .input-group-password{position:relative}
+    .input-group-password>input{padding-right:48px!important}
+    .btn-toggle-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:transparent;
+      color:var(--primary-color);cursor:pointer;display:grid;place-items:center;border-radius:8px;transition:transform .15s,color .2s,background .2s;z-index:3}
+    .btn-toggle-eye:hover{color:var(--text-color);background:rgba(71,133,167,.12);transform:translateY(-50%) scale(1.06)}
+    .btn-toggle-eye:active{transform:translateY(-50%) scale(.95)}
+    .btn-toggle-eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
     #reg-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E")}
     #reg-telefono{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E")}
@@ -148,15 +166,15 @@
     .btn-secondary:active{transform:scale(.99)}
     .btn-main{position:relative;width:100%;padding:15px 46px 15px 20px;border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:600;
       cursor:pointer;overflow:hidden;background:linear-gradient(90deg,#134989 0%,#366986 45%,#4785A7 100%);
-      box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
+      box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s,opacity .2s}
     .btn-main::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.20) 50%,transparent 70%);
       transform:translateX(-100%);transition:transform .7s ease}
     .btn-main::after{content:"→";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.15rem;line-height:1;transition:transform .25s}
-    .btn-main:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(71,133,167,.45),inset 0 1px 0 rgba(255,255,255,.25)}
-    .btn-main:hover::before{transform:translateX(100%)}
-    .btn-main:hover::after{transform:translate(4px,-50%)}
-    .btn-main:active{transform:translateY(0);filter:brightness(.92)}
-    .btn-main:disabled{opacity:.6;cursor:progress;transform:none}
+    .btn-main:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 32px rgba(71,133,167,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+    .btn-main:hover:not(:disabled)::before{transform:translateX(100%)}
+    .btn-main:hover:not(:disabled)::after{transform:translate(4px,-50%)}
+    .btn-main:active:not(:disabled){transform:translateY(0);filter:brightness(.92)}
+    .btn-main:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
     /* FOTO */
     .foto-group{position:relative;margin-top:4px}
@@ -188,26 +206,26 @@
     #modal-opciones-rol .btn-opcion-rol{width:auto!important;max-width:max-content!important;padding:9px 14px!important;font-size:13px!important;
       line-height:1.2!important;align-self:flex-start}
     @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
-    #modal-login .panel-title,
-#modal-registro .panel-title {
-  color: #ffffff !important;
-}
+    body.dark-mode #modal-login .panel-title,
+    body.dark-mode #modal-registro .panel-title {
+      color: #ffffff !important;
+    }
 
     /* ============================================================
-       NUEVO · DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor)
+       DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor)
        ============================================================ */
     #modal-documentacion{top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:2700;width:88%;max-width:360px;
-      background:rgba(20,20,20,.58)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      background:var(--modal-box-bg)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
       max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;
       box-shadow:0 0 0 200vmax rgba(0,0,0,.25),0 15px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
       animation:modalIn .5s cubic-bezier(.2,.8,.2,1) both;scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.5) transparent}
-    #modal-documentacion .panel-title{color:#ffffff!important}
-    #modal-documentacion .panel-subtitle{color:rgba(248,249,250,.70)}
+    body.dark-mode #modal-documentacion .panel-title{color:#ffffff!important}
+    #modal-documentacion .panel-subtitle{color:var(--muted-text)}
     #form-documentacion{text-align:left}
     #form-documentacion .btn-main{margin-top:6px}
     .doc-seccion{margin:4px 0 10px 4px;font-size:.66rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--primary-color)}
     .doc-seccion:not(:first-child){margin-top:18px}
-    .doc-nota{margin:-4px 4px 12px;font-size:.72rem;line-height:1.4;color:rgba(248,249,250,.62)}
+    .doc-nota{margin:-4px 4px 12px;font-size:.72rem;line-height:1.4;color:var(--muted-text)}
     #doc-tipo-servicio{padding:0 44px 0 50px;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M3 12h6.5M14.5 12H21M12 14.5V21'/%3E%3C/svg%3E"),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -226,7 +244,7 @@
     .btn-documentacion.completa{border-style:solid;border-color:rgba(46,204,113,.60)}
     .btn-documentacion.completa .doc-estado{background:rgba(46,204,113,.15);color:#2ecc71;border-color:rgba(46,204,113,.40)}
     .doc-item{margin-bottom:14px}
-    .doc-label{display:block;margin:0 0 6px 4px;font-size:.78rem;font-weight:600;color:#f8f9fa}
+    .doc-label{display:block;margin:0 0 6px 4px;font-size:.78rem;font-weight:600;color:var(--text-color)}
     .doc-drop{position:relative;display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:14px;border:1px dashed rgba(71,133,167,.55);
       background:var(--field-bg);color:var(--text-color);font-size:.88rem;font-weight:600;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s}
     .doc-drop:hover,.doc-drop:focus-within{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.18),0 0 26px rgba(71,133,167,.15)}
@@ -239,13 +257,102 @@
     .doc-preview-img{width:52px;height:52px;flex-shrink:0;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}
     .doc-preview-pdf{display:grid;place-items:center;width:52px;height:52px;flex-shrink:0;border-radius:8px;font-size:.62rem;font-weight:800;letter-spacing:.08em;
       color:#fff;background:linear-gradient(145deg,#c0392b,#96281b);border:1px solid rgba(255,255,255,.12)}
-    .doc-preview-nombre{flex:1;min-width:0;font-size:.76rem;color:#f8f9fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .doc-preview-nombre{flex:1;min-width:0;font-size:.76rem;color:var(--text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .doc-quitar{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.06);color:#fff;font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
+      background:rgba(255,255,255,.06);color:var(--text-color);font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
     .doc-quitar:hover{background:rgba(231,76,60,.25);border-color:rgba(231,76,60,.60)}
     #modal-instalar-pwa .panel-title::before {
-  display: none !important;
-}
+      display: none !important;
+    }
+
+    /* ============================================================
+       NUEVO · POLÍTICAS DE PRIVACIDAD Y PROTECCIÓN DE DATOS (LEGAL)
+       ============================================================ */
+    .politicas-registro-bloque{margin:14px 0 10px;display:flex;flex-direction:column;gap:8px}
+    .btn-abrir-politicas{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:12px 14px;
+      border-radius:14px;border:1px solid rgba(71,133,167,.45);background:var(--field-bg);color:var(--text-color);
+      cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .btn-abrir-politicas:hover{border-color:var(--primary-color);box-shadow:0 6px 20px rgba(71,133,167,.25);transform:translateY(-1px)}
+    .btn-abrir-politicas-content{display:flex;align-items:center;gap:10px}
+    .btn-abrir-politicas svg{flex-shrink:0;color:var(--primary-color)}
+    .btn-abrir-politicas-titulos{display:flex;flex-direction:column;gap:1px}
+    .btn-abrir-politicas-main{font-size:.82rem;font-weight:700;color:var(--text-color)}
+    .btn-abrir-politicas-sub{font-size:.68rem;color:var(--muted-text)}
+    .politicas-flecha{font-size:.9rem;color:var(--primary-color);transition:transform .2s}
+    .btn-abrir-politicas:hover .politicas-flecha{transform:translateX(3px)}
+
+    /* CHECKBOX DE POLÍTICAS */
+    .politicas-check-wrapper{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;
+      background:rgba(71,133,167,.08);border:1px solid rgba(71,133,167,.22);cursor:pointer;user-select:none;transition:all .25s}
+    .politicas-check-wrapper:hover{background:rgba(71,133,167,.14);border-color:var(--primary-color)}
+    .politicas-check-wrapper.aceptado{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.50)}
+    .politicas-check-wrapper input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+    .custom-check-box{width:22px;height:22px;flex-shrink:0;border-radius:6px;border:2px solid var(--primary-color);
+      display:grid;place-items:center;background:var(--field-bg);transition:all .2s;margin-top:1px}
+    .custom-check-box svg{width:14px;height:14px;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;opacity:0;transform:scale(.5);transition:all .2s}
+    .politicas-check-wrapper input[type="checkbox"]:checked + .custom-check-box{background:#2ecc71;border-color:#2ecc71}
+    .politicas-check-wrapper input[type="checkbox"]:checked + .custom-check-box svg{opacity:1;transform:scale(1)}
+    .politicas-check-texto{font-size:.76rem;line-height:1.4;color:var(--text-color);font-weight:500}
+    .politicas-check-texto strong{color:var(--primary-color)}
+
+    /* MODAL POLÍTICAS */
+    #modal-politicas{top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:2800;width:92%;max-width:440px;
+      background:var(--modal-box-bg)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      max-height:calc(100vh - 30px);max-height:calc(100dvh - 30px);overflow:hidden;display:flex;flex-direction:column;
+      padding:22px 18px 18px;border-radius:24px;border:1px solid var(--glass-border);
+      box-shadow:0 0 0 200vmax rgba(0,0,0,.45),0 25px 60px rgba(0,0,0,.55),inset 0 1px 0 var(--glass-highlight);
+      animation:modalIn .45s cubic-bezier(.2,.8,.2,1) both}
+    #modal-politicas .panel-title{color:var(--modal-box-title)!important;font-size:1.15rem;margin-bottom:4px}
+    #modal-politicas .panel-subtitle{font-size:.78rem;margin-bottom:10px}
+    
+    .politicas-contenedor-texto{position:relative;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 40px;
+      background:var(--legal-box-bg);border:1px solid var(--glass-border);border-radius:16px;text-align:left;
+      font-size:.78rem;line-height:1.55;color:var(--legal-text-color);max-height:45vh;scrollbar-width:thin;scrollbar-color:var(--primary-color) transparent}
+    .politicas-contenedor-texto h4{font-size:.85rem;font-weight:800;color:var(--primary-color);margin:12px 0 6px;letter-spacing:.02em}
+    .politicas-contenedor-texto h4:first-child{margin-top:0}
+    .politicas-contenedor-texto h5{font-size:.78rem;font-weight:700;color:var(--text-color);margin:8px 0 4px}
+    .politicas-contenedor-texto p{margin-bottom:8px}
+    .politicas-contenedor-texto ul{padding-left:18px;margin-bottom:8px}
+    .politicas-contenedor-texto li{margin-bottom:4px}
+    .politicas-contenedor-texto .nota-formal{margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(71,133,167,.12);
+      border-left:3px solid var(--primary-color);font-size:.74rem}
+
+    /* BOTÓN FLOTANTE SCROLL ABAJO */
+    .btn-scroll-abajo{position:sticky;bottom:8px;left:50%;transform:translateX(-50%);z-index:10;
+      display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:.72rem;font-weight:700;
+      background:var(--primary-color);color:#fff;border:1px solid rgba(255,255,255,.3);box-shadow:0 4px 14px rgba(0,0,0,.35);
+      cursor:pointer;transition:all .2s;opacity:.95;animation:bounceArrow 2s infinite}
+    .btn-scroll-abajo:hover{transform:translateX(-50%) scale(1.04);opacity:1;box-shadow:0 6px 18px rgba(71,133,167,.5)}
+    .btn-scroll-abajo.oculto{display:none!important}
+
+    /* CHECK DENTRO DEL MODAL */
+    .politicas-modal-actions{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .politicas-modal-check{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
+      background:rgba(71,133,167,.12);border:1px solid rgba(71,133,167,.3);cursor:pointer;user-select:none}
+    .politicas-modal-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--primary-color);cursor:pointer}
+    .politicas-modal-check span{font-size:.8rem;font-weight:600;color:var(--text-color)}
+
+    /* ============================================================
+       ALERTA PERSONALIZADA FLOTANTE (ADAPTABLE CLARO/OSCURO)
+       ============================================================ */
+    .bikar-alerta-toast{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;
+      width:86%;max-width:330px;padding:20px 18px;border-radius:20px;
+      background:var(--glass-bg-strong);color:var(--text-color);
+      border:1px solid var(--primary-color);
+      backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+      box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 25px var(--glow);
+      text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      animation:modalIn .35s cubic-bezier(.2,.8,.2,1) both;
+      font-size:.92rem;font-weight:600;line-height:1.45;pointer-events:none
+    }
+    .bikar-alerta-toast.alerta-salir{opacity:0;transform:translate(-50%,-42%) scale(.95);transition:opacity .3s,transform .3s}
+    .bikar-alerta-icono{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
+      background:rgba(71,133,167,.15);border:1px solid rgba(71,133,167,.35);color:var(--primary-color)}
+    .bikar-alerta-icono.icono-error{background:rgba(231,76,60,.15);border-color:rgba(231,76,60,.4);color:#e74c3c}
+    .bikar-alerta-icono.icono-exito{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:#2ecc71}
+    .bikar-alerta-icono svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    .bikar-alerta-mensaje{color:var(--text-color);word-break:break-word}
   </style>
 </head>
 <body class="dark-mode">
@@ -261,7 +368,7 @@
       <source src="https://i.imgur.com/xO5vIAY.mp4" type="video/mp4">
     </video>
     <div class="fx-scan" aria-hidden="true"></div>
-    <div class="inicio-features" aria-hidden="true"><span>Seguirdad</span><span>Comodidad</span><span>Confianza</span></div>
+    <div class="inicio-features" aria-hidden="true"><span>Seguridad</span><span>Comodidad</span><span>Confianza</span></div>
     <p class="texto-subtitulo">BIENVENIDOS! SELECCIONA TU ROL</p>
 
     <div class="roles-container">
@@ -293,7 +400,16 @@
     <p class="panel-subtitle">Ingresa tus datos para continuar</p>
     <form id="form-login">
       <div class="input-group"><input type="text" id="login-dni" placeholder="Número de Documento (DNI / CE)" required autocomplete="username"></div>
-      <div class="input-group"><input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password"></div>
+      
+      <!-- CONTRASEÑA LOGIN CON OJITO -->
+      <div class="input-group input-group-password">
+        <input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password">
+        <button type="button" class="btn-toggle-eye" data-target="login-password" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
+          <svg class="eye-abierto" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-cerrado oculto" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+
       <button type="submit" id="btn-login" class="btn-main">Iniciar sesión</button>
       <button type="button" id="btn-cancelar-login" class="btn-secondary" style="margin-top:8px">Volver</button>
     </form>
@@ -305,8 +421,25 @@
     <p class="panel-subtitle">Completa tus datos para continuar</p>
     <form id="form-registro">
       <div class="input-group"><input type="text" id="reg-nombre" placeholder="Nombre completo" required autocomplete="name"></div>
-      <div class="input-group"><input type="password" id="reg-password" placeholder="Crear contraseña" required autocomplete="new-password"></div>
-      <div class="input-group"><input type="password" id="reg-password-confirm" placeholder="Confirmar contraseña" required autocomplete="new-password"></div>
+      
+      <!-- CONTRASEÑA REGISTRO CON OJITO -->
+      <div class="input-group input-group-password">
+        <input type="password" id="reg-password" placeholder="Crear contraseña" required autocomplete="new-password">
+        <button type="button" class="btn-toggle-eye" data-target="reg-password" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
+          <svg class="eye-abierto" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-cerrado oculto" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+      
+      <!-- CONFIRMAR CONTRASEÑA CON OJITO -->
+      <div class="input-group input-group-password">
+        <input type="password" id="reg-password-confirm" placeholder="Confirmar contraseña" required autocomplete="new-password">
+        <button type="button" class="btn-toggle-eye" data-target="reg-password-confirm" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
+          <svg class="eye-abierto" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-cerrado oculto" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+
       <div class="input-group"><input type="tel" id="reg-telefono" placeholder="Teléfono / WhatsApp" required autocomplete="tel"></div>
       <div class="input-group"><input type="email" id="reg-email" placeholder="Correo electrónico" required autocomplete="email"></div>
       <div class="input-group">
@@ -318,16 +451,17 @@
       <div class="input-group"><input type="text" id="reg-num-doc" placeholder="Número de Documento (DNI / CE)" required autocomplete="off"></div>
       <div id="campos-especificos"></div>
 
+      <!-- FOTO / SELFIE O LOGO DE COMERCIO -->
       <div class="input-group foto-group">
-        <label for="reg-foto" class="label-foto">
+        <label for="reg-foto" class="label-foto" id="label-reg-foto">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          toma una selfie
+          <span id="texto-label-foto">toma una selfie</span>
         </label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
         <div id="preview-foto-container" class="preview-container oculto"><img id="preview-foto" src="" alt="Vista previa de foto"></div>
       </div>
 
-      <!-- NUEVO: Botón "Documentación para el vehículo" (solo visible para CONDUCTOR) -->
+      <!-- Botón "Documentación para el vehículo" (solo visible para CONDUCTOR) -->
       <div id="bloque-documentacion" class="input-group oculto">
         <button type="button" id="btn-documentacion-vehiculo" class="btn-documentacion" aria-haspopup="dialog" aria-controls="modal-documentacion">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
@@ -336,7 +470,30 @@
         </button>
       </div>
 
-      <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
+      <!-- NUEVO: BOTÓN Y CHECK DE POLÍTICAS DE PROTECCIÓN DE DATOS (ENCIMA DEL BOTÓN GUARDAR) -->
+      <div class="politicas-registro-bloque">
+        <button type="button" id="btn-abrir-politicas" class="btn-abrir-politicas" aria-haspopup="dialog" aria-controls="modal-politicas">
+          <div class="btn-abrir-politicas-content">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="btn-abrir-politicas-titulos">
+              <span class="btn-abrir-politicas-main">Política de Protección de Datos</span>
+              <span class="btn-abrir-politicas-sub">Ver documento legal y técnico</span>
+            </div>
+          </div>
+          <span class="politicas-flecha">→</span>
+        </button>
+
+        <label class="politicas-check-wrapper" id="contenedor-check-politicas">
+          <input type="checkbox" id="check-politicas-registro">
+          <span class="custom-check-box">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span class="politicas-check-texto">He leído y <strong>acepto todas las políticas</strong> de protección de datos personales de BIKAR</span>
+        </label>
+      </div>
+
+      <!-- BOTÓN GUARDAR (DESHABILITADO HASTA QUE SE ACEPTE LA POLÍTICA) -->
+      <button type="submit" id="btn-guardar-registro" class="btn-main" disabled>Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top:8px">Volver</button>
       <p class="form-note">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -345,7 +502,97 @@
     </form>
   </div>
 
-  <!-- NUEVO: DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) -->
+  <!-- NUEVO: MODAL POLÍTICAS DE PROTECCIÓN DE DATOS PERSONALES -->
+  <div id="modal-politicas" class="ui-panel oculto" role="dialog" aria-modal="true" aria-labelledby="politicas-titulo">
+    <h3 id="politicas-titulo" class="panel-title">Política de Privacidad</h3>
+    <p class="panel-subtitle">Protección de Datos Personales · BIKAR</p>
+    
+    <div class="politicas-contenedor-texto" id="scroll-politicas-body">
+      <h4>DOCUMENTO TÉCNICO Y LEGAL DE INSCRIPCIÓN Y POLÍTICA DE PROTECCIÓN DE DATOS PERSONALES – BIKAR</h4>
+      
+      <h4>1. MARCO NORMATIVO DE REFERENCIA</h4>
+      <p>De conformidad con la Ley N.º 29733 (Ley de Protección de Datos Personales) y su reglamento actualizado (Decreto Supremo N.º 016-24-JUS), BIKAR adopta los principios fundamentales para el tratamiento legítimo de datos personales:</p>
+      <ul>
+        <li><strong>Consentimiento:</strong> Todo tratamiento de datos recopilados a través de la plataforma de movilidad BIKAR exige la autorización libre, previa, expresa, inequívoca e informada del titular (pasajeros y conductores).</li>
+        <li><strong>Responsabilidad Proactiva (Accountability):</strong> BIKAR implementa medidas técnicas, legales y organizativas rigurosas para garantizar la seguridad de la información y demostrar su cumplimiento normativo ante la Autoridad Nacional de Protección de Datos Personales (ANPD).</li>
+        <li><strong>Finalidad:</strong> Los datos recopilados se limitan estrictamente a fines determinados, explícitos, lícitos y directamente relacionados con la prestación y gestión del servicio de transporte por intermediación tecnológica.</li>
+      </ul>
+
+      <h4>2. FICHA DE INSCRIPCIÓN DEL BANCO DE DATOS PERSONALES: "USUARIOS PASAJEROS - BIKAR"</h4>
+      <p><strong>Titular del Banco de Datos:</strong> [Razón Social o Empresa Operadora de BIKAR] / <strong>RUC:</strong> [Número de RUC]<br>
+      <strong>Denominación del Banco de Datos:</strong> USUARIOS - PASAJEROS (BIKAR)<br>
+      <strong>Sistema de Tratamiento:</strong> Automatizado e informático.</p>
+      <h5>Finalidad del Tratamiento:</h5>
+      <p>Recopilar los datos personales de los usuarios pasajeros para habilitar el uso de la aplicación BIKAR a fin de solicitar y gestionar servicios de transporte, realizar la gestión económica y contable, ejecutar actividades de publicidad y prospección comercial, remitir promociones, realizar análisis de perfiles, gestionar quejas o reclamos, cumplir con los estándares de compliance y los requisitos legales aplicables en el Perú.</p>
+      <h5>Tipos de Datos Personales Recopilados:</h5>
+      <ul>
+        <li><strong>Datos de carácter identificativo:</strong> Nombres y apellidos, número de DNI, pasaporte, carné de extranjería, dirección de domicilio, número de teléfono, correo electrónico, imagen de perfil, ubicación geográfica en tiempo real (GPS) e ID de usuario.</li>
+        <li><strong>Datos de características personales:</strong> Fecha de nacimiento, nacionalidad, sexo y ciudad.</li>
+        <li><strong>Datos económicos, financieros y de seguros:</strong> Datos bancarios o medios de pago asociados para la cancelación de las tarifas de los viajes.</li>
+      </ul>
+      <h5>Procedimiento de Obtención y Soporte:</h5>
+      <ul>
+        <li><strong>Fuente:</strong> Obtenidos directamente del titular del dato personal (pasajero) o su representante legal a través de la aplicación móvil y formularios web.</li>
+        <li><strong>Soporte:</strong> Informático / Magnético.</li>
+        <li><strong>Procedimiento:</strong> Formularios de registro digital, interacción directa en la interfaz de la app y transmisión electrónica de datos.</li>
+      </ul>
+
+      <h4>3. FICHA DE INSCRIPCIÓN DEL BANCO DE DATOS PERSONALES: "USUARIOS CONDUCTORES - BIKAR"</h4>
+      <p><strong>Denominación del Banco de Datos:</strong> USUARIOS - CONDUCTORES (BIKAR)</p>
+      <h5>Finalidad del Tratamiento:</h5>
+      <p>Recopilar los datos personales de los usuarios conductores para habilitar el uso de la plataforma BIKAR en la prestación de servicios de movilidad, verificar antecedentes, validar la documentación del vehículo y licencia de conducir, ejecutar gestiones de marketing, remitir notificaciones operativas y cumplir con la normatividad legal vigente.</p>
+      <h5>Tipos de Datos Personales Recopilados:</h5>
+      <ul>
+        <li><strong>Datos de carácter identificativo:</strong> Nombres y apellidos, DNI, pasaporte, carné de extranjería, domicilio, teléfono, correo, imagen, ubicación (GPS), ID de usuario y número de licencia de conducir.</li>
+        <li><strong>Datos de características personales y del vehículo:</strong> Fecha de nacimiento, nacionalidad, sexo, ciudad, datos del vehículo (SOAT, tarjeta de propiedad, revisión técnica) y antecedentes penales/policiales.</li>
+        <li><strong>Datos económicos y financieros:</strong> Cuentas bancarias para la dispersión de cobros o pagos de comisiones.</li>
+      </ul>
+
+      <h4>4. MEDIDAS DE SEGURIDAD DE LA INFORMACIÓN</h4>
+      <p>BIKAR implementa los más altos estándares de seguridad técnica y legal para salvaguardar la base de datos de los usuarios:</p>
+      <ul>
+        <li>Control estricto y documento de gestión de accesos y privilegios con revisiones periódicas.</li>
+        <li>Generación y mantenimiento de registros de auditoría y traza de interacciones con los datos lógicos.</li>
+        <li>Mecanismos automatizados de respaldo (backup) y seguridad de la información.</li>
+        <li>Infraestructura con control ambiental seguro y políticas para impedir la reproducción o copias no autorizadas de documentos por parte del personal.</li>
+        <li>Designación formal de un responsable de seguridad de la base de datos.</li>
+      </ul>
+
+      <h4>5. TRANSFERENCIA NACIONAL E INTERNACIONAL DE DATOS (FLUJO TRANSFRONTERIZO)</h4>
+      <p>Para el funcionamiento operativo, almacenamiento en la nube y optimización de la plataforma BIKAR, los datos podrán ser transferidos a nivel nacional e internacional bajo estrictos acuerdos de confidencialidad y protección de datos:</p>
+      <ul>
+        <li><strong>Transferencia a Nivel Nacional:</strong> Proveedores locales de pasarela de pagos, infraestructura tecnológica y agencias de marketing autorizadas.</li>
+        <li><strong>Flujo Transfronterizo (Internacional):</strong> Los servidores y proveedores de servicios tecnológicos se encuentran alojados en jurisdicciones seguras bajo normativas homologadas (tales como servicios de computación en la nube, pasarelas antifraude y herramientas de analítica móvil en regiones como América, Europa y Asia).</li>
+      </ul>
+
+      <h4>6. EJERCICIO DE DERECHOS ARCO (Acceso, Rectificación, Cancelación y Oposición)</h4>
+      <p>Los usuarios de BIKAR (pasajeros y conductores) podrán ejercer en todo momento sus derechos de Acceso, Actualización, Rectificación, Inclusión, Supresión/Cancelación u Oposición al tratamiento de sus datos personales, así como revocar su consentimiento.</p>
+      <p>Para tal efecto, BIKAR habilita un enlace directo de atención dentro de su plataforma digital y centro de soporte:</p>
+      <ul>
+        <li><strong>Enlace de Atención de Solicitudes y Soporte:</strong> <a href="https://bikar.com/es/contacts/support/" target="_blank" rel="noopener noreferrer" style="color:var(--primary-color);word-break:break-all;">https://bikar.com/es/contacts/support/</a> (o el enlace correspondiente habilitado para el diligenciamiento y gestión de requerimientos de datos).</li>
+        <li><strong>Correo Electrónico de Notificaciones Legales y Oficiales:</strong> privacidad@bikar.com / soporte@bikar.com.</li>
+      </ul>
+      <div class="nota-formal">
+        <strong>Nota formal:</strong> Una vez completados los formularios de inscripción correspondientes en la plataforma de la Autoridad Nacional de Protección de Datos Personales (ANPD) en el Perú, el Estado emitirá la respectiva Resolución Directoral que formaliza y autoriza la titularidad y operación legal de las bases de datos de BIKAR.
+      </div>
+
+      <!-- BOTÓN INDICADOR PARA DESPLAZARSE ABAJO -->
+      <button type="button" id="btn-scroll-abajo-politicas" class="btn-scroll-abajo" title="Ir al final del documento">
+        <span>Desplazarse abajo</span> ↓
+      </button>
+    </div>
+
+    <div class="politicas-modal-actions">
+      <label class="politicas-modal-check">
+        <input type="checkbox" id="check-politicas-modal">
+        <span>Acepto todas estas políticas</span>
+      </label>
+      <button type="button" id="btn-aceptar-politicas-modal" class="btn-main">Confirmar y Aceptar</button>
+      <button type="button" id="btn-cerrar-politicas-modal" class="btn-secondary">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) -->
   <div id="modal-documentacion" class="ui-panel oculto" role="dialog" aria-modal="true" aria-labelledby="documentacion-titulo">
     <h3 id="documentacion-titulo" class="panel-title">Documentación del vehículo</h3>
     <p class="panel-subtitle">Adjunta fotos o PDF · <span id="doc-contador">0/5 documentos</span></p>
@@ -468,12 +715,17 @@
       </p>
     </form>
   </div>
+
   <!-- ALERTA DE INSTALACIÓN PWA -->
   <div id="modal-instalar-pwa" class="ui-panel oculto" style="z-index:3500; top:50%; bottom:auto; transform:translate(-50%, -50%);">
-    <div style="display:flex; justify-content:center; margin-bottom:12px;">
-      <img src="icon-192.png" alt="BIKAR Logo" style="width:60px; height:60px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35); border: 1px solid rgba(71,133,167,0.4);">
+    <!-- CONTENEDOR CON FONDO BLANCO SIEMPRE -->
+    <div style="display:flex; justify-content:center; margin-bottom:14px;">
+      <div style="background:#ffffff !important; padding:8px; border-radius:20px; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.3); border:1px solid rgba(71,133,167,0.4);">
+        <img src="icon-192.png" alt="BIKAR Logo" style="width:60px; height:60px; border-radius:14px; object-fit:contain; display:block; background:#ffffff;">
+      </div>
     </div>
     <h3 class="panel-title" style="color:#92C5FC !important;">Instalar BIKAR</h3>
+    <p id="pwa-instalar-texto" class="panel-subtitle" style="margin-bottom:14px;">Instala la aplicación en tu dispositivo para acceder rápidamente</p>
     
     <!-- Instrucciones exclusivas para iPhone / iPad -->
     <div id="pwa-instrucciones-ios" class="oculto" style="text-align:left; background:rgba(255,255,255,0.06); padding:12px 14px; border-radius:14px; margin-bottom:16px; font-size:0.82rem; color:#f8f9fa; border:1px solid rgba(71,133,167,0.3);">
@@ -487,6 +739,7 @@
     <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
     <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px;">Ahora no</button>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* ================= SERVICE WORKER (PWA) ================= */
@@ -504,6 +757,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const APP_URL = "app.html";            /* Destino tras el acceso */
     const LLAVE_SESION = "bikar_usuario";  /* Puente entre las 2 páginas */
+    const LLAVE_TEMA = "bikar_theme_pref"; /* Memoria del modo claro / oscuro */
 
     /* ================= ESTADO ================= */
     let rolSeleccionado = null;
@@ -525,26 +779,104 @@
     const btnLogin = $('btn-login');
     const camposEspecificos = $('campos-especificos');
     const regFoto = $('reg-foto');
+    const labelRegFoto = $('label-reg-foto');
+    const textoLabelFoto = $('texto-label-foto');
     const btnThemeToggle = $('btn-theme-toggle');
     const themeIcon = $('theme-icon');
 
-    /* ================= VIDEO / TEMA ================= */
+    /* ================= SISTEMA DE ALERTAS ADAPTABLE CLARO/OSCURO (SIN DOMINIO) ================= */
+    function mostrarAlerta(mensaje, tipo = 'info') {
+      const previa = document.querySelector('.bikar-alerta-toast');
+      if (previa) previa.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'bikar-alerta-toast';
+
+      let claseIcono = 'icono-info';
+      let svgIcono = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+      const msgLower = (mensaje || '').toLowerCase();
+      if (tipo === 'error' || msgLower.includes('error') || msgLower.includes('incorrect') || msgLower.includes('no se encontró') || msgLower.includes('no existe') || msgLower.includes('falta') || msgLower.includes('no coinciden')) {
+        claseIcono = 'icono-error';
+        svgIcono = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+      } else if (tipo === 'exito' || msgLower.includes('exitos') || msgLower.includes('bienvenido') || msgLower.includes('guardada') || msgLower.includes('completada') || msgLower.includes('aceptad')) {
+        claseIcono = 'icono-exito';
+        svgIcono = `<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+      }
+
+      toast.innerHTML = `
+        <div class="bikar-alerta-icono ${claseIcono}">${svgIcono}</div>
+        <div class="bikar-alerta-mensaje">${mensaje}</div>
+      `;
+
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('alerta-salir');
+        setTimeout(() => toast.remove(), 320);
+      }, 2600);
+    }
+
+    /* ================= MEMORIA DE TEMA (MODO CLARO / OSCURO) ================= */
     function reproducirVideoActivo() {
       const claro = document.querySelector('.video-claro');
       const oscuro = document.querySelector('.video-oscuro');
-      const activo = document.body.classList.contains('dark-mode') ? oscuro : claro;
-      const inactivo = document.body.classList.contains('dark-mode') ? claro : oscuro;
+      const esOscuro = document.body.classList.contains('dark-mode');
+      const activo = esOscuro ? oscuro : claro;
+      const inactivo = esOscuro ? claro : oscuro;
       if (inactivo) inactivo.pause();
       if (activo) { activo.muted = true; activo.play().catch(() => {}); }
     }
-    reproducirVideoActivo();
+
+    function aplicarTema(tema) {
+      if (tema === 'light') {
+        document.body.classList.remove('dark-mode');
+        themeIcon.innerText = '🌙';
+      } else {
+        document.body.classList.add('dark-mode');
+        themeIcon.innerText = '☀️';
+      }
+      reproducirVideoActivo();
+    }
+
+    // Cargar preferencia persistente
+    const temaGuardado = localStorage.getItem(LLAVE_TEMA) || 'dark';
+    aplicarTema(temaGuardado);
 
     btnThemeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
+      const esOscuro = document.body.classList.toggle('dark-mode');
+      const nuevoTema = esOscuro ? 'dark' : 'light';
+      localStorage.setItem(LLAVE_TEMA, nuevoTema);
+      themeIcon.innerText = esOscuro ? '☀️' : '🌙';
       reproducirVideoActivo();
-      themeIcon.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
     });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) reproducirVideoActivo(); });
+
+    /* ================= OJITO PARA CONTRASEÑAS (MOSTRAR / OCULTAR) ================= */
+    document.querySelectorAll('.btn-toggle-eye').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const targetId = btn.getAttribute('data-target');
+        const input = $(targetId);
+        if (!input) return;
+
+        const eyeAbierto = btn.querySelector('.eye-abierto');
+        const eyeCerrado = btn.querySelector('.eye-cerrado');
+
+        if (input.type === 'password') {
+          input.type = 'text';
+          if (eyeAbierto) eyeAbierto.classList.add('oculto');
+          if (eyeCerrado) eyeCerrado.classList.remove('oculto');
+          btn.title = "Ocultar contraseña";
+        } else {
+          input.type = 'password';
+          if (eyeAbierto) eyeAbierto.classList.remove('oculto');
+          if (eyeCerrado) eyeCerrado.classList.add('oculto');
+          btn.title = "Mostrar contraseña";
+        }
+      });
+    });
 
     /* ================= SELECCIÓN DE ROL ================= */
     window.seleccionarRol = function (rol) {
@@ -552,7 +884,8 @@
       pantallaInicio.classList.remove('oculto');
       modalRegistro.classList.add('oculto');
       modalLogin.classList.add('oculto');
-      $('modal-documentacion').classList.add('oculto'); /* NUEVO */
+      $('modal-documentacion').classList.add('oculto');
+      $('modal-politicas').classList.add('oculto');
       modalOpcionesRol.classList.remove('oculto');
       reproducirVideoActivo();
     };
@@ -564,14 +897,24 @@
       modalRegistro.classList.remove('oculto');
       registroTitulo.innerText = `Registro - ${rolSeleccionado.toUpperCase()}`;
       camposEspecificos.innerHTML = "";
-      /* NUEVO: el botón "Documentación para el vehículo" solo se muestra al CONDUCTOR
-         (los campos Modelo y Placa ahora viven dentro de ese modal) */
-      $('bloque-documentacion').classList.toggle('oculto', rolSeleccionado !== 'conductor');
+
+      // Adaptación de foto según el rol
       if (rolSeleccionado === 'comercio') {
+        textoLabelFoto.innerText = "Foto del logo de tu comercio";
+        regFoto.removeAttribute('capture');
         camposEspecificos.innerHTML = `
           <div class="input-group"><input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required></div>
           <div class="input-group"><input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required></div>`;
+      } else {
+        textoLabelFoto.innerText = "toma una selfie";
+        regFoto.setAttribute('capture', 'user');
       }
+
+      // Documentación solo visible para conductor
+      $('bloque-documentacion').classList.toggle('oculto', rolSeleccionado !== 'conductor');
+
+      // Resetear estado de aceptación de políticas
+      actualizarEstadoPoliticas(checkPoliticasRegistro.checked);
     });
 
     $('btn-iniciar-sesion').addEventListener('click', () => {
@@ -617,7 +960,78 @@
       reader.readAsDataURL(file);
     });
 
-    /* ================= NUEVO · DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) ================= */
+    /* ================= POLÍTICAS DE PROTECCIÓN DE DATOS (LEGAL) ================= */
+    const modalPoliticas = $('modal-politicas');
+    const scrollPoliticasBody = $('scroll-politicas-body');
+    const btnScrollAbajo = $('btn-scroll-abajo-politicas');
+    const btnAbrirPoliticas = $('btn-abrir-politicas');
+    const btnCerrarPoliticasModal = $('btn-cerrar-politicas-modal');
+    const btnAceptarPoliticasModal = $('btn-aceptar-politicas-modal');
+    const checkPoliticasModal = $('check-politicas-modal');
+    const checkPoliticasRegistro = $('check-politicas-registro');
+    const contenedorCheckPoliticas = $('contenedor-check-politicas');
+    const btnGuardarRegistro = $('btn-guardar-registro');
+
+    function actualizarEstadoPoliticas(aceptadas) {
+      checkPoliticasRegistro.checked = aceptadas;
+      checkPoliticasModal.checked = aceptadas;
+      contenedorCheckPoliticas.classList.toggle('aceptado', aceptadas);
+      btnGuardarRegistro.disabled = !aceptadas;
+    }
+
+    function abrirModalPoliticas() {
+      modalRegistro.classList.add('oculto');
+      modalPoliticas.classList.remove('oculto');
+      scrollPoliticasBody.scrollTop = 0;
+      btnScrollAbajo.classList.remove('oculto');
+    }
+
+    function cerrarModalPoliticas() {
+      modalPoliticas.classList.add('oculto');
+      modalRegistro.classList.remove('oculto');
+    }
+
+    btnAbrirPoliticas.addEventListener('click', abrirModalPoliticas);
+    btnCerrarPoliticasModal.addEventListener('click', cerrarModalPoliticas);
+
+    // Scroll indicator dentro del modal de políticas
+    btnScrollAbajo.addEventListener('click', () => {
+      scrollPoliticasBody.scrollTo({
+        top: scrollPoliticasBody.scrollHeight,
+        behavior: 'smooth'
+      });
+    });
+
+    scrollPoliticasBody.addEventListener('scroll', () => {
+      const scrollPos = scrollPoliticasBody.scrollTop + scrollPoliticasBody.clientHeight;
+      const totalHeight = scrollPoliticasBody.scrollHeight;
+      if (totalHeight - scrollPos < 60) {
+        btnScrollAbajo.classList.add('oculto');
+      } else {
+        btnScrollAbajo.classList.remove('oculto');
+      }
+    });
+
+    // Check en el modal de políticas
+    btnAceptarPoliticasModal.addEventListener('click', () => {
+      actualizarEstadoPoliticas(true);
+      cerrarModalPoliticas();
+      mostrarAlerta("Políticas aceptadas correctamente.", "exito");
+    });
+
+    checkPoliticasModal.addEventListener('change', (e) => {
+      actualizarEstadoPoliticas(e.target.checked);
+    });
+
+    // Checkbox en el formulario de registro
+    checkPoliticasRegistro.addEventListener('change', (e) => {
+      actualizarEstadoPoliticas(e.target.checked);
+      if (e.target.checked) {
+        mostrarAlerta("Políticas aceptadas.", "exito");
+      }
+    });
+
+    /* ================= DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) ================= */
     const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo";
     const MAX_MB_DOCUMENTO = 5;
     const DOCS_OBLIGATORIOS = [
@@ -681,12 +1095,11 @@
     formDocumentacion.addEventListener('input', marcarDocumentacionPendiente);
     formDocumentacion.addEventListener('change', marcarDocumentacionPendiente);
 
-    /* Lee el archivo: imagen comprimida en Canvas o PDF en base64 */
     function procesarArchivoDocumento(file, callback) {
-      if (file.size > MAX_MB_DOCUMENTO * 1024 * 1024) { mostrarAlerta(`El archivo supera los ${MAX_MB_DOCUMENTO} MB.`); return false; }
+      if (file.size > MAX_MB_DOCUMENTO * 1024 * 1024) { mostrarAlerta(`El archivo supera los ${MAX_MB_DOCUMENTO} MB.`, "error"); return false; }
       const esPdf = file.type === 'application/pdf' || /.pdf$/i.test(file.name);
       const esImagen = file.type.startsWith('image/');
-      if (!esPdf && !esImagen) { mostrarAlerta('Formato no válido. Sube una foto o un PDF.'); return false; }
+      if (!esPdf && !esImagen) { mostrarAlerta('Formato no válido. Sube una foto o un PDF.', "error"); return false; }
       const reader = new FileReader();
       reader.onload = function (evt) {
         if (esPdf) { callback({ tipo: 'pdf', nombre: file.name, data: evt.target.result }); return; }
@@ -701,14 +1114,13 @@
           canvas.getContext('2d').drawImage(img, 0, 0, width, height);
           callback({ tipo: 'imagen', nombre: file.name, data: canvas.toDataURL('image/jpeg', 0.75) });
         };
-        img.onerror = () => mostrarAlerta('No se pudo leer la imagen. Intenta con otro archivo.');
+        img.onerror = () => mostrarAlerta('No se pudo leer la imagen. Intenta con otro archivo.', "error");
         img.src = evt.target.result;
       };
       reader.readAsDataURL(file);
       return true;
     }
 
-    /* Conecta cada casilla de documento (subir, vista previa y quitar) */
     formDocumentacion.querySelectorAll('.doc-item').forEach((item) => {
       const clave = item.dataset.doc;
       const input = item.querySelector('input[type="file"]');
@@ -749,7 +1161,6 @@
       item.querySelector('.doc-quitar').addEventListener('click', () => { limpiar(); marcarDocumentacionPendiente(); });
     });
 
-    /* Guardar documentación: valida todo y regresa al registro */
     formDocumentacion.addEventListener('submit', (e) => {
       e.preventDefault();
       const camposTexto = [
@@ -761,14 +1172,14 @@
       ];
       for (const [id, mensaje] of camposTexto) {
         const campo = $(id);
-        if (!campo.value.trim()) { mostrarAlerta(mensaje); campo.focus(); return; }
+        if (!campo.value.trim()) { mostrarAlerta(mensaje, "error"); campo.focus(); return; }
       }
       const anio = parseInt(docAnio.value, 10);
       const anioActual = new Date().getFullYear();
-      if (isNaN(anio) || anio < 1950 || anio > anioActual + 1) { mostrarAlerta('Ingresa un año de vehículo válido.'); docAnio.focus(); return; }
+      if (isNaN(anio) || anio < 1950 || anio > anioActual + 1) { mostrarAlerta('Ingresa un año de vehículo válido.', "error"); docAnio.focus(); return; }
       for (const [clave, nombre] of listaDocumentosRequeridos()) {
         if (!documentacionVehiculo.archivos[clave]) {
-          mostrarAlerta(`Falta adjuntar: ${nombre}.`);
+          mostrarAlerta(`Falta adjuntar: ${nombre}.`, "error");
           const item = formDocumentacion.querySelector(`.doc-item[data-doc="${clave}"]`);
           if (item) item.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
@@ -782,10 +1193,9 @@
       documentacionVehiculo.requiere_revision_tecnica = requiereRevisionTecnica();
       marcarDocumentacionCompleta();
       cerrarModalDocumentacion();
-      mostrarAlerta('Documentación del vehículo guardada.');
+      mostrarAlerta('Documentación del vehículo guardada.', 'exito');
     });
 
-    /* Guarda la documentación tras crear al conductor (no interrumpe el registro si falla) */
     async function guardarDocumentacionConductor(usuarioId, conductorId) {
       const archivos = documentacionVehiculo.archivos;
       const registro = {
@@ -834,19 +1244,19 @@
           .or(`numero_documento.eq.${dni},email.eq.${dni}`)
           .limit(1);
 
-        if (errUsuario) { alert("Error al buscar el usuario: " + errUsuario.message); return; }
-        if (!usuarios || usuarios.length === 0) { alert("No se encontró usuario con ese documento o correo."); return; }
+        if (errUsuario) { mostrarAlerta("Error al buscar el usuario: " + errUsuario.message, "error"); return; }
+        if (!usuarios || usuarios.length === 0) { mostrarAlerta("No se encontró usuario con ese documento o correo.", "error"); return; }
 
         const usuario = usuarios[0];
 
         if (usuario.tipo_usuario && rolSeleccionado && usuario.tipo_usuario !== rolSeleccionado) {
-          alert("No existe una cuenta con ese documento para este rol.");
+          mostrarAlerta("No existe una cuenta con ese documento para este rol.", "error");
           return;
         }
-        if (!usuario.email) { alert("Esta cuenta no tiene un correo asociado."); return; }
+        if (!usuario.email) { mostrarAlerta("Esta cuenta no tiene un correo asociado.", "error"); return; }
 
         const { error: errAuth } = await supabaseClient.auth.signInWithPassword({ email: usuario.email, password: pwd });
-        if (errAuth) { alert("Contraseña incorrecta o error de acceso: " + errAuth.message); return; }
+        if (errAuth) { mostrarAlerta("Contraseña incorrecta o error de acceso.", "error"); return; }
 
         if (usuario.tipo_usuario === 'conductor' && !usuario.conductor_id) {
           const { data: cond } = await supabaseClient
@@ -857,11 +1267,11 @@
         usuarioActual = usuario;
         guardarSesion(usuario);
         modalLogin.classList.add('oculto');
-        mostrarAlerta(`¡Bienvenido de nuevo, ${usuario.nombre || 'Usuario'}!`);
+        mostrarAlerta(`¡Bienvenido de nuevo, ${usuario.nombre || 'Usuario'}!`, "exito");
         irAlApp();
       } catch (err) {
         console.error(err);
-        alert("Ocurrió un error al iniciar sesión: " + err.message);
+        mostrarAlerta("Ocurrió un error al iniciar sesión: " + err.message, "error");
       } finally {
         btnLogin.disabled = false;
         btnLogin.innerText = "Iniciar sesión";
@@ -878,11 +1288,18 @@
       const regTipoDoc = $('reg-tipo-doc');
       const regNumDoc = $('reg-num-doc');
 
-      if (regPassword.value !== regPasswordConfirm.value) { alert("Las contraseñas no coinciden."); return; }
+      if (!checkPoliticasRegistro.checked) {
+        mostrarAlerta("Debes aceptar la Política de Protección de Datos para continuar.", "error");
+        return;
+      }
 
-      /* NUEVO: el conductor debe completar la documentación del vehículo antes de registrarse */
+      if (regPassword.value !== regPasswordConfirm.value) { 
+        mostrarAlerta("Las contraseñas no coinciden.", "error"); 
+        return; 
+      }
+
       if (rolSeleccionado === 'conductor' && !documentacionVehiculo.completa) {
-        mostrarAlerta("Completa la documentación para el vehículo antes de continuar.");
+        mostrarAlerta("Completa la documentación para el vehículo antes de continuar.", "error");
         abrirModalDocumentacion();
         return;
       }
@@ -896,7 +1313,7 @@
       });
 
       if (authError) {
-        alert("Error al crear la cuenta: " + authError.message);
+        mostrarAlerta("Error al crear la cuenta: " + authError.message, "error");
         btnGuardar.disabled = false;
         btnGuardar.innerText = "Guardar y Continuar";
         return;
@@ -917,7 +1334,7 @@
         .from('usuarios').insert([datosUsuario]).select();
 
       if (errorUsuario) {
-        alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
+        mostrarAlerta("Error al guardar en la tabla 'usuarios': " + errorUsuario.message, "error");
         btnGuardar.disabled = false;
         btnGuardar.innerText = "Guardar y Continuar";
         return;
@@ -937,7 +1354,6 @@
           const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
           usuarioCreado.conductor_id = conductorId;
           await supabaseClient.from('vehiculos').insert([{ conductor_id: conductorId, modelo: vehiculoModelo, placa: vehiculoPlaca }]);
-          /* NUEVO: guarda la documentación del vehículo (no interrumpe el registro si falla) */
           await guardarDocumentacionConductor(nuevoUsuarioId, conductorId);
         }
       }
@@ -946,43 +1362,10 @@
       guardarSesion(usuarioCreado);
       btnGuardar.disabled = false;
       btnGuardar.innerText = "Guardar y Continuar";
-      mostrarAlerta(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
+      mostrarAlerta(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`, "exito");
       irAlApp();
     });
 
-    function mostrarAlerta(mensaje) {
-  const alerta = document.createElement('div');
-
-  alerta.textContent = mensaje;
-
-  Object.assign(alerta.style, {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex: '9999',
-    width: '85%',
-    maxWidth: '320px',
-    padding: '20px',
-    background: 'rgba(20,20,20,.88)',
-    color: '#fff',
-    border: '1px solid rgba(71,133,167,.5)',
-    borderRadius: '18px',
-    backdropFilter: 'blur(18px)',
-    WebkitBackdropFilter: 'blur(18px)',
-    boxShadow: '0 20px 50px rgba(0,0,0,.45)',
-    textAlign: 'center',
-    fontSize: '15px',
-    fontWeight: '600'
-  });
-
-  document.body.appendChild(alerta);
-
-  setTimeout(() => {
-    alerta.remove();
-  }, 1800);
-}
-    
     /* ================= PUENTE ENTRE PÁGINAS ================= */
     function guardarSesion(usuario) {
       try { localStorage.setItem(LLAVE_SESION, JSON.stringify(usuario)); }
@@ -1002,6 +1385,7 @@
         if (usuarioActual) irAlApp();
       } catch (e) { console.error("Error al cargar sesión:", e); }
     })();
+
     /* ================= LÓGICA DE INSTALACIÓN PWA ================= */
     let deferredPrompt = null;
     const modalInstalar = document.getElementById('modal-instalar-pwa');
@@ -1010,35 +1394,28 @@
     const instruccionesIos = document.getElementById('pwa-instrucciones-ios');
     const textoInstalar = document.getElementById('pwa-instalar-texto');
 
-    // Verificar si la app ya está instalada y ejecutándose en pantalla completa
     const esPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-    // Detectar si el usuario está en iOS (iPhone / iPad)
     const esIos = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
 
     if (!esPwa) {
-      // 1. Android / Chrome
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         mostrarAlertaInstalacion();
       });
 
-      // 2. iPhone / iOS (Safari no lanza beforeinstallprompt)
       if (esIos) {
         setTimeout(() => {
           instruccionesIos.classList.remove('oculto');
-          btnInstalar.classList.add('oculto'); // Oculta el botón nativo ya que en iOS no existe
-          textoInstalar.innerText = "Agrega BIKAR a tu pantalla de inicio para acceder rápidamente.";
+          btnInstalar.classList.add('oculto');
+          if (textoInstalar) textoInstalar.innerText = "Agrega BIKAR a tu pantalla de inicio para acceder rápidamente.";
           mostrarAlertaInstalacion();
         }, 1200);
       }
     }
 
     function mostrarAlertaInstalacion() {
-      // Si el usuario ya instaló la app, no la volvemos a mostrar
       if (localStorage.getItem('bikar_pwa_instalada') === 'true') return;
-
       modalInstalar.classList.remove('oculto');
     }
 
@@ -1055,7 +1432,6 @@
       modalInstalar.classList.add('oculto');
     });
 
-    // Detecta la instalación completada de forma automática
     window.addEventListener('appinstalled', () => {
       localStorage.setItem('bikar_pwa_instalada', 'true');
       modalInstalar.classList.add('oculto');
