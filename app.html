@@ -492,6 +492,16 @@
     .btn-conf-aceptar{color:#fff;border:none;background:linear-gradient(90deg,#a32626,#e05a5a);box-shadow:0 10px 24px rgba(224,90,90,.32)}
     .btn-conf-aceptar:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(224,90,90,.4)}
   </style>
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('bikar_tema');
+        if (t === 'light') {
+          document.documentElement.classList.remove('dark-mode');
+        }
+      } catch(e){}
+    })();
+  </script>
 </head>
 <body class="dark-mode">
   <!-- ================= APP ================= -->
@@ -742,6 +752,7 @@
     const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-BIKAR/";
     const K_SESION = "bikar_usuario";
     const K_DOC = "bikar_documentacion_vehiculo";
+    const K_TEMA = "bikar_tema";
     const K_ESTADO_CONDUCTOR = "bikar_conductor_activo";
     const PASAJERO_ID_PRUEBA = "5";
     const CONDUCTOR_ID_PRUEBA = "10";
@@ -805,6 +816,7 @@
     let usuarioActual = null, claveServicioConductor = null, documentacionVehiculo = null;
     let conductorActivo = true; // Estado online/offline del conductor
     let viajeActivoPasajero = null; // Viaje en curso del pasajero
+    let viajeActivoConductor = null; // Viaje en curso del conductor
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
 
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
@@ -1207,13 +1219,26 @@
       iconMoon.classList.toggle('oculto', oscuro);
       iconSun.classList.toggle('oculto', !oscuro);
     }
+
+    function inicializarTema() {
+      const guardado = lsGet(K_TEMA);
+      if (guardado === 'light') {
+        document.body.classList.remove('dark-mode');
+      } else if (guardado === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+      actualizarIconoTema();
+    }
+
     function alternarTema() {
       document.body.classList.toggle('dark-mode');
+      const esOscuro = document.body.classList.contains('dark-mode');
+      lsSet(K_TEMA, esOscuro ? 'dark' : 'light');
       actualizarIconoTema();
       if (map) map.setOptions({ styles: estiloActual() });
       setTimeout(mostrarPopupOrigen, 120);
     }
-    actualizarIconoTema();
+    inicializarTema();
     $('btn-theme-toggle').addEventListener('click', alternarTema);
     $('btn-perfil-tema').addEventListener('click', alternarTema);
 
@@ -1270,46 +1295,58 @@
         '</div>';
     }
 
-    /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO) ============================ */
-    async function verificarViajeEnProgresoPasajero() {
-      if (modoActual !== 'pasajero' || !usuarioActual || !db) return;
-      const idPasajero = usuarioActual.id || usuarioActual.Id || PASAJERO_ID_PRUEBA;
+    /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
+    async function verificarViajeEnProgresoUsuario() {
+      if (!usuarioActual || !db) return;
+      const esConductor = (modoActual === 'conductor' || usuarioActual.tipo_usuario === 'conductor');
+      const idUsuario = esConductor
+        ? (usuarioActual.conductor_id || usuarioActual.id || CONDUCTOR_ID_PRUEBA)
+        : (usuarioActual.id || usuarioActual.Id || PASAJERO_ID_PRUEBA);
 
       try {
-        const { data, error } = await db.from('viajes').select('*')
-          .eq('pasajero_id', idPasajero)
-          .in('estado', ['solicitado', 'aceptado', 'en_camino'])
-          .order('id', { ascending: false })
-          .limit(1);
+        let query = db.from('viajes').select('*');
+        if (esConductor) {
+          // Para conductor: viajes aceptados o en camino donde figure como conductor
+          query = query.eq('conductor_id', idUsuario).in('estado', ['aceptado', 'en_camino']);
+        } else {
+          // Para pasajero: viajes solicitados, aceptados o en camino
+          query = query.eq('pasajero_id', idUsuario).in('estado', ['solicitado', 'aceptado', 'en_camino']);
+        }
+
+        const { data, error } = await query.order('id', { ascending: false }).limit(1);
 
         if (!error && data && data.length > 0) {
-          viajeActivoPasajero = data[0];
-          aplicarBloqueoViajeActivo(true, viajeActivoPasajero);
+          const viaje = data[0];
+          const rol = esConductor ? 'conductor' : 'pasajero';
+          const url = 'viaje.html?id=' + viaje.id + '&rol=' + rol;
+
+          alertaViajeActivo.href = url;
+          alertaViajeActivo.classList.remove('oculto');
+          menuItemMisViajes.classList.remove('oculto');
+          menuItemMisViajes.onclick = () => { window.location.href = url; };
+
+          if (esConductor) {
+            viajeActivoConductor = viaje;
+            // Para el conductor NO se bloquea la recepción de solicitudes en su categoría
+          } else {
+            viajeActivoPasajero = viaje;
+            bloqueoViajeActivo.classList.remove('oculto');
+            seccionSolicitarPasajero.classList.add('oculto');
+            btnIrViajeActivo.onclick = () => { window.location.href = url; };
+          }
         } else {
-          viajeActivoPasajero = null;
-          aplicarBloqueoViajeActivo(false);
+          alertaViajeActivo.classList.add('oculto');
+          menuItemMisViajes.classList.add('oculto');
+          if (esConductor) {
+            viajeActivoConductor = null;
+          } else {
+            viajeActivoPasajero = null;
+            bloqueoViajeActivo.classList.add('oculto');
+            seccionSolicitarPasajero.classList.remove('oculto');
+          }
         }
       } catch (e) {
         console.warn('Error al verificar viaje activo:', e);
-      }
-    }
-
-    function aplicarBloqueoViajeActivo(hayActivo, viaje) {
-      if (hayActivo && viaje) {
-        const url = 'viaje.html?id=' + viaje.id + '&rol=pasajero';
-        alertaViajeActivo.href = url;
-        alertaViajeActivo.classList.remove('oculto');
-        menuItemMisViajes.classList.remove('oculto');
-        menuItemMisViajes.onclick = () => { window.location.href = url; };
-        
-        bloqueoViajeActivo.classList.remove('oculto');
-        seccionSolicitarPasajero.classList.add('oculto');
-        btnIrViajeActivo.onclick = () => { window.location.href = url; };
-      } else {
-        alertaViajeActivo.classList.add('oculto');
-        menuItemMisViajes.classList.add('oculto');
-        bloqueoViajeActivo.classList.add('oculto');
-        seccionSolicitarPasajero.classList.remove('oculto');
       }
     }
 
@@ -1405,6 +1442,7 @@
         } else {
           renderizarConductorInactivo();
         }
+        await verificarViajeEnProgresoUsuario();
       } else {
         modoActual = 'pasajero';
         uiConductor.classList.add('oculto');
@@ -1416,7 +1454,7 @@
             esc(usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento') +
             ' · ' + esc(usuario.categoria || 'Categoría no registrada') + '</div>');
         }
-        await verificarViajeEnProgresoPasajero();
+        await verificarViajeEnProgresoUsuario();
       }
       actualizarChipUsuario();
     }
@@ -2040,7 +2078,7 @@
       db.channel('public:viajes')
         .on('postgres_changes', { event:'*', schema:'public', table:'viajes' }, () => {
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
-          if (modoActual === 'pasajero') verificarViajeEnProgresoPasajero();
+          verificarViajeEnProgresoUsuario();
           if (abierto(modalHistorial)) cargarHistorial();
         })
         .subscribe();
@@ -2048,6 +2086,7 @@
 
     /* ============================ ARRANQUE ============================ */
     document.addEventListener('DOMContentLoaded', () => {
+      inicializarTema();
       cargarGoogleMaps();
       suscribirRealtime();
       verificarSesionGuardada();
