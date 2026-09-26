@@ -53,11 +53,19 @@
     .stepper{display:flex;justify-content:space-between;position:relative;margin:22px 0 4px}
     .stepper::before{content:'';position:absolute;top:14px;left:12%;right:12%;height:2px;background:var(--border-color);z-index:1}
     .step{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;width:25%}
-    .step-icon{width:30px;height:30px;border-radius:50%;background:var(--card-bg);border:2px solid var(--border-color);display:grid;place-items:center;font-size:.72rem;font-weight:800;color:var(--muted-text)}
+    .step-icon{position:relative;width:30px;height:30px;border-radius:50%;background:var(--card-bg);border:2px solid var(--border-color);display:grid;place-items:center;font-size:.72rem;font-weight:800;color:var(--muted-text)}
     .step.active .step-icon{border-color:var(--primary-color);background:var(--primary-color);color:#fff}
     .step.completed .step-icon{border-color:var(--accent-green);background:var(--accent-green);color:#fff}
     .step-text{font-size:.66rem;color:var(--muted-text);font-weight:700;text-align:center;line-height:1.2}
     .step.active .step-text,.step.completed .step-text{color:var(--text-color)}
+
+    /* [MOD 2] Ring ring en los estados */
+    .step.active .step-icon{animation:ringShake 1.6s ease-in-out infinite}
+    .step.active .step-icon::before,.step.active .step-icon::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--primary-color);animation:ringWave 1.6s ease-out infinite;pointer-events:none}
+    .step.active .step-icon::after{animation-delay:.8s}
+    .step.completed .step-icon::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--accent-green);animation:ringWave 2.4s ease-out infinite;pointer-events:none}
+    @keyframes ringWave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.1);opacity:0}}
+    @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
 
     /* PERFIL DE LA CONTRAPARTE */
     .profile-box{display:flex;align-items:center;gap:14px}
@@ -70,12 +78,28 @@
     .vehicle-tag svg,.mini-tag svg{width:13px;height:13px;flex-shrink:0}
     .mini-tag{color:var(--text-color)}
     .placa{letter-spacing:1px;text-transform:uppercase}
-    .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color)}
+    .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
     .btn-contacto{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:12px;cursor:pointer;
-      font-size:.8rem;font-weight:800;text-decoration:none;transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color)}
+      font-size:.8rem;font-weight:800;text-decoration:none;transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color);position:relative}
     .btn-contacto:hover{transform:translateY(-1px);border-color:var(--primary-color)}
     .btn-contacto svg{width:15px;height:15px}
     .btn-contacto.whatsapp{color:#128c7e;border-color:rgba(18,140,126,.35)}
+    .badge-chat{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-red);color:#fff;font-size:.65rem;display:none;place-items:center}
+
+    /* [MOD 1] Radar */
+    #card-persona{position:relative;overflow:hidden}
+    #card-persona > *:not(.radar){position:relative;z-index:1}
+    .radar{position:absolute;inset:0;pointer-events:none;z-index:0;display:none}
+    .radar.on{display:block}
+    .radar .centro{position:absolute;left:51px;top:50%;width:0;height:0}
+    .radar .anillo{position:absolute;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;border:2px solid var(--brand);opacity:0;animation:radarRing 3.6s linear infinite}
+    .radar .anillo:nth-child(2){animation-delay:1.2s}
+    .radar .anillo:nth-child(3){animation-delay:2.4s}
+    .radar .barrido{position:absolute;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;
+      background:conic-gradient(from 0deg,rgba(71,133,167,.28),rgba(71,133,167,0) 70deg,transparent 360deg);animation:radarSweep 3s linear infinite}
+    .radar .grid{position:absolute;left:0;top:0;border-radius:50%;border:1px dashed var(--border-color)}
+    @keyframes radarRing{0%{transform:scale(.05);opacity:.7}100%{transform:scale(1);opacity:0}}
+    @keyframes radarSweep{to{transform:rotate(360deg)}}
 
     /* RUTA */
     .route-box{display:flex;flex-direction:column;gap:12px}
@@ -97,7 +121,7 @@
 
     /* ACCIONES */
     .btn-action{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(90deg,#134989,#4785A7);color:#fff;
-      font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s,transform .1s,opacity .2s}
+      font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s,transform .1s,opacity .2s;text-decoration:none}
     .btn-action:hover{filter:brightness(1.08)}
     .btn-action:active{transform:scale(.985)}
     .btn-action:disabled{opacity:.55;cursor:not-allowed;transform:none}
@@ -105,6 +129,7 @@
     .btn-danger{background:linear-gradient(90deg,#a32626,#e05a5a)}
     .btn-secundario{background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color)}
     .zona-acciones{display:flex;flex-direction:column;gap:8px}
+    .zona-acciones > * + *{margin-top:8px}
 
     .aviso{padding:12px 14px;border-radius:12px;font-size:.78rem;font-weight:600;line-height:1.45;color:var(--muted-text);
       background:var(--field-bg);border:1px dashed var(--border-color)}
@@ -114,9 +139,63 @@
     @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#1f2937;color:#fff;
-      padding:12px 24px;border-radius:30px;font-size:.88rem;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.25);transition:transform .3s ease;z-index:100;max-width:88vw;text-align:center}
+      padding:12px 24px;border-radius:30px;font-size:.88rem;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.25);transition:transform .3s ease;z-index:300;max-width:88vw;text-align:center}
     .toast.visible{transform:translateX(-50%) translateY(0)}
-    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}}
+
+    /* MODALES */
+    .modal{position:fixed;inset:0;z-index:150;display:none;align-items:flex-end;justify-content:center;padding:16px;background:rgba(5,10,20,.55);backdrop-filter:blur(4px)}
+    .modal.open{display:flex;animation:fadeIn .25s ease}
+    .modal.z2{z-index:170}
+    .modal.z3{z-index:190}
+    .modal-box{width:100%;max-width:460px;max-height:90vh;overflow:auto;background:var(--card-bg);color:var(--text-color);border:1px solid var(--border-color);
+      border-radius:22px;padding:22px;box-shadow:var(--shadow);animation:slideUp .35s cubic-bezier(.2,.9,.3,1.2)}
+    @media (min-width:600px){.modal{align-items:center}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideUp{from{transform:translateY(60px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+    .modal-title{font-size:1.1rem;font-weight:800}
+    .modal-desc{font-size:.84rem;color:var(--muted-text);line-height:1.45;margin-bottom:14px}
+    .modal-close{background:transparent;border:1px solid var(--border-color);color:var(--text-color);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;flex-shrink:0}
+    .modal-ico{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;background:var(--field-bg);color:var(--primary-color);position:relative}
+    .modal-ico svg{width:30px;height:30px}
+    .modal-ico::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid var(--brand);animation:ringWave 1.8s ease-out infinite}
+    .opciones{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .opcion{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--field-bg);cursor:pointer;font-size:.86rem;font-weight:600}
+    .opcion input{accent-color:var(--primary-color);width:16px;height:16px}
+    .opcion.sel{border-color:var(--primary-color)}
+    .campo{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--field-bg);color:var(--text-color);font-size:.88rem;resize:vertical;outline:none}
+    .campo:focus{border-color:var(--primary-color)}
+    .modal-acciones{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+    .pin-digitos{display:flex;justify-content:center;gap:10px;margin:14px 0}
+    .pin-digitos span{width:58px;height:70px;border-radius:14px;display:grid;place-items:center;font-size:2rem;font-weight:800;background:var(--field-bg);border:2px solid var(--primary-color);color:var(--primary-color);animation:popIn .4s ease backwards}
+    .pin-digitos span:nth-child(2){animation-delay:.08s}.pin-digitos span:nth-child(3){animation-delay:.16s}.pin-digitos span:nth-child(4){animation-delay:.24s}
+    @keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+    .pin-inputs{display:flex;justify-content:center;gap:10px;margin:14px 0}
+    .pin-inputs input{width:58px;height:66px;text-align:center;font-size:1.8rem;font-weight:800;border-radius:14px;border:2px solid var(--border-color);background:var(--field-bg);color:var(--text-color);outline:none}
+    .pin-inputs input:focus{border-color:var(--primary-color)}
+    .pin-inputs.error input{border-color:var(--accent-red);animation:shake .4s}
+    @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+    .estrellas{display:flex;justify-content:center;gap:8px;margin:10px 0 14px}
+    .estrellas button{background:none;border:none;cursor:pointer;color:var(--border-color);transition:transform .15s,color .15s}
+    .estrellas button svg{width:40px;height:40px}
+    .estrellas button.on{color:var(--accent-amber)}
+    .estrellas button.on svg{fill:var(--accent-amber)}
+    .estrellas button:hover{transform:scale(1.15)}
+    .nav-app{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1px solid var(--border-color);background:var(--field-bg);color:var(--text-color);text-decoration:none;font-weight:700}
+    .nav-app:hover{border-color:var(--primary-color)}
+    .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800}
+    /* Chat */
+    .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
+    .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:.86rem;line-height:1.35;word-break:break-word}
+    .msg.mio{align-self:flex-end;background:linear-gradient(90deg,#134989,#4785A7);color:#fff;border-bottom-right-radius:4px}
+    .msg.otro{align-self:flex-start;background:var(--card-bg);border:1px solid var(--border-color);border-bottom-left-radius:4px}
+    .msg small{display:block;font-size:.62rem;opacity:.7;margin-top:3px}
+    .chat-form{display:flex;gap:8px;margin-top:10px}
+    .chat-form button{width:48px;border:none;border-radius:12px;background:var(--primary-color);color:#fff;cursor:pointer;display:grid;place-items:center}
+    .chat-form button svg{width:18px;height:18px}
+    .llamada-estado{text-align:center;font-weight:800;font-size:1rem;margin-bottom:4px}
+    .llamada-tiempo{text-align:center;color:var(--muted-text);font-size:.85rem;margin-bottom:10px}
+    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
 <body>
@@ -158,6 +237,16 @@
 
     <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
+      <div class="radar" id="radar">
+        <div class="centro">
+          <div class="barrido"></div>
+          <div class="grid" style="width:160px;height:160px;margin:-80px 0 0 -80px"></div>
+          <div class="grid" style="width:320px;height:320px;margin:-160px 0 0 -160px"></div>
+          <div>
+            <div class="anillo"></div><div class="anillo"></div><div class="anillo"></div>
+          </div>
+        </div>
+      </div>
       <div class="card-title" id="titulo-persona">Información del conductor</div>
       <div class="profile-box">
         <img id="persona-foto" class="profile-img" alt="Foto de perfil" src="">
@@ -176,6 +265,15 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
           WhatsApp
         </a>
+        <button class="btn-contacto" id="btn-chat-app" type="button" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Chat
+          <span class="badge-chat" id="badge-chat">0</span>
+        </button>
+        <button class="btn-contacto" id="btn-llamada-app" type="button" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg>
+          Llamar por app
+        </button>
       </div>
     </section>
 
@@ -220,12 +318,137 @@
     <section id="sec-acciones" class="zona-acciones" style="display:none">
       <div class="aviso" id="aviso-rol" style="display:none"></div>
       <button id="btn-siguiente-estado" class="btn-action">Cargando…</button>
+      <button id="btn-extra-nav" class="btn-action btn-secundario" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+        <span>Abrir navegación al origen</span>
+      </button>
+      <button id="btn-extra-compartir" class="btn-action btn-secundario" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        <span>Compartir ubicación</span>
+      </button>
+      <button id="btn-extra-cancelar" class="btn-action btn-danger" style="display:none"><span>Cancelar viaje</span></button>
       <a id="btn-inicio" class="btn-action btn-secundario" href="index.html" style="display:none;text-decoration:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
         Volver al inicio
       </a>
     </section>
   </main>
+
+  <!-- MODAL CANCELACIÓN -->
+  <div class="modal z3" id="modal-cancelar">
+    <div class="modal-box">
+      <div class="modal-head"><div class="modal-title">¿Por qué cancelas?</div><button class="modal-close" data-cerrar="modal-cancelar">✕</button></div>
+      <p class="modal-desc" id="cancel-desc">Selecciona un motivo para ayudarnos a mejorar.</p>
+      <div class="opciones" id="cancel-opciones"></div>
+      <textarea id="cancel-otro" class="campo" rows="3" placeholder="Escribe cuál es el motivo…" style="display:none"></textarea>
+      <div class="modal-acciones">
+        <button class="btn-action btn-danger" id="cancel-confirmar"><span>Confirmar cancelación</span></button>
+        <button class="btn-action btn-secundario" data-cerrar="modal-cancelar"><span>Volver</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PIN PASAJERO (no se puede cerrar) -->
+  <div class="modal" id="modal-pin-pasajero">
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+      <div class="modal-title">Tu PIN de seguridad</div>
+      <p class="modal-desc" style="margin-top:6px">Cuando el conductor llegue, díctale este PIN. El viaje solo iniciará cuando lo ingrese correctamente.</p>
+      <div class="pin-digitos" id="pin-digitos"></div>
+      <p class="modal-desc" id="pin-pasajero-estado">Tu conductor está en camino…</p>
+      <div class="modal-acciones">
+        <button class="btn-action btn-danger" id="pin-pasajero-cancelar"><span>Cancelar viaje</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PIN CONDUCTOR (no se puede cerrar) -->
+  <div class="modal" id="modal-pin-conductor">
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+      <div class="modal-title">Verifica el PIN del pasajero</div>
+      <p class="modal-desc" style="margin-top:6px">Pide al pasajero que te dicte su PIN de 4 dígitos para iniciar el viaje.</p>
+      <div class="pin-inputs" id="pin-inputs">
+        <input inputmode="numeric" maxlength="1" autocomplete="off">
+        <input inputmode="numeric" maxlength="1" autocomplete="off">
+        <input inputmode="numeric" maxlength="1" autocomplete="off">
+        <input inputmode="numeric" maxlength="1" autocomplete="off">
+      </div>
+      <p class="modal-desc" id="pin-conductor-msg"></p>
+      <div class="modal-acciones">
+        <button class="btn-action" id="pin-verificar"><span>Verificar e iniciar viaje</span></button>
+        <button class="btn-action btn-danger" id="pin-conductor-cancelar"><span>Cancelar viaje</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL NAVEGACIÓN -->
+  <div class="modal" id="modal-nav">
+    <div class="modal-box">
+      <div class="modal-head"><div class="modal-title">Navegar al origen</div><button class="modal-close" data-cerrar="modal-nav">✕</button></div>
+      <p class="modal-desc" id="nav-desc">Elige la app para llegar al punto de recojo.</p>
+      <div class="opciones">
+        <a class="nav-app" id="nav-google" href="#" target="_blank" rel="noopener"><span class="logo" style="background:#1a73e8">G</span><span>Abrir en Google Maps</span></a>
+        <a class="nav-app" id="nav-waze" href="#" target="_blank" rel="noopener"><span class="logo" style="background:#33ccff">W</span><span>Abrir en Waze</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL COMPARTIR -->
+  <div class="modal" id="modal-compartir">
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+      <div class="modal-title">Tu viaje está en curso</div>
+      <p class="modal-desc" style="margin-top:6px">Por tu seguridad, comparte los datos del trayecto y tu ubicación con un contacto de confianza por WhatsApp.</p>
+      <div class="modal-acciones">
+        <button class="btn-action" id="btn-compartir-ubicacion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+          <span>Compartir ubicación</span>
+        </button>
+        <button class="btn-action btn-secundario" data-cerrar="modal-compartir"><span>Ahora no</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CALIFICACIÓN -->
+  <div class="modal z2" id="modal-calificar">
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-head"><div class="modal-title" id="calif-titulo">Califica tu viaje</div><button class="modal-close" data-cerrar="modal-calificar">✕</button></div>
+      <p class="modal-desc" id="calif-desc">¿Cómo fue tu experiencia?</p>
+      <div class="estrellas" id="estrellas"></div>
+      <p class="modal-desc" id="calif-label" style="font-weight:800;color:var(--primary-color)">Toca una estrella</p>
+      <textarea id="calif-resena" class="campo" rows="3" placeholder="Deja una reseña (opcional)…"></textarea>
+      <div class="modal-acciones">
+        <button class="btn-action" id="calif-enviar" disabled><span>Enviar calificación</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHAT -->
+  <div class="modal z2" id="modal-chat">
+    <div class="modal-box">
+      <div class="modal-head"><div class="modal-title" id="chat-titulo">Chat del viaje</div><button class="modal-close" data-cerrar="modal-chat">✕</button></div>
+      <div class="chat-box" id="chat-box"></div>
+      <form class="chat-form" id="chat-form">
+        <input class="campo" id="chat-input" placeholder="Escribe un mensaje…" autocomplete="off" maxlength="500">
+        <button type="submit" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL LLAMADA -->
+  <div class="modal z3" id="modal-llamada">
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg></div>
+      <div class="llamada-estado" id="llamada-estado">Llamando…</div>
+      <div class="llamada-tiempo" id="llamada-tiempo">Llamada segura a través de BIKAR</div>
+      <div class="modal-acciones">
+        <button class="btn-action" id="llamada-aceptar" style="display:none"><span>Contestar</span></button>
+        <button class="btn-action btn-danger" id="llamada-colgar"><span>Colgar</span></button>
+      </div>
+      <audio id="audio-remoto" autoplay playsinline></audio>
+    </div>
+  </div>
 
   <div id="toast" class="toast">Notificación</div>
 
@@ -280,7 +503,8 @@
       check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
       usuario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>',
       estrella: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17.8 6.5 20l1-6.1L3 9.5l6.3-.9z"/></svg>',
-      siguiente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>'
+      siguiente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>',
+      candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'
     };
     const ICONO_SERVICIO = {
       moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, taxi_carga: SVG.caja, default: SVG.ruta
@@ -292,7 +516,16 @@
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const mismoId = (a, b) => a != null && b != null && String(a) === String(b);
     const lsJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
-    const formatoMoneda = (v) => 'S/ ' + (Number(v || 0) / 1000).toFixed(2);
+    /* [MOD 3] La tarifa se muestra tal como la guarda app.html (en soles), sin dividir entre 1000 */
+    const formatoMoneda = (v) => { const n = Number(v); return 'S/ ' + (isFinite(n) ? n : 0).toFixed(2); };
+    const tarifaDelViaje = (v) => {
+      if (!v) return 0;
+      const campos = ['tarifa', 'tarifa_total', 'precio', 'precio_total', 'monto', 'costo'];
+      for (let i = 0; i < campos.length; i++) {
+        if (v[campos[i]] != null && v[campos[i]] !== '' && !isNaN(Number(v[campos[i]]))) return Number(v[campos[i]]);
+      }
+      return 0;
+    };
 
     function mostrarToast(msg) {
       const t = $('toast');
@@ -385,7 +618,9 @@
       return fila;
     }
 
+    let infoContraparte = null;
     function pintarPersona(info) {
+      infoContraparte = info;
       const nombre = info.nombre || 'Usuario BIKAR';
       personaNombre.textContent = nombre;
       personaSub.textContent = info.sub || '';
@@ -412,6 +647,30 @@
       } else {
         zonaContacto.style.display = 'none';
       }
+      actualizarContacto();
+    }
+
+    /* [MOD 7] El conductor no ve teléfono/WhatsApp del pasajero: usa chat y llamada dentro de la app */
+    function actualizarContacto() {
+      const estado = String((viajeActual && viajeActual.estado) || 'solicitado').toLowerCase();
+      const activo = ['aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
+      const hayContraparte = rolUsuario === 'conductor'
+        ? (viajeActual && viajeActual.pasajero_id != null)
+        : (viajeActual && viajeActual.conductor_id != null);
+      const appOK = activo && hayContraparte;
+      $('btn-chat-app').style.display = appOK ? 'inline-flex' : 'none';
+      $('btn-llamada-app').style.display = appOK ? 'inline-flex' : 'none';
+      if (rolUsuario === 'conductor') {
+        btnLlamar.style.display = 'none';
+        btnWhatsapp.style.display = 'none';
+        zonaContacto.style.display = appOK ? 'flex' : 'none';
+      } else {
+        const tieneTel = !!(infoContraparte && infoContraparte.telefono);
+        btnLlamar.style.display = tieneTel ? '' : 'none';
+        btnWhatsapp.style.display = tieneTel ? '' : 'none';
+        zonaContacto.style.display = (tieneTel || appOK) ? 'flex' : 'none';
+      }
+      if (appOK) prepararCanalChat();
     }
 
     function avatarDe(nombre) {
@@ -475,7 +734,7 @@
       const clave = normalizarClaveServicio(viajeActual.tipo_servicio || viajeActual.nombre_servicio);
       $('txt-servicio').innerHTML = (ICONO_SERVICIO[clave] || SVG.ruta) + '<span>' +
         esc(viajeActual.tipo_servicio || viajeActual.nombre_servicio || etiquetaServicio(clave)) + '</span>';
-      $('txt-tarifa').textContent = formatoMoneda(viajeActual.tarifa);
+      $('txt-tarifa').textContent = formatoMoneda(tarifaDelViaje(viajeActual));
       $('txt-distancia').textContent = viajeActual.distancia_km ? viajeActual.distancia_km + ' km' : '—';
 
       const fecha = viajeActual.created_at || viajeActual.creado_en || viajeActual.fecha;
@@ -516,6 +775,7 @@
       }
 
       configurarAcciones(estado);
+      actualizarExtras(estado);
     }
 
     /* ============================================================
@@ -551,7 +811,11 @@
           avisoRol.textContent = 'Este servicio aparece como disponible. Si lo tomas, quedarás asignado al viaje.';
           avisoRol.style.display = 'block';
         }
-        boton(SVG.siguiente + '<span>' + paso[0] + '</span>', false, () => cambiarEstadoViaje(paso[1]));
+        boton(SVG.siguiente + '<span>' + paso[0] + '</span>', false, () => {
+          if (paso[1] === 'en_camino') { abrirModalNavegacion(); cambiarEstadoViaje(paso[1]); }  /* [MOD 6] */
+          else if (paso[1] === 'en_progreso') { abrirPinConductor(); }                          /* [MOD 9] */
+          else cambiarEstadoViaje(paso[1]);
+        });
         return;
       }
 
@@ -559,7 +823,7 @@
       if (estado === 'solicitado') {
         avisoRol.textContent = 'Aún no hay conductor asignado. Puedes cancelar sin costo mientras esperas.';
         avisoRol.style.display = 'block';
-        boton('<span>Cancelar solicitud</span>', false, () => cancelarViaje(), true);
+        boton('<span>Cancelar solicitud</span>', false, () => abrirModalCancelacion(), true);
       } else {
         boton(SVG.ruta + '<span>Seguimiento activo del viaje</span>', true, null);
       }
@@ -578,26 +842,32 @@
         mostrarToast('Estado actualizado: ' + nuevoEstado.replace(/_/g, ' '));
         viajeActual = Object.assign({}, viajeActual, cambios);
         renderizarUI();
+        return true;
       } catch (e) {
         console.error(e);
         mostrarToast('Error al actualizar el estado');
         renderizarUI();
+        return false;
       }
     }
 
-    async function cancelarViaje() {
+    /* [MOD 4] Cancelación con motivo */
+    async function cancelarViaje(motivo) {
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Cancelando…</span>';
       try {
-        const { error } = await db.from('viajes').update({ estado:'cancelado' }).eq('id', viajeId);
-        if (error) throw error;
+        let r = await db.from('viajes').update({ estado:'cancelado', motivo_cancelacion: motivo || null, cancelado_por: rolUsuario }).eq('id', viajeId);
+        if (r.error) r = await db.from('viajes').update({ estado:'cancelado' }).eq('id', viajeId);
+        if (r.error) throw r.error;
         mostrarToast('Solicitud cancelada');
         viajeActual = Object.assign({}, viajeActual, { estado:'cancelado' });
         renderizarUI();
+        return true;
       } catch (e) {
         console.error(e);
         mostrarToast('No se pudo cancelar el viaje');
         renderizarUI();
+        return false;
       }
     }
 
@@ -610,6 +880,435 @@
       personaNombre.textContent = '—';
       personaSub.textContent = '';
       personaExtra.innerHTML = '';
+      $('radar').classList.remove('on');
+    }
+
+    /* ============================================================
+       MODALES (genérico)
+       ============================================================ */
+    function abrirModal(id) { $(id).classList.add('open'); }
+    function cerrarModal(id) { $(id).classList.remove('open'); }
+    document.querySelectorAll('[data-cerrar]').forEach((b) => b.addEventListener('click', () => cerrarModal(b.getAttribute('data-cerrar'))));
+
+    /* ============================================================
+       EXTRAS SEGÚN ESTADO
+       ============================================================ */
+    function actualizarExtras(estado) {
+      /* [MOD 1] Radar: activo buscando y sigue tras aceptar hasta finalizar */
+      $('radar').classList.toggle('on', ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0);
+
+      const bNav = $('btn-extra-nav'), bComp = $('btn-extra-compartir'), bCanc = $('btn-extra-cancelar');
+      bNav.style.display = 'none'; bComp.style.display = 'none'; bCanc.style.display = 'none';
+
+      if (rolUsuario === 'conductor') {
+        if (estado === 'en_camino') { bNav.style.display = 'flex'; }
+        if (estado === 'aceptado' || estado === 'en_camino') { bCanc.style.display = 'flex'; }
+      } else if (estado === 'en_progreso') {
+        bComp.style.display = 'flex';
+      }
+
+      /* [MOD 9] PIN */
+      const pinPendiente = (estado === 'aceptado' || estado === 'en_camino');
+      if (rolUsuario !== 'conductor') {
+        if (pinPendiente && viajeActual.conductor_id != null) mostrarPinPasajero(estado);
+        else cerrarModal('modal-pin-pasajero');
+      } else {
+        if (estado === 'en_camino' && sessionStorage.getItem('bikar_pin_abierto_' + viajeId) === '1') abrirPinConductor();
+        if (!pinPendiente) { cerrarModal('modal-pin-conductor'); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
+      }
+
+      /* [MOD 5] Compartir ubicación (pasajero, en curso) */
+      if (rolUsuario !== 'conductor' && estado === 'en_progreso' && !sessionStorage.getItem('bikar_share_' + viajeId)) {
+        sessionStorage.setItem('bikar_share_' + viajeId, '1');
+        setTimeout(() => abrirModal('modal-compartir'), 400);
+      }
+      if (estado !== 'en_progreso') cerrarModal('modal-compartir');
+
+      /* [MOD 8] Calificación */
+      if (estado === 'terminado' && !localStorage.getItem('bikar_calif_' + viajeId + '_' + rolUsuario)) abrirCalificacion();
+
+      if (estado === 'cancelado' || estado === 'terminado') { cerrarModal('modal-chat'); if (llamada.pc) terminarLlamada(true); }
+    }
+
+    $('btn-extra-nav').addEventListener('click', abrirModalNavegacion);
+    $('btn-extra-compartir').addEventListener('click', () => abrirModal('modal-compartir'));
+    $('btn-extra-cancelar').addEventListener('click', abrirModalCancelacion);
+
+    /* ============================================================
+       [MOD 4] MODAL DE CANCELACIÓN
+       ============================================================ */
+    const MOTIVOS = {
+      pasajero: ['El conductor tarda demasiado', 'Cambié de planes', 'Encontré otro medio de transporte', 'Me equivoqué en la dirección', 'La tarifa es muy alta', 'El conductor me pidió cancelar'],
+      conductor: ['El pasajero no se presentó', 'No logro contactar al pasajero', 'El pasajero pidió cancelar', 'Dirección de origen incorrecta o inaccesible', 'Comportamiento inapropiado del pasajero', 'Problema con mi vehículo']
+    };
+    function abrirModalCancelacion() {
+      const lista = (rolUsuario === 'conductor' ? MOTIVOS.conductor : MOTIVOS.pasajero).concat(['Otro']);
+      $('cancel-desc').textContent = rolUsuario === 'conductor'
+        ? 'Indica el motivo relacionado con el pasajero.' : 'Selecciona un motivo para ayudarnos a mejorar.';
+      $('cancel-opciones').innerHTML = lista.map((m, i) =>
+        '<label class="opcion"><input type="radio" name="motivo" value="' + esc(m) + '"' + (i === 0 ? ' checked' : '') + '><span>' + esc(m) + '</span></label>').join('');
+      $('cancel-otro').value = '';
+      $('cancel-otro').style.display = 'none';
+      marcarOpcion();
+      abrirModal('modal-cancelar');
+    }
+    function marcarOpcion() {
+      const sel = document.querySelector('input[name="motivo"]:checked');
+      document.querySelectorAll('#cancel-opciones .opcion').forEach((o) => o.classList.toggle('sel', o.contains(sel)));
+      $('cancel-otro').style.display = sel && sel.value === 'Otro' ? 'block' : 'none';
+    }
+    $('cancel-opciones').addEventListener('change', marcarOpcion);
+    $('cancel-confirmar').addEventListener('click', async () => {
+      const sel = document.querySelector('input[name="motivo"]:checked');
+      let motivo = sel ? sel.value : '';
+      if (motivo === 'Otro') {
+        const txt = $('cancel-otro').value.trim();
+        if (!txt) { mostrarToast('Escribe cuál es el motivo'); $('cancel-otro').focus(); return; }
+        motivo = 'Otro: ' + txt;
+      }
+      const b = $('cancel-confirmar');
+      b.disabled = true;
+      const ok = await cancelarViaje(motivo);
+      b.disabled = false;
+      if (ok) {
+        cerrarModal('modal-cancelar');
+        cerrarModal('modal-pin-pasajero');
+        cerrarModal('modal-pin-conductor');
+        sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
+      }
+    });
+
+    /* ============================================================
+       [MOD 9] PIN DE SEGURIDAD
+       ============================================================ */
+    let pinIntentado = false;
+    function pinDerivado() {
+      let h = 2166136261;
+      const s = 'bikar|' + viajeId + '|' + (viajeActual.conductor_id != null ? viajeActual.conductor_id : '') + '|' + (viajeActual.pasajero_id != null ? viajeActual.pasajero_id : '');
+      for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+      return String((Math.abs(h) % 9000) + 1000);
+    }
+    function pinDelViaje() {
+      return viajeActual && viajeActual.pin_verificacion ? String(viajeActual.pin_verificacion) : pinDerivado();
+    }
+    async function asegurarPin() {
+      if (pinIntentado || viajeActual.pin_verificacion) return;
+      pinIntentado = true;
+      const nuevo = String(Math.floor(1000 + Math.random() * 9000));
+      try {
+        const { error } = await db.from('viajes').update({ pin_verificacion: nuevo }).eq('id', viajeId);
+        if (!error) viajeActual.pin_verificacion = nuevo;
+      } catch (e) { /* sin columna: se usa PIN derivado */ }
+    }
+    async function mostrarPinPasajero(estado) {
+      $('pin-pasajero-estado').textContent = estado === 'en_camino'
+        ? 'Tu conductor está en camino al punto de recojo…' : 'Tu conductor aceptó el viaje y se prepara…';
+      const yaAbierto = $('modal-pin-pasajero').classList.contains('open');
+      await asegurarPin();
+      const pin = pinDelViaje();
+      if (!yaAbierto || $('pin-digitos').dataset.pin !== pin) {
+        $('pin-digitos').dataset.pin = pin;
+        $('pin-digitos').innerHTML = pin.split('').map((c) => '<span>' + c + '</span>').join('');
+      }
+      abrirModal('modal-pin-pasajero');
+    }
+    $('pin-pasajero-cancelar').addEventListener('click', abrirModalCancelacion);
+
+    const pinInputs = Array.prototype.slice.call(document.querySelectorAll('#pin-inputs input'));
+    pinInputs.forEach((inp, i) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g, '').slice(-1);
+        $('pin-inputs').classList.remove('error');
+        if (inp.value && pinInputs[i + 1]) pinInputs[i + 1].focus();
+        if (pinInputs.every((x) => x.value)) verificarPin();
+      });
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !inp.value && pinInputs[i - 1]) pinInputs[i - 1].focus(); });
+    });
+    function abrirPinConductor() {
+      sessionStorage.setItem('bikar_pin_abierto_' + viajeId, '1');
+      if (!$('modal-pin-conductor').classList.contains('open')) {
+        pinInputs.forEach((x) => (x.value = ''));
+        $('pin-conductor-msg').textContent = '';
+        abrirModal('modal-pin-conductor');
+        setTimeout(() => pinInputs[0].focus(), 300);
+      }
+    }
+    let verificando = false;
+    async function verificarPin() {
+      if (verificando) return;
+      const ingresado = pinInputs.map((x) => x.value).join('');
+      if (ingresado.length < 4) { mostrarToast('Ingresa los 4 dígitos'); return; }
+      verificando = true;
+      $('pin-verificar').disabled = true;
+      $('pin-conductor-msg').textContent = 'Verificando…';
+      try {
+        const { data } = await db.from('viajes').select('*').eq('id', viajeId).maybeSingle();
+        if (data) viajeActual = data;
+      } catch (e) {}
+      if (String(viajeActual.estado).toLowerCase() === 'cancelado') {
+        verificando = false; $('pin-verificar').disabled = false;
+        cerrarModal('modal-pin-conductor'); renderizarUI(); mostrarToast('El pasajero canceló el viaje'); return;
+      }
+      if (ingresado === pinDelViaje()) {
+        $('pin-conductor-msg').textContent = '¡PIN correcto! Iniciando viaje…';
+        const ok = await cambiarEstadoViaje('en_progreso');
+        if (ok) {
+          try { await db.from('viajes').update({ pin_verificado: true }).eq('id', viajeId); } catch (e) {}
+          sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
+          cerrarModal('modal-pin-conductor');
+        } else $('pin-conductor-msg').textContent = 'No se pudo iniciar. Intenta de nuevo.';
+      } else {
+        $('pin-inputs').classList.add('error');
+        $('pin-conductor-msg').textContent = 'PIN incorrecto. Pide al pasajero que lo repita.';
+        pinInputs.forEach((x) => (x.value = ''));
+        pinInputs[0].focus();
+      }
+      verificando = false;
+      $('pin-verificar').disabled = false;
+    }
+    $('pin-verificar').addEventListener('click', verificarPin);
+    $('pin-conductor-cancelar').addEventListener('click', abrirModalCancelacion);
+
+    /* ============================================================
+       [MOD 6] NAVEGACIÓN AL ORIGEN
+       ============================================================ */
+    function abrirModalNavegacion() {
+      const v = viajeActual || {};
+      const lat = v.origen_lat, lon = v.origen_lon != null ? v.origen_lon : v.origen_lng;
+      const hayCoords = lat != null && lon != null;
+      const nombre = v.origen_nombre || '';
+      $('nav-desc').textContent = 'Punto de recojo: ' + (nombre || 'origen del viaje');
+      $('nav-google').href = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + (hayCoords ? lat + ',' + lon : encodeURIComponent(nombre));
+      $('nav-waze').href = hayCoords
+        ? 'https://waze.com/ul?ll=' + lat + ',' + lon + '&navigate=yes'
+        : 'https://waze.com/ul?q=' + encodeURIComponent(nombre) + '&navigate=yes';
+      abrirModal('modal-nav');
+    }
+    ['nav-google', 'nav-waze'].forEach((id) => $(id).addEventListener('click', () => setTimeout(() => cerrarModal('modal-nav'), 300)));
+
+    /* ============================================================
+       [MOD 5] COMPARTIR UBICACIÓN POR WHATSAPP
+       ============================================================ */
+    function textoCompartir(pos) {
+      const v = viajeActual || {}, c = infoContraparte || {};
+      const l = ['🚖 *Estoy en un viaje BIKAR* (#' + viajeId + ')', ''];
+      l.push('📍 *Origen:* ' + (v.origen_nombre || '—'));
+      l.push('🏁 *Destino:* ' + (v.destino_nombre || '—'));
+      if (c.nombre) l.push('👤 *Conductor:* ' + c.nombre);
+      if (c.vehiculo) l.push('🚗 *Vehículo:* ' + c.vehiculo);
+      if (c.placa) l.push('🔢 *Placa:* ' + String(c.placa).toUpperCase());
+      if (c.telefono) l.push('📞 *Tel. conductor:* ' + c.telefono);
+      l.push('💰 *Tarifa:* ' + formatoMoneda(tarifaDelViaje(v)));
+      if (v.distancia_km) l.push('📏 *Distancia:* ' + v.distancia_km + ' km');
+      if (pos) l.push('', '🛰️ *Mi ubicación actual:* https://www.google.com/maps?q=' + pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6));
+      l.push('🗺️ *Ruta al destino:* ' + linkMaps.href);
+      l.push('', '🕒 ' + new Date().toLocaleString('es-PE'));
+      return l.join('\n');
+    }
+    $('btn-compartir-ubicacion').addEventListener('click', () => {
+      const w = window.open('', '_blank');
+      const enviar = (pos) => {
+        const url = 'https://wa.me/?text=' + encodeURIComponent(textoCompartir(pos));
+        if (w) w.location.href = url; else location.href = url;
+        cerrarModal('modal-compartir');
+      };
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(enviar, () => enviar(null), { enableHighAccuracy:true, timeout:6000, maximumAge:30000 });
+      } else enviar(null);
+    });
+
+    /* ============================================================
+       [MOD 8] CALIFICACIÓN
+       ============================================================ */
+    let estrellasSel = 0;
+    const ETIQ = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', '¡Excelente!'];
+    $('estrellas').innerHTML = [1, 2, 3, 4, 5].map((n) => '<button type="button" data-n="' + n + '" aria-label="' + n + ' estrellas">' + SVG.estrella + '</button>').join('');
+    $('estrellas').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      estrellasSel = Number(b.dataset.n);
+      $('estrellas').querySelectorAll('button').forEach((x) => x.classList.toggle('on', Number(x.dataset.n) <= estrellasSel));
+      $('calif-label').textContent = ETIQ[estrellasSel];
+      $('calif-enviar').disabled = false;
+    });
+    function abrirCalificacion() {
+      if ($('modal-calificar').classList.contains('open')) return;
+      $('calif-titulo').textContent = rolUsuario === 'conductor' ? 'Califica al pasajero' : 'Califica a tu conductor';
+      $('calif-desc').textContent = rolUsuario === 'conductor' ? '¿Cómo fue el viaje con este pasajero?' : '¿Cómo fue tu experiencia en este viaje?';
+      setTimeout(() => abrirModal('modal-calificar'), 500);
+    }
+    $('calif-enviar').addEventListener('click', async () => {
+      if (!estrellasSel) return;
+      const b = $('calif-enviar'); b.disabled = true;
+      const v = viajeActual || {};
+      const fila = {
+        viaje_id: viajeId,
+        rol_calificador: rolUsuario,
+        calificador_id: usuarioSesion ? (rolUsuario === 'conductor' ? (usuarioSesion.conductor_id || usuarioSesion.id) : usuarioSesion.id) : null,
+        calificado_id: rolUsuario === 'conductor' ? v.pasajero_id : v.conductor_id,
+        estrellas: estrellasSel,
+        resena: $('calif-resena').value.trim() || null
+      };
+      let ok = false;
+      try { const { error } = await db.from('calificaciones').insert(fila); ok = !error; if (error) console.warn(error); } catch (e) { console.warn(e); }
+      if (!ok) {
+        const campo = rolUsuario === 'conductor' ? { calificacion_pasajero: estrellasSel, resena_conductor: fila.resena } : { calificacion_conductor: estrellasSel, resena_pasajero: fila.resena };
+        try { const { error } = await db.from('viajes').update(campo).eq('id', viajeId); ok = !error; } catch (e) {}
+      }
+      localStorage.setItem('bikar_calif_' + viajeId + '_' + rolUsuario, String(estrellasSel));
+      cerrarModal('modal-calificar');
+      mostrarToast(ok ? '¡Gracias por tu calificación!' : 'Calificación guardada localmente');
+    });
+
+    /* ============================================================
+       [MOD 7] CHAT INTERNO Y LLAMADA EN LA APP (tiempo real)
+       ============================================================ */
+    let canalChat = null, noLeidos = 0;
+    const msgsVistos = new Set();
+    function prepararCanalChat() {
+      if (canalChat || !db || !viajeId) return;
+      canalChat = db.channel('chat-viaje-' + viajeId, { config: { broadcast: { self: false } } })
+        .on('broadcast', { event: 'msg' }, (p) => recibirMensaje(p.payload))
+        .on('broadcast', { event: 'call' }, (p) => manejarSenal(p.payload))
+        .subscribe();
+      cargarHistorialChat();
+    }
+    async function cargarHistorialChat() {
+      try {
+        const { data, error } = await db.from('mensajes_viaje').select('*').eq('viaje_id', viajeId).order('created_at', { ascending: true });
+        if (!error && data) data.forEach((m) => pintarMensaje({ uid: m.uid || ('db' + m.id), de: m.remitente_rol, texto: m.mensaje, ts: m.created_at }, true));
+      } catch (e) {}
+    }
+    function pintarMensaje(m, silencioso) {
+      if (msgsVistos.has(m.uid)) return;
+      msgsVistos.add(m.uid);
+      const box = $('chat-box');
+      const div = document.createElement('div');
+      div.className = 'msg ' + (m.de === rolUsuario ? 'mio' : 'otro');
+      const h = new Date(m.ts || Date.now());
+      div.innerHTML = esc(m.texto) + '<small>' + h.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) + '</small>';
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      if (!silencioso && m.de !== rolUsuario && !$('modal-chat').classList.contains('open')) {
+        noLeidos++; $('badge-chat').textContent = noLeidos; $('badge-chat').style.display = 'grid';
+        mostrarToast('💬 Nuevo mensaje: ' + String(m.texto).slice(0, 40));
+      }
+    }
+    function recibirMensaje(m) { pintarMensaje(m, false); }
+    $('btn-chat-app').addEventListener('click', () => {
+      prepararCanalChat();
+      noLeidos = 0; $('badge-chat').style.display = 'none';
+      $('chat-titulo').textContent = 'Chat con ' + ((infoContraparte && infoContraparte.nombre) || (rolUsuario === 'conductor' ? 'el pasajero' : 'el conductor'));
+      abrirModal('modal-chat');
+      setTimeout(() => { $('chat-input').focus(); $('chat-box').scrollTop = $('chat-box').scrollHeight; }, 250);
+    });
+    $('chat-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const texto = $('chat-input').value.trim();
+      if (!texto || !canalChat) return;
+      const m = { uid: Date.now() + '-' + Math.random().toString(36).slice(2, 8), de: rolUsuario, texto, ts: new Date().toISOString() };
+      $('chat-input').value = '';
+      pintarMensaje(m, true);
+      canalChat.send({ type: 'broadcast', event: 'msg', payload: m });
+      try { await db.from('mensajes_viaje').insert({ viaje_id: viajeId, remitente_rol: rolUsuario, mensaje: texto, uid: m.uid }); } catch (err) {}
+    });
+
+    /* Llamada de voz WebRTC (señalización por Supabase Realtime) */
+    const llamada = { pc: null, stream: null, ofertaPendiente: null, timer: null, inicio: 0, iceCola: [] };
+    const RTC_CFG = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+    function enviarSenal(payload) { if (canalChat) canalChat.send({ type: 'broadcast', event: 'call', payload: Object.assign({ de: rolUsuario }, payload) }); }
+    async function crearPC() {
+      llamada.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const pc = new RTCPeerConnection(RTC_CFG);
+      llamada.stream.getTracks().forEach((t) => pc.addTrack(t, llamada.stream));
+      pc.onicecandidate = (e) => { if (e.candidate) enviarSenal({ tipo: 'ice', candidate: e.candidate }); };
+      pc.ontrack = (e) => { $('audio-remoto').srcObject = e.streams[0]; };
+      pc.onconnectionstatechange = () => {
+        if (pc.connectionState === 'connected') iniciarCronometro();
+        if (['failed', 'disconnected', 'closed'].indexOf(pc.connectionState) >= 0 && llamada.pc === pc) terminarLlamada(true);
+      };
+      llamada.pc = pc;
+      return pc;
+    }
+    function iniciarCronometro() {
+      $('llamada-estado').textContent = 'En llamada';
+      llamada.inicio = Date.now();
+      clearInterval(llamada.timer);
+      llamada.timer = setInterval(() => {
+        const s = Math.floor((Date.now() - llamada.inicio) / 1000);
+        $('llamada-tiempo').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+      }, 1000);
+    }
+    $('btn-llamada-app').addEventListener('click', async () => {
+      prepararCanalChat();
+      if (llamada.pc) return;
+      $('llamada-estado').textContent = 'Llamando a ' + ((infoContraparte && infoContraparte.nombre) || 'tu contraparte') + '…';
+      $('llamada-tiempo').textContent = 'Llamada segura a través de BIKAR';
+      $('llamada-aceptar').style.display = 'none';
+      abrirModal('modal-llamada');
+      try {
+        const pc = await crearPC();
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        enviarSenal({ tipo: 'offer', sdp: offer });
+      } catch (e) {
+        console.warn(e);
+        mostrarToast('No se pudo acceder al micrófono');
+        terminarLlamada(false);
+      }
+    });
+    async function manejarSenal(p) {
+      if (!p || p.de === rolUsuario) return;
+      try {
+        if (p.tipo === 'offer') {
+          if (llamada.pc) { enviarSenal({ tipo: 'busy' }); return; }
+          llamada.ofertaPendiente = p.sdp;
+          $('llamada-estado').textContent = 'Llamada entrante de ' + (p.de === 'conductor' ? 'tu conductor' : 'tu pasajero');
+          $('llamada-tiempo').textContent = 'Llamada segura a través de BIKAR';
+          $('llamada-aceptar').style.display = 'flex';
+          abrirModal('modal-llamada');
+        } else if (p.tipo === 'answer' && llamada.pc) {
+          await llamada.pc.setRemoteDescription(p.sdp);
+          llamada.iceCola.forEach((c) => llamada.pc.addIceCandidate(c).catch(() => {}));
+          llamada.iceCola = [];
+        } else if (p.tipo === 'ice') {
+          if (llamada.pc && llamada.pc.remoteDescription) await llamada.pc.addIceCandidate(p.candidate);
+          else llamada.iceCola.push(p.candidate);
+        } else if (p.tipo === 'end' || p.tipo === 'reject' || p.tipo === 'busy') {
+          mostrarToast(p.tipo === 'busy' ? 'La línea está ocupada' : p.tipo === 'reject' ? 'Llamada rechazada' : 'Llamada finalizada');
+          terminarLlamada(false);
+        }
+      } catch (e) { console.warn('Señal:', e); }
+    }
+    $('llamada-aceptar').addEventListener('click', async () => {
+      $('llamada-aceptar').style.display = 'none';
+      $('llamada-estado').textContent = 'Conectando…';
+      try {
+        const pc = await crearPC();
+        await pc.setRemoteDescription(llamada.ofertaPendiente);
+        llamada.iceCola.forEach((c) => pc.addIceCandidate(c).catch(() => {}));
+        llamada.iceCola = [];
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        enviarSenal({ tipo: 'answer', sdp: answer });
+      } catch (e) {
+        console.warn(e);
+        mostrarToast('No se pudo conectar la llamada');
+        enviarSenal({ tipo: 'reject' });
+        terminarLlamada(false);
+      }
+    });
+    $('llamada-colgar').addEventListener('click', () => {
+      enviarSenal({ tipo: llamada.pc ? 'end' : 'reject' });
+      terminarLlamada(false);
+    });
+    function terminarLlamada(avisar) {
+      if (avisar && llamada.pc) enviarSenal({ tipo: 'end' });
+      clearInterval(llamada.timer);
+      if (llamada.pc) { try { llamada.pc.close(); } catch (e) {} }
+      if (llamada.stream) llamada.stream.getTracks().forEach((t) => t.stop());
+      llamada.pc = null; llamada.stream = null; llamada.ofertaPendiente = null; llamada.iceCola = [];
+      $('audio-remoto').srcObject = null;
+      cerrarModal('modal-llamada');
     }
 
     /* ============================================================
@@ -671,6 +1370,7 @@
     function renderCargando() {
       personaNombre.innerHTML = '<span class="skeleton" style="width:150px;height:14px"></span>';
       personaSub.innerHTML = '<span class="skeleton" style="width:190px;height:11px;display:block;margin-top:6px"></span>';
+      $('radar').classList.add('on');
     }
 
     $('btn-refrescar').addEventListener('click', () => { obtenerDatosViaje(); mostrarToast('Actualizando…'); });
@@ -680,7 +1380,9 @@
     });
     window.addEventListener('beforeunload', () => {
       detenerRefresco();
+      if (llamada.pc) terminarLlamada(true);
       if (canalRealtime && db && db.removeChannel) db.removeChannel(canalRealtime);
+      if (canalChat && db && db.removeChannel) db.removeChannel(canalChat);
     });
     document.addEventListener('DOMContentLoaded', inicializar);
   })();
