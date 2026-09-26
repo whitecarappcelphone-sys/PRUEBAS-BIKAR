@@ -976,17 +976,22 @@
       setTimeout(() => { window.location.href = APP_URL; }, 400);
     }
 
-        /* Si NO hay sesión activa, redirige a index.html. Si la hay, carga los datos. */
+         /* CONTROL DE ACCESO BIKAR */
     (function verificarSesionGuardada() {
       const sesionGuardada = localStorage.getItem(LLAVE_SESION);
+      
+      // Si NO hay sesión iniciada, te expulsa de inmediato a index.html
       if (!sesionGuardada) {
-        window.location.href = "index.html"; // Te expulsa al login real
+        window.location.href = "index.html"; 
         return;
       }
+      
+      // Si SÍ hay sesión, se cargan los datos del usuario y nos quedamos en app.html (SIN REDIRIGIR)
       try {
         usuarioActual = JSON.parse(sesionGuardada);
+        console.log("Sesión iniciada con éxito en BIKAR:", usuarioActual);
       } catch (e) { 
-        console.error("Error al cargar sesión:", e); 
+        console.error("Error al verificar la sesión:", e); 
         window.location.href = "index.html";
       }
     })();
