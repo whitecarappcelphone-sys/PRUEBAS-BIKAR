@@ -1352,20 +1352,16 @@
       if (await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión')) cerrarSesion();
     });
 
-    function cerrarSesion() {
-      try { localStorage.removeItem(K_SESION); } catch (e) {}
-      usuarioActual = null; documentacionVehiculo = null; claveServicioConductor = null;
-      cerrarPanelServicios(); cerrarMenuPerfil();
-      modalPerfil.classList.add('oculto'); modalHistorial.classList.add('oculto');
-      contSolicitudes.innerHTML = '';
-      uiPasajero.classList.add('oculto'); uiConductor.classList.add('oculto');
-      perfilSuperior.classList.add('oculto');
-      btnCambiarModo.textContent = 'BIKAR';
-      $('acceso-usuario').value = ''; $('acceso-clave').value = '';
-      $('acceso-error').classList.remove('visible');
-      pantallaAcceso.classList.remove('oculto');
-      mostrarToast('Sesión cerrada');
-      setTimeout(() => { try { $('acceso-usuario').focus(); } catch (e) {} }, 200);
+        function cerrarSesion() {
+      try { 
+        localStorage.removeItem(K_SESION); 
+      } catch (e) {}
+      usuarioActual = null; 
+      documentacionVehiculo = null; 
+      claveServicioConductor = null;
+      
+      // Redirigir directamente a la pantalla de login principal
+      window.location.href = index.html;
     }
 
     /* ============================ CONFIRMACIÓN ============================ */
@@ -1652,12 +1648,8 @@
     $('btn-descargar-historial').addEventListener('click', descargarHistorial);
 
     /* ============================ ACCESO ============================ */
-    function mostrarPantallaAcceso() {
-      pantallaAcceso.classList.remove('oculto');
-      perfilSuperior.classList.add('oculto');
-      uiPasajero.classList.add('oculto');
-      uiConductor.classList.add('oculto');
-      btnCambiarModo.textContent = 'BIKAR';
+        function mostrarPantallaAcceso() {
+      window.location.href = index.html;
     }
     const errorAcceso = (msg) => { const e = $('acceso-error'); e.textContent = msg; e.classList.add('visible'); };
 
