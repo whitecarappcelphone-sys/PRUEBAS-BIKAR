@@ -497,48 +497,6 @@
 </head>
 <body class="dark-mode">
 
-  <!-- ================= PANTALLA DE ACCESO ================= -->
-  <div id="pantalla-acceso" class="oculto">
-    <div class="acceso-dialog">
-      <div class="acceso-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h2c.6 0 1-.4 1-1v-3c0-.9.7-1.7 1.5-1.9L10 10s1.3-1.4 2.2-2.3c.5-.4 1.1-.7 1.8-.7H19c.6 0 1.1.4 1.4.9l1.4 2.9c.1.4.2.8.2 1.2v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="17.5" r="2"/><path d="M9 17.5h6"/><circle cx="17" cy="17.5" r="2"/></svg>
-      </div>
-      <span class="acceso-marca">BIKAR · Acceso</span>
-      <h2 class="acceso-titulo">Bienvenido de nuevo</h2>
-      <p class="acceso-sub">Ingresa con los datos con los que te registraste para ver tu perfil, tus servicios y tus pagos.</p>
-
-      <form id="form-acceso" class="acceso-form" autocomplete="off" novalidate>
-        <div class="acceso-campo">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>
-          <input type="text" id="acceso-usuario" placeholder="Correo, usuario o teléfono" autocomplete="username">
-        </div>
-        <div class="acceso-campo">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
-          <input type="password" id="acceso-clave" placeholder="Contraseña" autocomplete="current-password">
-          <button type="button" class="acceso-ver" id="btn-ver-clave" aria-label="Mostrar contraseña">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <button type="submit" class="btn-main acceso-btn" id="btn-acceso">Ingresar</button>
-      </form>
-      <div class="acceso-error" id="acceso-error"></div>
-
-      <div class="acceso-separador"><span>acceso rápido</span></div>
-      <div class="acceso-demos">
-        <button type="button" class="acceso-demo" id="demo-pasajero">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
-          Pasajero
-        </button>
-        <button type="button" class="acceso-demo" id="demo-conductor">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h2c.6 0 1-.4 1-1v-3c0-.9.7-1.7 1.5-1.9L10 10s1.3-1.4 2.2-2.3c.5-.4 1.1-.7 1.8-.7H19c.6 0 1.1.4 1.4.9l1.4 2.9c.1.4.2.8.2 1.2v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="17.5" r="2"/><path d="M9 17.5h6"/><circle cx="17" cy="17.5" r="2"/></svg>
-          Conductor
-        </button>
-      </div>
-
-      <p class="acceso-pie">¿Aún no tienes cuenta? <button type="button" class="acceso-link" id="btn-ir-registro">Registrarme</button></p>
-    </div>
-  </div>
-
   <!-- ================= APP ================= -->
   <div id="perfil-superior" class="perfil-superior oculto" title="Toca para ver tu menú">
     <img id="foto-perfil-header" src="" alt="Foto de Perfil">
