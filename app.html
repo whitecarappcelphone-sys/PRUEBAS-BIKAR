@@ -1304,9 +1304,9 @@
     $('menu-item-perfil').addEventListener('click', () => { cerrarMenuPerfil(); abrirModalPerfil(); });
     $('menu-item-historial').addEventListener('click', () => { cerrarMenuPerfil(); abrirModalHistorial(); });
     $('menu-item-modo').addEventListener('click', () => { cerrarMenuPerfil(); alternarModo(); });
-    $('menu-item-salir').addEventListener('click', () => {
+    $('menu-item-salir').addEventListener('click', async () => {
       cerrarMenuPerfil();
-      cerrarSesion();
+      if (await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión')) cerrarSesion();
     });
 
         function cerrarSesion() {
