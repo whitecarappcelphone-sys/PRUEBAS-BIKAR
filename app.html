@@ -819,7 +819,7 @@
     const resumenDistancia = $('resumen-distancia'), resumenDuracion = $('resumen-duracion');
     const toast = $('toast'), toastText = $('toast-text'), iconMoon = $('icon-moon'), iconSun = $('icon-sun');
     const menuPerfil = $('menu-perfil'), modalPerfil = $('modal-perfil'), modalHistorial = $('modal-historial');
-    const modalRegistro = $('modal-registro'), modalConfirmar = $('modal-confirmar'), pantallaAcceso = $('pantalla-acceso');
+    const modalRegistro = $('modal-registro'), modalConfirmar = $('modal-confirmar');
     const historialContenido = $('historial-contenido'), filtroPeriodo = $('filtro-periodo');
     const tabServicios = $('tab-servicios'), tabPagos = $('tab-pagos');
     const selServicioConductor = $('selector-servicio-conductor'), sscPills = $('ssc-pills');
@@ -1620,14 +1620,13 @@
       return { fila: fila || null, error:null };
     }
 
-    async function iniciarSesion(usuario, mensaje) {
-      usuarioActual = usuario;
-      guardarSesion();
-      pantallaAcceso.classList.add('oculto');
-      await enriquecerUsuario();
-      await aplicarSesionUsuario(usuarioActual);
-      if (mensaje) mostrarToast(mensaje);
-    }
+async function iniciarSesion(usuario, mensaje) {
+  usuarioActual = usuario;
+  guardarSesion();
+  await enriquecerUsuario();
+  await aplicarSesionUsuario(usuarioActual);
+  if (mensaje) mostrarToast(mensaje);
+}
     
     $('cerrar-modal-registro').addEventListener('click', () => modalRegistro.classList.add('oculto'));
     modalRegistro.addEventListener('click', (e) => { if (e.target === modalRegistro) modalRegistro.classList.add('oculto'); });
