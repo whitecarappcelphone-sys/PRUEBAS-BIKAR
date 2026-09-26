@@ -1628,46 +1628,7 @@
       await aplicarSesionUsuario(usuarioActual);
       if (mensaje) mostrarToast(mensaje);
     }
-
-    $('form-acceso').addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const ident = $('acceso-usuario').value.trim(), clave = $('acceso-clave').value;
-      $('acceso-error').classList.remove('visible');
-      if (!ident) { errorAcceso('Escribe tu correo, usuario o teléfono.'); return; }
-
-      const btn = $('btn-acceso');
-      btn.disabled = true; btn.textContent = 'Verificando…';
-      let r = { fila:null, error:null };
-      try { r = await buscarUsuarioEnBD(ident); } catch (e) { r = { fila:null, error:e }; }
-      btn.disabled = false; btn.textContent = 'Ingresar';
-
-      if (r.error) { errorAcceso('No se pudo validar el acceso en este momento. Intenta con el acceso rápido.'); return; }
-      if (!r.fila) { errorAcceso('No encontramos una cuenta con esos datos. Puedes registrarte o usar el acceso rápido.'); return; }
-      const guardada = r.fila.password || r.fila.contrasena || r.fila.clave || r.fila.pass;
-      if (guardada && String(guardada) !== clave) { errorAcceso('La contraseña no coincide. Inténtalo de nuevo.'); return; }
-
-      await iniciarSesion(limpiarNulos(r.fila), '¡Bienvenido, ' + nombreUsuario(r.fila).split(' ')[0] + '!');
-    });
-
-    $('btn-ver-clave').addEventListener('click', () => {
-      const i = $('acceso-clave');
-      i.type = i.type === 'password' ? 'text' : 'password';
-      i.focus();
-    });
-    $('demo-pasajero').addEventListener('click', () => iniciarSesion({
-      id: PASAJERO_ID_PRUEBA, nombre:'Pasajero', apellido:'BIKAR', usuario:'pasajero',
-      correo:'pasajero@bikar.com', tipo_usuario:'pasajero', foto:FOTO_REPO_GITHUB
-    }, 'Modo pasajero activo'));
-    $('demo-conductor').addEventListener('click', () => iniciarSesion({
-      id: CONDUCTOR_ID_PRUEBA, conductor_id: CONDUCTOR_ID_PRUEBA, nombre:'Conductor', apellido:'BIKAR',
-      usuario:'conductor', correo:'conductor@bikar.com', tipo_usuario:'conductor',
-      tipo_servicio:'Taxi Auto', placa:'ABC-123', marca:'Toyota', modelo:'Corolla',
-      color:'Blanco', licencia:'LIC-2026', foto:FOTO_REPO_GITHUB
-    }, 'Modo conductor activo'));
-    $('btn-ir-registro').addEventListener('click', () => {
-      $('acceso-error').classList.remove('visible');
-      modalRegistro.classList.remove('oculto');
-    });
+    
     $('cerrar-modal-registro').addEventListener('click', () => modalRegistro.classList.add('oculto'));
     modalRegistro.addEventListener('click', (e) => { if (e.target === modalRegistro) modalRegistro.classList.add('oculto'); });
 
