@@ -634,38 +634,54 @@
       }
       return '';
     }
-    async function buscarDocumentoConductor(id, u) {
-      const llave = 'doc:' + id + ':' + (u && u.id != null ? u.id : '');
+    /* En el registro (index.html) el conductor se guarda así:
+         usuarios(id) -> conductores(id, usuario_id) -> vehiculos(conductor_id, modelo, placa) y documentos_conductor(usuario_id, conductor_id, placa...)
+       Por eso viajes.conductor_id es el id de "conductores" y hay que pasar por esa tabla para llegar al usuario. */
+    async function resolverConductor(id) {
+      const llave = 'cond:' + id;
+      if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
+      let cond = null, u = null;
+      if (db) {
+        try {
+          const r = await db.from('conductores').select('*').eq('id', id).maybeSingle();
+          if (r.error) console.warn('[BIKAR] conductores.id:', r.error.message || r.error);
+          cond = r.data || null;
+        } catch (e) { console.warn('[BIKAR] conductores:', e); }
+        if (cond && cond.usuario_id != null) u = await buscarUsuario(cond.usuario_id);
+        if (!u) u = await buscarUsuario(id);                       /* por si viajes.conductor_id guarda el id de usuarios */
+        if (u && !cond) {
+          try {
+            const r = await db.from('conductores').select('*').eq('usuario_id', u.id).limit(1).maybeSingle();
+            cond = r.data || null;
+          } catch (e) {}
+        }
+      }
+      const res = { u: u, condId: cond && cond.id != null ? cond.id : id, usuarioId: u && u.id != null ? u.id : (cond ? cond.usuario_id : null) };
+      cachePerfiles.set(llave, res);
+      return res;
+    }
+
+    /* Datos del vehículo y placa del conductor: vehiculos + documentos_conductor */
+    async function buscarDocumentoConductor(ref) {
+      const llave = 'doc:' + ref.condId + ':' + ref.usuarioId;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
       let fila = null;
       if (db) {
-        /* Ids posibles: el del viaje y el de la fila de usuarios */
-        const ids = [];
-        [id, u && u.id, u && u.usuario_id, u && u.conductor_id].forEach((x) => { if (x != null && ids.indexOf(x) < 0) ids.push(x); });
-        /* Tablas y columnas posibles donde se guardan los datos del vehículo */
-        const fuentes = [
-          ['documentos_conductor', ['usuario_id', 'conductor_id', 'user_id', 'id']],
-          ['conductores', ['usuario_id', 'id', 'conductor_id']],
-          ['vehiculos', ['conductor_id', 'usuario_id']]
-        ];
-        buscar:
-        for (let t = 0; t < fuentes.length; t++) {
-          for (let c = 0; c < fuentes[t][1].length; c++) {
-            for (let k = 0; k < ids.length; k++) {
-              try {
-                const r = await db.from(fuentes[t][0]).select('*').eq(fuentes[t][1][c], ids[k]).limit(1).maybeSingle();
-                if (r.error) { console.warn('[BIKAR] ' + fuentes[t][0] + '.' + fuentes[t][1][c] + ':', r.error.message || r.error); continue; }
-                if (r.data) {
-                  /* Se combinan las filas encontradas; se corta cuando ya hay placa */
-                  fila = Object.assign({}, r.data, fila || {});
-                  console.log('[BIKAR] Datos del conductor en ' + fuentes[t][0] + ':', r.data);
-                  if (placaDeFila(fila)) break buscar;
-                }
-              } catch (e) { console.warn('[BIKAR] ' + fuentes[t][0] + ':', e); }
+        const intentos = [];
+        if (ref.condId != null) { intentos.push(['vehiculos', 'conductor_id', ref.condId]); intentos.push(['documentos_conductor', 'conductor_id', ref.condId]); }
+        if (ref.usuarioId != null) { intentos.push(['documentos_conductor', 'usuario_id', ref.usuarioId]); }
+        for (let i = 0; i < intentos.length; i++) {
+          const t = intentos[i];
+          try {
+            const r = await db.from(t[0]).select('*').eq(t[1], t[2]).limit(1).maybeSingle();
+            if (r.error) { console.warn('[BIKAR] ' + t[0] + '.' + t[1] + ':', r.error.message || r.error); continue; }
+            if (r.data) {
+              fila = Object.assign({}, r.data, fila || {});
+              if (placaDeFila(fila) && fila.tipo_servicio) break;
             }
-          }
+          } catch (e) { console.warn('[BIKAR] ' + t[0] + ':', e); }
         }
-        if (!placaDeFila(fila)) console.warn('[BIKAR] No se encontró la placa del conductor. Ids probados:', ids);
+        if (!placaDeFila(fila)) console.warn('[BIKAR] No se encontró la placa del conductor. Referencias:', ref);
       }
       cachePerfiles.set(llave, fila);
       return fila;
@@ -694,16 +710,6 @@
             if (nums.length) { res.total = nums.length; res.promedio = nums.reduce((a, b) => a + b, 0) / nums.length; }
           }
         } catch (e) { console.warn('stats calificaciones:', e); }
-        /* Respaldo: calificaciones guardadas en la tabla viajes */
-        if (!res.total) {
-          try {
-            const r = await db.from('viajes').select(campoCalif).eq(campoViaje, id).not(campoCalif, 'is', null);
-            if (!r.error && r.data && r.data.length) {
-              const nums = r.data.map((x) => Number(x[campoCalif])).filter((n) => isFinite(n) && n > 0);
-              if (nums.length) { res.total = nums.length; res.promedio = nums.reduce((a, b) => a + b, 0) / nums.length; }
-            }
-          } catch (e) { console.warn('stats respaldo:', e); }
-        }
       }
       cachePerfiles.set(llave, { t: Date.now(), v: res });
       return res;
@@ -787,8 +793,9 @@
     }
 
     async function cargarPerfilConductor(id) {
-      const u = await buscarUsuario(id);
-      const [doc, est] = await Promise.all([buscarDocumentoConductor(id, u), obtenerEstadisticas(id, 'conductor')]);
+      const ref = await resolverConductor(id);
+      const u = ref.u;
+      const [doc, est] = await Promise.all([buscarDocumentoConductor(ref), obtenerEstadisticas(id, 'conductor')]);
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
         || (u && (u.usuario || u.correo)) || 'Conductor BIKAR';
       const placa = placaDeFila(doc) || placaDeFila(u) || '';
