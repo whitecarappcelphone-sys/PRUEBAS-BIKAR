@@ -77,7 +77,9 @@
     .vehicle-tag,.mini-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--field-bg);color:var(--primary-color);border-radius:9px;font-weight:700;font-size:.74rem}
     .vehicle-tag svg,.mini-tag svg{width:13px;height:13px;flex-shrink:0}
     .mini-tag{color:var(--text-color)}
-    .mini-tag .estrella-ico{display:inline-flex;color:var(--accent-amber)}
+    .mini-tag.placa-tag{border:1px dashed var(--primary-color);color:var(--primary-color)}
+    .mini-tag.rating-tag{color:var(--accent-amber)}
+    .mini-tag.viajes-tag{color:var(--brand)}
     .placa{letter-spacing:1px;text-transform:uppercase}
     .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
     .btn-contacto{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:12px;cursor:pointer;
@@ -177,19 +179,22 @@
     .pin-inputs.error input{border-color:var(--accent-red);animation:shake .4s}
     @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-    /* [CAMBIO 1] Tarjetas PIN pequeñas debajo de la tarjeta de datos (no bloquean la app) */
-    .pin-card{display:none;padding:14px 16px}
-    .pin-card.open{display:block;animation:fadeIn .25s ease}
-    .pin-card .pin-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .pin-card .pin-titulo{font-size:.78rem;text-transform:uppercase;color:var(--muted-text);font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
-    .pin-card .pin-titulo svg{width:14px;height:14px;color:var(--primary-color)}
-    .pin-card .pin-hint{font-size:.74rem;color:var(--muted-text);line-height:1.4;margin-top:4px}
-    .pin-card .pin-digitos{margin:0;gap:6px;justify-content:flex-end;flex-shrink:0}
-    .pin-card .pin-digitos span{width:36px;height:44px;font-size:1.3rem;border-radius:10px}
-    .pin-card .pin-inputs{margin:10px 0 6px;gap:8px}
-    .pin-card .pin-inputs input{width:46px;height:50px;font-size:1.4rem;border-radius:12px}
-    .pin-card .btn-compacto{padding:10px 12px;font-size:.82rem;border-radius:11px;margin-top:10px}
-    .pin-card .btn-compacto svg{width:15px;height:15px}
+    /* [CAMBIO 1] TARJETA PIN COMPACTA (no bloqueante) */
+    #card-pin{padding:14px 16px}
+    #card-pin .card-title{margin-bottom:10px;display:flex;align-items:center;gap:7px}
+    #card-pin .card-title svg{width:14px;height:14px;color:var(--primary-color)}
+    .pin-mini{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .pin-mini-txt{flex:1;min-width:150px}
+    .pin-mini-label{font-size:.82rem;font-weight:800;line-height:1.3}
+    .pin-mini-desc{font-size:.73rem;color:var(--muted-text);margin-top:3px;line-height:1.35}
+    #card-pin .pin-digitos{margin:0;gap:7px}
+    #card-pin .pin-digitos span{width:42px;height:50px;font-size:1.4rem;border-radius:11px}
+    #card-pin .pin-inputs{margin:12px 0 4px;gap:8px}
+    #card-pin .pin-inputs input{width:50px;height:56px;font-size:1.5rem;border-radius:12px}
+    #card-pin .btn-action{padding:12px;font-size:.88rem;margin-top:8px}
+    .pin-msg{font-size:.75rem;font-weight:700;color:var(--muted-text);text-align:center;min-height:15px;line-height:1.35}
+    .pin-msg.ok{color:var(--accent-green)}
+    .pin-msg.err{color:var(--accent-red)}
 
     .estrellas{display:flex;justify-content:center;gap:8px;margin:10px 0 14px}
     .estrellas button{background:none;border:none;cursor:pointer;color:var(--border-color);transition:transform .15s,color .15s}
@@ -200,7 +205,6 @@
     .nav-app{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1px solid var(--border-color);background:var(--field-bg);color:var(--text-color);text-decoration:none;font-weight:700}
     .nav-app:hover{border-color:var(--primary-color)}
     .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
-    button.nav-app{width:100%;cursor:pointer;font-size:.95rem;text-align:left}
     /* Chat */
     .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
     .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:.86rem;line-height:1.35;word-break:break-word}
@@ -212,7 +216,7 @@
     .chat-form button svg{width:18px;height:18px}
     .llamada-estado{text-align:center;font-weight:800;font-size:1rem;margin-bottom:4px}
     .llamada-tiempo{text-align:center;color:var(--muted-text);font-size:.85rem;margin-bottom:10px}
-    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}.pin-card{padding:12px 14px}.pin-card .pin-digitos span{width:32px}.pin-card .pin-inputs input{width:44px}}
+    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
 <body>
@@ -294,31 +298,34 @@
       </div>
     </section>
 
-    <!-- [CAMBIO 1] PIN PASAJERO (tarjeta pequeña debajo de los datos del conductor) -->
-    <section class="card pin-card" id="modal-pin-pasajero">
-      <div class="pin-row">
-        <div>
-          <div class="pin-titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Tu PIN de seguridad</div>
-          <p class="pin-hint">Díctaselo al conductor cuando llegue para iniciar el viaje.</p>
-          <p class="pin-hint" id="pin-pasajero-estado" style="font-weight:700">Tu conductor está en camino…</p>
+    <!-- [CAMBIO 1] PIN DE SEGURIDAD COMPACTO -->
+    <section class="card" id="card-pin" style="display:none">
+      <div class="card-title" id="pin-card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>PIN de seguridad</span>
+      </div>
+
+      <!-- Vista pasajero -->
+      <div class="pin-mini" id="pin-mini-pasajero" style="display:none">
+        <div class="pin-mini-txt">
+          <div class="pin-mini-label">Dicta este PIN a tu conductor</div>
+          <div class="pin-mini-desc" id="pin-pasajero-estado">Tu conductor está en camino…</div>
         </div>
         <div class="pin-digitos" id="pin-digitos"></div>
       </div>
-      <button class="btn-action btn-danger btn-compacto" id="pin-pasajero-cancelar"><span>Cancelar viaje</span></button>
-    </section>
 
-    <!-- [CAMBIO 1] PIN CONDUCTOR (tarjeta pequeña debajo de los datos del pasajero) -->
-    <section class="card pin-card" id="modal-pin-conductor">
-      <div class="pin-titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Verifica el PIN del pasajero</div>
-      <p class="pin-hint">Pide al pasajero su PIN de 4 dígitos para iniciar el viaje.</p>
-      <div class="pin-inputs" id="pin-inputs">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
+      <!-- Vista conductor -->
+      <div id="pin-mini-conductor" style="display:none">
+        <div class="pin-mini-desc">Pide al pasajero su PIN de 4 dígitos para iniciar el viaje. Puedes seguir usando el chat y ver la información mientras tanto.</div>
+        <div class="pin-inputs" id="pin-inputs">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+        </div>
+        <p class="pin-msg" id="pin-conductor-msg"></p>
+        <button class="btn-action" id="pin-verificar"><span>Verificar e iniciar viaje</span></button>
       </div>
-      <p class="pin-hint" id="pin-conductor-msg" style="text-align:center;font-weight:700"></p>
-      <button class="btn-action btn-compacto" id="pin-verificar"><span>Verificar e iniciar viaje</span></button>
     </section>
 
     <!-- RUTA -->
@@ -409,24 +416,25 @@
     <div class="modal-box" style="text-align:center">
       <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
       <div class="modal-title">Tu viaje está en curso</div>
-      <p class="modal-desc" style="margin-top:6px">Por tu seguridad, comparte los datos del trayecto y tu ubicación con un contacto de confianza. Podrás elegir la app: WhatsApp, correo, Messenger, etc.</p>
-      <div class="modal-acciones" id="compartir-principal">
+      <p class="modal-desc" style="margin-top:6px">Por tu seguridad, comparte los datos del trayecto y tu ubicación con un contacto de confianza.</p>
+      <div class="modal-acciones">
         <button class="btn-action" id="btn-compartir-ubicacion">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
           <span>Compartir ubicación</span>
         </button>
         <button class="btn-action btn-secundario" data-cerrar="modal-compartir"><span>Ahora no</span></button>
       </div>
-      <div id="compartir-opciones" style="display:none;text-align:left">
-        <p class="modal-desc" style="margin-top:14px;text-align:center">Elige por qué medio enviar el mensaje:</p>
-        <div class="opciones">
-          <a class="nav-app" id="sh-wa" href="#" target="_blank" rel="noopener"><span class="logo" style="background:#25d366">W</span><span>WhatsApp</span></a>
-          <a class="nav-app" id="sh-mail" href="#"><span class="logo" style="background:#ea4335">@</span><span>Correo electrónico</span></a>
-          <a class="nav-app" id="sh-tg" href="#" target="_blank" rel="noopener"><span class="logo" style="background:#229ed9">T</span><span>Telegram</span></a>
-          <a class="nav-app" id="sh-sms" href="#"><span class="logo" style="background:#34c759">S</span><span>Mensaje de texto (SMS)</span></a>
-          <button class="nav-app" id="sh-copy" type="button"><span class="logo" style="background:#64748b">⧉</span><span>Copiar mensaje</span></button>
-        </div>
-        <button class="btn-action btn-secundario" data-cerrar="modal-compartir"><span>Cerrar</span></button>
+    </div>
+  </div>
+
+  <!-- [CAMBIO 4] MODAL SELECTOR DE APPS PARA COMPARTIR (respaldo si no hay share nativo) -->
+  <div class="modal z3" id="modal-enviar">
+    <div class="modal-box">
+      <div class="modal-head"><div class="modal-title">Compartir por…</div><button class="modal-close" data-cerrar="modal-enviar">✕</button></div>
+      <p class="modal-desc">Elige la aplicación con la que quieres enviar los datos del viaje y tu ubicación actual.</p>
+      <div class="opciones" id="enviar-opciones"></div>
+      <div class="modal-acciones">
+        <button class="btn-action btn-secundario" id="enviar-copiar"><span>Copiar mensaje</span></button>
       </div>
     </div>
   </div>
@@ -510,6 +518,7 @@
     const btnLlamar = $('btn-llamar'), btnWhatsapp = $('btn-whatsapp'), linkMaps = $('link-maps');
     const secAcciones = $('sec-acciones'), btnSiguiente = $('btn-siguiente-estado');
     const btnInicio = $('btn-inicio'), avisoRol = $('aviso-rol');
+    const cardPin = $('card-pin');
 
     /* ============================================================
        ICONOS SVG
@@ -525,7 +534,9 @@
       usuario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>',
       estrella: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17.8 6.5 20l1-6.1L3 9.5l6.3-.9z"/></svg>',
       siguiente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>',
-      candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'
+      candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+      placa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h2M11 10h2M16 10h2M6 14h12"/></svg>',
+      viajes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 7h11l-2 3 2 3H4"/><circle cx="19" cy="19" r="2"/></svg>'
     };
     const ICONO_SERVICIO = {
       moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, taxi_carga: SVG.caja, default: SVG.ruta
@@ -554,6 +565,58 @@
       t.classList.add('visible');
       clearTimeout(mostrarToast._t);
       mostrarToast._t = setTimeout(() => t.classList.remove('visible'), 3000);
+    }
+
+    /* ============================================================
+       [FIX CONSOLA] Consultas tolerantes: detectan tablas/columnas
+       inexistentes y evitan lanzar errores 400/404 repetidos.
+       ============================================================ */
+    const DEBUG = urlParams.get('debug') === '1';
+    const logDebug = function () { if (DEBUG) console.info.apply(console, ['[BIKAR]'].concat(Array.prototype.slice.call(arguments))); };
+    const tablasFallidas = new Set();
+    const columnasTabla = new Map();
+
+    async function consultaSegura(tabla, armar) {
+      if (!db || tablasFallidas.has(tabla)) return null;
+      try {
+        const r = await armar(db.from(tabla));
+        if (r && r.error) {
+          const cod = String(r.error.code || '');
+          const msg = String(r.error.message || '');
+          if (cod === '42P01' || cod === 'PGRST205' || /does not exist|find the table|schema cache/i.test(msg)) {
+            tablasFallidas.add(tabla);
+            logDebug('tabla no disponible:', tabla, msg);
+          } else { logDebug('consulta con error:', tabla, msg); }
+          return null;
+        }
+        return r;
+      } catch (e) { logDebug('excepción en', tabla, e); return null; }
+    }
+
+    /* Devuelve las columnas reales de una tabla (null si no existe) */
+    async function columnasDe(tabla) {
+      if (columnasTabla.has(tabla)) return columnasTabla.get(tabla);
+      const r = await consultaSegura(tabla, (q) => q.select('*').limit(1));
+      const cols = r ? (r.data && r.data.length ? Object.keys(r.data[0]) : []) : null;
+      columnasTabla.set(tabla, cols);
+      logDebug('columnas de', tabla, cols);
+      return cols;
+    }
+
+    const colsViaje = () => (viajeActual ? Object.keys(viajeActual) : []);
+    const viajeTiene = (c) => colsViaje().indexOf(c) >= 0;
+
+    /* Primer valor de un objeto cuya clave coincida con el patrón */
+    function valorPorPatron(obj, patron) {
+      if (!obj) return null;
+      const claves = Object.keys(obj);
+      for (let i = 0; i < claves.length; i++) {
+        if (!patron.test(claves[i])) continue;
+        const v = obj[claves[i]];
+        if (v == null || v === '' || typeof v === 'object') continue;
+        return v;
+      }
+      return null;
     }
 
     /* ============================================================
@@ -603,115 +666,132 @@
       }
     }
 
-    /* Busca una fila de "usuarios" por id, correo o usuario (mismo criterio de la app) */
+    /* Busca una fila de "usuarios" por id o por correo.
+       En BIKAR la columna del correo se llama "email" (ver registro en index.html). */
     async function buscarUsuario(id, correo) {
       const llave = String(id != null ? 'id:' + id : 'c:' + correo);
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
       let fila = null;
       if (db) {
-        try {
-          if (id != null) {
-            const r = await db.from('usuarios').select('*').eq('id', id).maybeSingle();
-            fila = r.data || null;
+        if (id != null) {
+          const r = await consultaSegura('usuarios', (q) => q.select('*').eq('id', id).limit(1));
+          fila = (r && r.data && r.data[0]) || null;
+        }
+        if (!fila && correo) {
+          const cu = (await columnasDe('usuarios')) || [];
+          const colMail = cu.indexOf('email') >= 0 ? 'email' : (cu.indexOf('correo') >= 0 ? 'correo' : null);
+          if (colMail) {
+            const r = await consultaSegura('usuarios', (q) => q.select('*').eq(colMail, correo).limit(1));
+            fila = (r && r.data && r.data[0]) || null;
           }
-          if (!fila && correo) {
-            const r = await db.from('usuarios').select('*').eq('correo', correo).maybeSingle();
-            fila = r.data || null;
-          }
-        } catch (e) { console.warn('usuarios:', e); }
+        }
       }
       cachePerfiles.set(llave, fila);
       return fila;
     }
+    const correoDe = (u) => (u && (u.email || u.correo)) || null;
 
-    /* [CAMBIO 3] Documento del conductor (placa con la que se inscribió). Prueba varias columnas de enlace */
-    /* Devuelve el valor de la placa de una fila, sin importar cómo se llame la columna */
-    function placaDeFila(f) {
-      if (!f) return '';
-      const claves = Object.keys(f);
-      for (let i = 0; i < claves.length; i++) {
-        if (/placa|matricula|plate/i.test(claves[i]) && f[claves[i]] != null && String(f[claves[i]]).trim() !== '') return String(f[claves[i]]).trim();
-      }
-      return '';
+    /* [CAMBIO 3] En BIKAR: viajes.conductor_id → conductores.id ; conductores.usuario_id → usuarios.id
+       La placa vive en "vehiculos" (conductor_id, modelo, placa) y en
+       "documentos_conductor" (conductor_id / usuario_id, marca, modelo, anio, placa, tipo_servicio). */
+    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa';
+    async function filaPorLlave(tabla, llave, valor, columnas) {
+      if (valor == null) return null;
+      let r = await consultaSegura(tabla, (q) => q.select(columnas || '*').eq(llave, valor).limit(1));
+      if (!r && columnas) r = await consultaSegura(tabla, (q) => q.select('*').eq(llave, valor).limit(1));
+      return (r && r.data && r.data[0]) || null;
     }
-    /* En el registro (index.html) el conductor se guarda así:
-         usuarios(id) -> conductores(id, usuario_id) -> vehiculos(conductor_id, modelo, placa) y documentos_conductor(usuario_id, conductor_id, placa...)
-       Por eso viajes.conductor_id es el id de "conductores" y hay que pasar por esa tabla para llegar al usuario. */
-    async function resolverConductor(id) {
-      const llave = 'cond:' + id;
+
+    async function resolverConductor(conductorId) {
+      const llave = 'cond:' + conductorId;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
-      let cond = null, u = null;
-      if (db) {
-        try {
-          const r = await db.from('conductores').select('*').eq('id', id).maybeSingle();
-          if (r.error) console.warn('[BIKAR] conductores.id:', r.error.message || r.error);
-          cond = r.data || null;
-        } catch (e) { console.warn('[BIKAR] conductores:', e); }
-        if (cond && cond.usuario_id != null) u = await buscarUsuario(cond.usuario_id);
-        if (!u) u = await buscarUsuario(id);                       /* por si viajes.conductor_id guarda el id de usuarios */
-        if (u && !cond) {
-          try {
-            const r = await db.from('conductores').select('*').eq('usuario_id', u.id).limit(1).maybeSingle();
-            cond = r.data || null;
-          } catch (e) {}
-        }
+      const info = { conductorId: conductorId, usuarioId: null, conductor: null, vehiculo: null, doc: null, usuario: null };
+
+      /* 1) Fila de "conductores": primero por id y, si no, por usuario_id */
+      info.conductor = await filaPorLlave('conductores', 'id', conductorId);
+      if (!info.conductor) {
+        const porUsuario = await filaPorLlave('conductores', 'usuario_id', conductorId);
+        if (porUsuario) { info.conductor = porUsuario; if (porUsuario.id != null) info.conductorId = porUsuario.id; }
       }
-      const res = { u: u, condId: cond && cond.id != null ? cond.id : id, usuarioId: u && u.id != null ? u.id : (cond ? cond.usuario_id : null) };
-      cachePerfiles.set(llave, res);
-      return res;
+      info.usuarioId = (info.conductor && info.conductor.usuario_id != null) ? info.conductor.usuario_id : conductorId;
+
+      /* 2) Vehículo registrado (modelo + PLACA) */
+      info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.conductorId);
+      if (!info.vehiculo && info.usuarioId !== info.conductorId) info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.usuarioId);
+
+      /* 3) Documentación del vehículo (sin traer los archivos en base64) */
+      info.doc = await filaPorLlave('documentos_conductor', 'conductor_id', info.conductorId, COLS_DOC);
+      if (!info.doc) info.doc = await filaPorLlave('documentos_conductor', 'usuario_id', info.usuarioId, COLS_DOC);
+
+      /* 4) Cuenta del conductor */
+      info.usuario = await buscarUsuario(info.usuarioId);
+      if (!info.usuario && info.usuarioId !== conductorId) info.usuario = await buscarUsuario(conductorId);
+
+      logDebug('conductor resuelto', info);
+      cachePerfiles.set(llave, info);
+      return info;
     }
 
-    /* Datos del vehículo y placa del conductor: vehiculos + documentos_conductor */
-    async function buscarDocumentoConductor(ref) {
-      const llave = 'doc:' + ref.condId + ':' + ref.usuarioId;
+    /* ============================================================
+       [CAMBIO 3 y 5] ESTADÍSTICAS: viajes realizados + calificación promedio
+       - viajes: contados del historial de viajes (los mismos que lista app.html)
+       - promedio: de la tabla "calificaciones" que se llena en esta página (viaje.html)
+       ============================================================ */
+    function limpiarCacheStats() {
+      Array.from(cachePerfiles.keys()).forEach((k) => { if (String(k).indexOf('stats:') === 0) cachePerfiles.delete(k); });
+    }
+    async function estadisticasUsuario(id, rolPersona, usuarioId) {
+      const llave = 'stats:' + rolPersona + ':' + id;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
-      let fila = null;
-      if (db) {
-        const intentos = [];
-        if (ref.condId != null) { intentos.push(['vehiculos', 'conductor_id', ref.condId]); intentos.push(['documentos_conductor', 'conductor_id', ref.condId]); }
-        if (ref.usuarioId != null) { intentos.push(['documentos_conductor', 'usuario_id', ref.usuarioId]); }
-        for (let i = 0; i < intentos.length; i++) {
-          const t = intentos[i];
-          try {
-            const r = await db.from(t[0]).select('*').eq(t[1], t[2]).limit(1).maybeSingle();
-            if (r.error) { console.warn('[BIKAR] ' + t[0] + '.' + t[1] + ':', r.error.message || r.error); continue; }
-            if (r.data) {
-              fila = Object.assign({}, r.data, fila || {});
-              if (placaDeFila(fila) && fila.tipo_servicio) break;
-            }
-          } catch (e) { console.warn('[BIKAR] ' + t[0] + ':', e); }
-        }
-        if (!placaDeFila(fila)) console.warn('[BIKAR] No se encontró la placa del conductor. Referencias:', ref);
-      }
-      cachePerfiles.set(llave, fila);
-      return fila;
-    }
-
-    /* [CAMBIO 3 y 5] Estadísticas: viajes realizados (historial) y calificación promedio */
-    async function obtenerEstadisticas(id, rolPerfil) {
-      const llave = 'stats:' + rolPerfil + ':' + id;
-      const c = cachePerfiles.get(llave);
-      if (c && (Date.now() - c.t) < 30000) return c.v;
-      const res = { viajes: 0, promedio: null, total: 0 };
+      const res = { viajes: null, promedio: null, total: 0 };
       if (db && id != null) {
-        const campoViaje = rolPerfil === 'conductor' ? 'conductor_id' : 'pasajero_id';
-        const campoCalif = rolPerfil === 'conductor' ? 'calificacion_conductor' : 'calificacion_pasajero';
-        const rolCalificador = rolPerfil === 'conductor' ? 'pasajero' : 'conductor';
-        /* Viajes terminados en el historial */
-        try {
-          const r = await db.from('viajes').select('id', { count: 'exact', head: true }).eq(campoViaje, id).eq('estado', 'terminado');
-          if (!r.error && r.count != null) res.viajes = r.count;
-        } catch (e) { console.warn('stats viajes:', e); }
-        /* Calificaciones recibidas (tabla calificaciones) */
-        try {
-          const r = await db.from('calificaciones').select('estrellas').eq('calificado_id', id).eq('rol_calificador', rolCalificador);
-          if (!r.error && r.data && r.data.length) {
-            const nums = r.data.map((x) => Number(x.estrellas)).filter((n) => isFinite(n) && n > 0);
-            if (nums.length) { res.total = nums.length; res.promedio = nums.reduce((a, b) => a + b, 0) / nums.length; }
+        const campoId = rolPersona === 'conductor' ? 'conductor_id' : 'pasajero_id';
+        const cv = colsViaje().length ? colsViaje() : ((await columnasDe('viajes')) || []);
+        const idsPersona = [id];
+        if (usuarioId != null && String(usuarioId) !== String(id)) idsPersona.push(usuarioId);
+
+        /* Cantidad de viajes realizados (historial de app.html) */
+        if (cv.indexOf(campoId) >= 0) {
+          let r = null;
+          if (cv.indexOf('estado') >= 0) {
+            r = await consultaSegura('viajes', (q) => q.select('id', { count:'exact', head:true }).eq(campoId, id).eq('estado', 'terminado'));
           }
-        } catch (e) { console.warn('stats calificaciones:', e); }
+          if (!r) r = await consultaSegura('viajes', (q) => q.select('id', { count:'exact', head:true }).eq(campoId, id));
+          if (r && typeof r.count === 'number') res.viajes = r.count;
+        }
+
+        /* Promedio de estrellas recibidas (calificaciones de viaje.html) */
+        const cc = await columnasDe('calificaciones');
+        if (cc !== null && cc.length) {
+          const colEstrellas = cc.indexOf('estrellas') >= 0 ? 'estrellas' : (cc.indexOf('calificacion') >= 0 ? 'calificacion' : (cc.indexOf('puntaje') >= 0 ? 'puntaje' : null));
+          const colCalificado = cc.indexOf('calificado_id') >= 0 ? 'calificado_id' : (cc.indexOf('usuario_id') >= 0 ? 'usuario_id' : null);
+          if (colEstrellas && colCalificado) {
+            const r = await consultaSegura('calificaciones', (q) => {
+              let s = q.select(colEstrellas).in(colCalificado, idsPersona);
+              if (cc.indexOf('rol_calificador') >= 0) s = s.eq('rol_calificador', rolPersona === 'conductor' ? 'pasajero' : 'conductor');
+              return s;
+            });
+            if (r && r.data && r.data.length) {
+              const ns = r.data.map((x) => Number(x[colEstrellas])).filter((n) => isFinite(n) && n > 0);
+              if (ns.length) { res.promedio = ns.reduce((a, b) => a + b, 0) / ns.length; res.total = ns.length; }
+            }
+          }
+        }
+
+        /* Respaldo: columnas de calificación dentro de la tabla viajes (solo si existen) */
+        if (res.promedio == null) {
+          const col = rolPersona === 'conductor' ? 'calificacion_conductor' : 'calificacion_pasajero';
+          if (cv.indexOf(col) >= 0 && cv.indexOf(campoId) >= 0) {
+            const r = await consultaSegura('viajes', (q) => q.select(col).eq(campoId, id).not(col, 'is', null));
+            if (r && r.data && r.data.length) {
+              const ns = r.data.map((x) => Number(x[col])).filter((n) => isFinite(n) && n > 0);
+              if (ns.length) { res.promedio = ns.reduce((a, b) => a + b, 0) / ns.length; res.total = ns.length; }
+            }
+          }
+        }
       }
-      cachePerfiles.set(llave, { t: Date.now(), v: res });
+      logDebug('stats', rolPersona, id, res);
+      cachePerfiles.set(llave, res);
       return res;
     }
 
@@ -724,29 +804,39 @@
       personaFoto.src = info.foto || avatarDe(nombre);
 
       const chips = [];
-      const chipEstadisticas = () => {
-        if (info.promedio != null) {
-          chips.push('<span class="mini-tag"><span class="estrella-ico">' + SVG.estrella + '</span>' + esc(Number(info.promedio).toFixed(1)) +
-            ' · ' + esc(info.totalCalif) + (Number(info.totalCalif) === 1 ? ' calificación' : ' calificaciones') + '</span>');
-        } else if (info.estadisticas) {
-          chips.push('<span class="mini-tag"><span class="estrella-ico">' + SVG.estrella + '</span>Sin calificaciones</span>');
+      const chipRating = () => {
+        if (info.calificacion) {
+          return '<span class="mini-tag rating-tag">' + SVG.estrella + esc(info.calificacion) +
+            (info.totalCalif ? ' <span style="color:var(--muted-text);font-weight:600">(' + esc(info.totalCalif) + ')</span>' : '') + '</span>';
         }
-        if (info.estadisticas) {
-          chips.push('<span class="mini-tag">' + SVG.check + esc(info.viajes || 0) + (Number(info.viajes) === 1 ? ' viaje realizado' : ' viajes realizados') + '</span>');
-        }
+        if (info.viajes != null || info.calificacion === null) return '<span class="mini-tag rating-tag">' + SVG.estrella + 'Sin calificaciones</span>';
+        return '';
       };
+      const chipViajes = () => {
+        if (info.viajes == null) return '';
+        return '<span class="mini-tag viajes-tag">' + SVG.viajes + esc(info.viajes) + ' viaje' + (Number(info.viajes) === 1 ? '' : 's') + '</span>';
+      };
+
       if (info.rol === 'conductor') {
-        if (info.tipo_servicio) chips.push('<span class="vehicle-tag">' + (ICONO_SERVICIO[info.tipo_servicio] || SVG.ruta) + esc(info.tipo_servicio) + '</span>');
+        if (info.tipo_servicio) {
+          const claveSrv = normalizarClaveServicio(info.tipo_servicio);
+          chips.push('<span class="vehicle-tag">' + (ICONO_SERVICIO[claveSrv] || SVG.ruta) + esc(info.tipo_servicio) + '</span>');
+        }
         if (info.vehiculo) chips.push('<span class="mini-tag">' + SVG.auto + esc(info.vehiculo) + '</span>');
-        if (info.placa) chips.push('<span class="mini-tag">' + SVG.candado + 'Placa <span class="placa">' + esc(info.placa) + '</span></span>');
-        else if (info.estadisticas) chips.push('<span class="mini-tag">' + SVG.candado + 'Placa no registrada</span>');
-        chipEstadisticas();
+        /* [CAMBIO 3] Placa registrada por el conductor en index.html */
+        if (info.placa !== undefined) {
+          chips.push('<span class="mini-tag placa-tag">' + SVG.placa + '<span class="placa">' +
+            (info.placa ? esc(info.placa) : 'Placa no registrada') + '</span></span>');
+        }
+        chips.push(chipRating());   /* [CAMBIO 3] promedio de calificaciones de viaje.html */
+        chips.push(chipViajes());   /* [CAMBIO 3] viajes realizados del historial de app.html */
       } else {
         if (info.telefono) chips.push('<span class="mini-tag">' + SVG.usuario + 'Pasajero</span>');
+        chips.push(chipRating());   /* [CAMBIO 5] promedio recibido de los conductores */
+        chips.push(chipViajes());   /* [CAMBIO 5] viajes realizados del historial de app.html */
         if (info.correo) chips.push('<span class="mini-tag">' + esc(info.correo) + '</span>');
-        chipEstadisticas();
       }
-      personaExtra.innerHTML = chips.join('');
+      personaExtra.innerHTML = chips.filter(Boolean).join('');
 
       if (info.telefono) {
         const tel = String(info.telefono).replace(/[^\d+]/g, '');
@@ -793,41 +883,52 @@
     }
 
     async function cargarPerfilConductor(id) {
-      const ref = await resolverConductor(id);
-      const u = ref.u;
-      const [doc, est] = await Promise.all([buscarDocumentoConductor(ref), obtenerEstadisticas(id, 'conductor')]);
+      const info = await resolverConductor(id);
+      const u = info.usuario, doc = info.doc, veh = info.vehiculo;
+      const st = await estadisticasUsuario(id, 'conductor', info.usuarioId);
+
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
-        || (u && (u.usuario || u.correo)) || 'Conductor BIKAR';
-      const placa = placaDeFila(doc) || placaDeFila(u) || '';
+        || (u && (u.usuario || correoDe(u))) || 'Conductor BIKAR';
+
+      /* [CAMBIO 3] Placa: vehiculos → documentos_conductor → usuarios → viaje */
+      const PAT_PLACA = /placa|matricul|patente/i;
+      const placa = valorPorPatron(veh, PAT_PLACA) || valorPorPatron(doc, PAT_PLACA) ||
+                    valorPorPatron(u, PAT_PLACA) || valorPorPatron(viajeActual, PAT_PLACA) || '';
+
+      const marca = (doc && doc.marca) || '';
+      const modelo = (doc && doc.modelo) || (veh && veh.modelo) || '';
+      const anio = (doc && doc.anio) || (veh && veh.anio) || '';
+      const tipoServ = (doc && doc.tipo_servicio) || (viajeActual && (viajeActual.tipo_servicio || viajeActual.nombre_servicio)) || '';
+
+      logDebug('perfil conductor', { usuario: u, vehiculo: veh, documento: doc, placa: placa, stats: st });
+
       pintarPersona({
         rol: 'conductor', nombre,
         sub: (u && u.telefono) ? 'Teléfono · ' + u.telefono : 'Conductor verificado BIKAR',
         foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
         telefono: u && u.telefono,
-        tipo_servicio: doc && doc.tipo_servicio,
-        vehiculo: doc ? [doc.marca, doc.modelo, doc.color].filter(Boolean).join(' ') : '',
-        placa,
-        estadisticas: true,
-        viajes: est.viajes,
-        promedio: est.promedio,
-        totalCalif: est.total
+        tipo_servicio: tipoServ,
+        vehiculo: [marca, modelo, anio].filter(Boolean).join(' '),
+        placa: placa,
+        calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
+        totalCalif: st.total,
+        viajes: st.viajes
       });
     }
 
     async function cargarPerfilPasajero(id) {
-      const [u, est] = await Promise.all([buscarUsuario(id), obtenerEstadisticas(id, 'pasajero')]);
+      const [u, st] = await Promise.all([buscarUsuario(id), estadisticasUsuario(id, 'pasajero')]);
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
-        || (u && (u.usuario || u.correo)) || 'Pasajero BIKAR';
+        || (u && (u.usuario || correoDe(u))) || 'Pasajero BIKAR';
       pintarPersona({
         rol: 'pasajero', nombre,
         sub: (u && u.telefono) ? 'Teléfono · ' + u.telefono : 'Pasajero BIKAR',
         foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
         telefono: u && u.telefono,
-        correo: u && u.correo,
-        estadisticas: true,
-        viajes: est.viajes,
-        promedio: est.promedio,
-        totalCalif: est.total
+        correo: correoDe(u),
+        calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
+        totalCalif: st.total,
+        viajes: st.viajes
       });
     }
 
@@ -933,7 +1034,7 @@
         }
         boton(SVG.siguiente + '<span>' + paso[0] + '</span>', false, () => {
           if (paso[1] === 'en_camino') { abrirModalNavegacion(); cambiarEstadoViaje(paso[1]); }  /* [MOD 6] */
-          else if (paso[1] === 'en_progreso') { abrirPinConductor(true); }                      /* [MOD 9] */
+          else if (paso[1] === 'en_progreso') { abrirPinConductor(); }                          /* [MOD 9] */
           else cambiarEstadoViaje(paso[1]);
         });
         return;
@@ -971,33 +1072,35 @@
       }
     }
 
-    /* [CAMBIO 2] Al cancelar, el viaje debe dejar de aparecer en app.html:
-       se guarda el estado 'cancelado', se verifica que realmente se guardó y se limpian rastros locales */
-    function limpiarViajeLocal() {
+    /* ============================================================
+       [CAMBIO 2] AL CANCELAR, EL VIAJE DEBE DESAPARECER DE app.html
+       Se marcan banderas de ocultamiento en la BD (las que existan) y
+       se avisa a app.html por localStorage / BroadcastChannel / postMessage.
+       ============================================================ */
+    async function ocultarViajeDeApp() {
+      if (db && viajeId) {
+        /* Solo se actualizan las banderas que existan realmente en la tabla */
+        const posibles = { activo:false, visible:false, oculto:true, archivado:true, disponible:false, eliminado:true, finalizado:true };
+        const cambios = {};
+        Object.keys(posibles).forEach((k) => { if (viajeTiene(k)) cambios[k] = posibles[k]; });
+        if (Object.keys(cambios).length) await consultaSegura('viajes', (q) => q.update(cambios).eq('id', viajeId));
+        logDebug('banderas de ocultamiento aplicadas', cambios);
+      }
+      /* Señales locales para que app.html lo quite de la lista */
       try {
-        [localStorage, sessionStorage].forEach((st) => {
-          Object.keys(st).forEach((k) => {
-            if (!/viaje|trip/i.test(k) || /^bikar_(calif|share|pin_abierto)/.test(k)) return;
-            const raw = st.getItem(k);
-            let coincide = raw === String(viajeId);
-            if (!coincide) {
-              try {
-                const o = JSON.parse(raw);
-                if (o && typeof o === 'object') coincide = mismoId(o.id, viajeId) || mismoId(o.viaje_id, viajeId);
-                else coincide = mismoId(o, viajeId);
-              } catch (e) {}
-            }
-            if (coincide) st.removeItem(k);
-          });
-        });
+        const k = 'bikar_viajes_ocultos';
+        const arr = lsJSON(k) || [];
+        if (arr.map(String).indexOf(String(viajeId)) < 0) arr.push(String(viajeId));
+        localStorage.setItem(k, JSON.stringify(arr));
+        localStorage.setItem('bikar_viaje_cancelado', JSON.stringify({ id: String(viajeId), rol: rolUsuario, ts: Date.now() }));
+        const activo = lsJSON('bikar_viaje_activo');
+        if (activo && String(activo.id) === String(viajeId)) localStorage.removeItem('bikar_viaje_activo');
+        if (String(localStorage.getItem('bikar_viaje_activo_id') || '') === String(viajeId)) localStorage.removeItem('bikar_viaje_activo_id');
       } catch (e) {}
-      try {
-        if (window.BroadcastChannel) {
-          const bc = new BroadcastChannel('bikar_viajes');
-          bc.postMessage({ tipo: 'cancelado', id: viajeId });
-          bc.close();
-        }
-      } catch (e) {}
+      const aviso = { tipo: 'viaje_cancelado', id: String(viajeId), rol: rolUsuario, ts: Date.now() };
+      try { if (window.BroadcastChannel) { const bc = new BroadcastChannel('bikar_viajes'); bc.postMessage(aviso); bc.close(); } } catch (e) {}
+      try { if (window.opener && !window.opener.closed) window.opener.postMessage(aviso, '*'); } catch (e) {}
+      try { if (window.parent && window.parent !== window) window.parent.postMessage(aviso, '*'); } catch (e) {}
     }
 
     /* [MOD 4] Cancelación con motivo */
@@ -1005,14 +1108,13 @@
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Cancelando…</span>';
       try {
-        let r = await db.from('viajes').update({ estado:'cancelado', motivo_cancelacion: motivo || null, cancelado_por: rolUsuario }).eq('id', viajeId);
+        const cambios = { estado: 'cancelado' };
+        if (viajeTiene('motivo_cancelacion')) cambios.motivo_cancelacion = motivo || null;
+        if (viajeTiene('cancelado_por')) cambios.cancelado_por = rolUsuario;
+        let r = await db.from('viajes').update(cambios).eq('id', viajeId);
         if (r.error) r = await db.from('viajes').update({ estado:'cancelado' }).eq('id', viajeId);
         if (r.error) throw r.error;
-        /* Verificación: que la base de datos realmente quedó en 'cancelado' */
-        try {
-          const chk = await db.from('viajes').select('estado').eq('id', viajeId).maybeSingle();
-          if (chk && chk.data && String(chk.data.estado).toLowerCase() !== 'cancelado') throw new Error('El servidor no aplicó la cancelación (revisa los permisos de la tabla viajes).');
-        } catch (ve) { if (ve && /no aplic/.test(ve.message || '')) throw ve; }
+        await ocultarViajeDeApp();                      /* [CAMBIO 2] */
         mostrarToast('Solicitud cancelada');
         viajeActual = Object.assign({}, viajeActual, { estado:'cancelado' });
         renderizarUI();
@@ -1034,6 +1136,7 @@
       personaNombre.textContent = '—';
       personaSub.textContent = '';
       personaExtra.innerHTML = '';
+      ocultarCardPin();
       $('radar').classList.remove('on');
     }
 
@@ -1057,40 +1160,37 @@
       if (rolUsuario === 'conductor') {
         if (estado === 'en_camino') { bNav.style.display = 'flex'; }
         if (estado === 'aceptado' || estado === 'en_camino') { bCanc.style.display = 'flex'; }
-      } else if (estado === 'en_progreso') {
-        bComp.style.display = 'flex';
+      } else {
+        if (estado === 'en_progreso') bComp.style.display = 'flex';
+        /* El pasajero conserva la opción de cancelar (antes estaba dentro del modal del PIN) */
+        if (estado === 'aceptado' || estado === 'en_camino') bCanc.style.display = 'flex';
       }
 
-      /* [MOD 9 / CAMBIO 1] PIN como tarjeta pequeña debajo de los datos de la contraparte */
+      /* [CAMBIO 1] PIN compacto debajo de la tarjeta de datos (no bloqueante) */
       const pinPendiente = (estado === 'aceptado' || estado === 'en_camino');
       if (rolUsuario !== 'conductor') {
-        cerrarModal('modal-pin-conductor');
         if (pinPendiente && viajeActual.conductor_id != null) mostrarPinPasajero(estado);
-        else cerrarModal('modal-pin-pasajero');
+        else ocultarCardPin();
       } else {
-        cerrarModal('modal-pin-pasajero');
-        if (estado === 'en_camino') abrirPinConductor(false);
-        else { cerrarModal('modal-pin-conductor'); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
+        if (estado === 'en_camino') mostrarPinConductor(false);
+        else { ocultarCardPin(); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
       }
 
       /* [MOD 5] Compartir ubicación (pasajero, en curso) */
       if (rolUsuario !== 'conductor' && estado === 'en_progreso' && !sessionStorage.getItem('bikar_share_' + viajeId)) {
         sessionStorage.setItem('bikar_share_' + viajeId, '1');
-        setTimeout(() => abrirCompartir(), 400);
+        setTimeout(() => { abrirModal('modal-compartir'); pedirPosicion(); }, 400);
       }
       if (estado !== 'en_progreso') cerrarModal('modal-compartir');
 
       /* [MOD 8] Calificación */
       if (estado === 'terminado' && !localStorage.getItem('bikar_calif_' + viajeId + '_' + rolUsuario)) abrirCalificacion();
 
-      /* [CAMBIO 2] Viaje cancelado: limpiar rastros para que no siga apareciendo como activo */
-      if (estado === 'cancelado') limpiarViajeLocal();
-
       if (estado === 'cancelado' || estado === 'terminado') { cerrarModal('modal-chat'); if (llamada.pc) terminarLlamada(true); }
     }
 
     $('btn-extra-nav').addEventListener('click', abrirModalNavegacion);
-    $('btn-extra-compartir').addEventListener('click', () => abrirCompartir());
+    $('btn-extra-compartir').addEventListener('click', () => { abrirModal('modal-compartir'); pedirPosicion(); });
     $('btn-extra-cancelar').addEventListener('click', abrirModalCancelacion);
 
     /* ============================================================
@@ -1131,14 +1231,13 @@
       b.disabled = false;
       if (ok) {
         cerrarModal('modal-cancelar');
-        cerrarModal('modal-pin-pasajero');
-        cerrarModal('modal-pin-conductor');
+        ocultarCardPin();
         sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
       }
     });
 
     /* ============================================================
-       [MOD 9] PIN DE SEGURIDAD
+       [MOD 9 / CAMBIO 1] PIN DE SEGURIDAD COMPACTO
        ============================================================ */
     let pinIntentado = false;
     function pinDerivado() {
@@ -1153,25 +1252,42 @@
     async function asegurarPin() {
       if (pinIntentado || viajeActual.pin_verificacion) return;
       pinIntentado = true;
+      if (!viajeTiene('pin_verificacion')) return;          /* sin columna: se usa PIN derivado */
       const nuevo = String(Math.floor(1000 + Math.random() * 9000));
-      try {
-        const { error } = await db.from('viajes').update({ pin_verificacion: nuevo }).eq('id', viajeId);
-        if (!error) viajeActual.pin_verificacion = nuevo;
-      } catch (e) { /* sin columna: se usa PIN derivado */ }
+      const r = await consultaSegura('viajes', (q) => q.update({ pin_verificacion: nuevo }).eq('id', viajeId));
+      if (r) viajeActual.pin_verificacion = nuevo;
+    }
+    function ocultarCardPin() {
+      cardPin.style.display = 'none';
+      $('pin-mini-pasajero').style.display = 'none';
+      $('pin-mini-conductor').style.display = 'none';
     }
     async function mostrarPinPasajero(estado) {
       $('pin-pasajero-estado').textContent = estado === 'en_camino'
-        ? 'Tu conductor está en camino al punto de recojo…' : 'Tu conductor aceptó el viaje y se prepara…';
-      const yaAbierto = $('modal-pin-pasajero').classList.contains('open');
+        ? 'Tu conductor está en camino. Dale el PIN solo al subir al vehículo.'
+        : 'Tu conductor aceptó el viaje y se prepara para recogerte.';
       await asegurarPin();
       const pin = pinDelViaje();
-      if (!yaAbierto || $('pin-digitos').dataset.pin !== pin) {
-        $('pin-digitos').dataset.pin = pin;
-        $('pin-digitos').innerHTML = pin.split('').map((c) => '<span>' + c + '</span>').join('');
+      const cont = $('pin-digitos');
+      if (cont.dataset.pin !== pin) {
+        cont.dataset.pin = pin;
+        cont.innerHTML = pin.split('').map((c) => '<span>' + c + '</span>').join('');
       }
-      abrirModal('modal-pin-pasajero');
+      $('pin-card-title').querySelector('span').textContent = 'PIN de seguridad';
+      $('pin-mini-conductor').style.display = 'none';
+      $('pin-mini-pasajero').style.display = 'flex';
+      cardPin.style.display = 'block';
     }
-    $('pin-pasajero-cancelar').addEventListener('click', abrirModalCancelacion);
+    function mostrarPinConductor(enfocar) {
+      $('pin-card-title').querySelector('span').textContent = 'Verifica el PIN del pasajero';
+      $('pin-mini-pasajero').style.display = 'none';
+      $('pin-mini-conductor').style.display = 'block';
+      cardPin.style.display = 'block';
+      if (enfocar) {
+        try { cardPin.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+        setTimeout(() => { try { pinInputs[0].focus(); } catch (e) {} }, 350);
+      }
+    }
 
     const pinInputs = Array.prototype.slice.call(document.querySelectorAll('#pin-inputs input'));
     pinInputs.forEach((inp, i) => {
@@ -1183,19 +1299,12 @@
       });
       inp.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !inp.value && pinInputs[i - 1]) pinInputs[i - 1].focus(); });
     });
-    /* [CAMBIO 1] La tarjeta del PIN del conductor queda visible bajo los datos del pasajero; con enfocar=true se lleva la vista y el cursor */
-    function abrirPinConductor(enfocar) {
+    function abrirPinConductor() {
       sessionStorage.setItem('bikar_pin_abierto_' + viajeId, '1');
-      const card = $('modal-pin-conductor');
-      if (!card.classList.contains('open')) {
-        pinInputs.forEach((x) => (x.value = ''));
-        $('pin-conductor-msg').textContent = '';
-        abrirModal('modal-pin-conductor');
-      }
-      if (enfocar) {
-        try { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
-        setTimeout(() => { const vacio = pinInputs.filter((x) => !x.value)[0] || pinInputs[0]; vacio.focus(); }, 350);
-      }
+      pinInputs.forEach((x) => (x.value = ''));
+      $('pin-conductor-msg').textContent = '';
+      $('pin-conductor-msg').className = 'pin-msg';
+      mostrarPinConductor(true);
     }
     let verificando = false;
     async function verificarPin() {
@@ -1204,6 +1313,7 @@
       if (ingresado.length < 4) { mostrarToast('Ingresa los 4 dígitos'); return; }
       verificando = true;
       $('pin-verificar').disabled = true;
+      $('pin-conductor-msg').className = 'pin-msg';
       $('pin-conductor-msg').textContent = 'Verificando…';
       try {
         const { data } = await db.from('viajes').select('*').eq('id', viajeId).maybeSingle();
@@ -1211,18 +1321,23 @@
       } catch (e) {}
       if (String(viajeActual.estado).toLowerCase() === 'cancelado') {
         verificando = false; $('pin-verificar').disabled = false;
-        cerrarModal('modal-pin-conductor'); renderizarUI(); mostrarToast('El pasajero canceló el viaje'); return;
+        ocultarCardPin(); renderizarUI(); mostrarToast('El pasajero canceló el viaje'); return;
       }
       if (ingresado === pinDelViaje()) {
+        $('pin-conductor-msg').className = 'pin-msg ok';
         $('pin-conductor-msg').textContent = '¡PIN correcto! Iniciando viaje…';
         const ok = await cambiarEstadoViaje('en_progreso');
         if (ok) {
-          try { await db.from('viajes').update({ pin_verificado: true }).eq('id', viajeId); } catch (e) {}
+          if (viajeTiene('pin_verificado')) await consultaSegura('viajes', (q) => q.update({ pin_verificado: true }).eq('id', viajeId));
           sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
-          cerrarModal('modal-pin-conductor');
-        } else $('pin-conductor-msg').textContent = 'No se pudo iniciar. Intenta de nuevo.';
+          ocultarCardPin();
+        } else {
+          $('pin-conductor-msg').className = 'pin-msg err';
+          $('pin-conductor-msg').textContent = 'No se pudo iniciar. Intenta de nuevo.';
+        }
       } else {
         $('pin-inputs').classList.add('error');
+        $('pin-conductor-msg').className = 'pin-msg err';
         $('pin-conductor-msg').textContent = 'PIN incorrecto. Pide al pasajero que lo repita.';
         pinInputs.forEach((x) => (x.value = ''));
         pinInputs[0].focus();
@@ -1250,78 +1365,91 @@
     ['nav-google', 'nav-waze'].forEach((id) => $(id).addEventListener('click', () => setTimeout(() => cerrarModal('modal-nav'), 300)));
 
     /* ============================================================
-       [MOD 5 / CAMBIO 4] COMPARTIR UBICACIÓN (selector nativo del móvil: WhatsApp, correo, Messenger, etc.)
+       [MOD 5 / CAMBIO 4] COMPARTIR UBICACIÓN (share nativo + selector)
        ============================================================ */
-    let posCompartir = null;
-    function obtenerPosicion(ms) {
-      return new Promise((resolve) => {
-        if (!navigator.geolocation) return resolve(null);
-        navigator.geolocation.getCurrentPosition((p) => resolve(p), () => resolve(null), { enableHighAccuracy:true, timeout:ms, maximumAge:30000 });
-      });
+    let ultimaPos = null, ultimoTextoCompartir = '';
+    function pedirPosicion() {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition((p) => { ultimaPos = p; }, () => {}, { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 });
     }
-    function abrirCompartir() {
-      $('compartir-principal').style.display = 'flex';
-      $('compartir-opciones').style.display = 'none';
-      obtenerPosicion(10000).then((p) => { if (p) posCompartir = p; });   /* se precarga para poder compartir sin perder el gesto del usuario */
-      abrirModal('modal-compartir');
+    function urlUbicacion(pos) {
+      if (pos && pos.coords) return 'https://www.google.com/maps?q=' + pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+      const v = viajeActual || {};
+      if (v.destino_lat != null && v.destino_lon != null) return 'https://www.google.com/maps?q=' + v.destino_lat + ',' + v.destino_lon;
+      return linkMaps.href;
     }
     function textoCompartir(pos) {
       const v = viajeActual || {}, c = infoContraparte || {};
-      const l = ['🚖 Estoy en un viaje BIKAR (#' + viajeId + ')', ''];
-      l.push('📍 Origen: ' + (v.origen_nombre || '—'));
-      l.push('🏁 Destino: ' + (v.destino_nombre || '—'));
-      l.push('');
-      l.push('DATOS DEL CONDUCTOR');
-      if (c.nombre) l.push('👤 Conductor: ' + c.nombre);
-      if (c.vehiculo) l.push('🚗 Vehículo: ' + c.vehiculo);
-      if (c.placa) l.push('🔢 Placa: ' + String(c.placa).toUpperCase());
-      if (c.telefono) l.push('📞 Teléfono: ' + c.telefono);
-      if (c.promedio != null) l.push('⭐ Calificación: ' + Number(c.promedio).toFixed(1) + ' (' + c.totalCalif + ')');
-      l.push('');
-      l.push('💰 Tarifa: ' + formatoMoneda(tarifaDelViaje(v)));
-      if (v.distancia_km) l.push('📏 Distancia: ' + v.distancia_km + ' km');
-      l.push('');
-      if (pos) l.push('🛰️ Mi ubicación actual (abre el enlace): https://www.google.com/maps?q=' + pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6));
-      else l.push('🛰️ Ubicación actual: no disponible (activa el GPS).');
-      l.push('🗺️ Ruta al destino: ' + linkMaps.href);
+      const l = ['🚖 *Estoy en un viaje BIKAR* (#' + viajeId + ')', ''];
+      l.push('📍 *Origen:* ' + (v.origen_nombre || '—'));
+      l.push('🏁 *Destino:* ' + (v.destino_nombre || '—'));
+      if (c.nombre) l.push('👤 *Conductor:* ' + c.nombre);
+      if (c.vehiculo) l.push('🚗 *Vehículo:* ' + c.vehiculo);
+      if (c.placa) l.push('🔢 *Placa:* ' + String(c.placa).toUpperCase());
+      if (c.calificacion) l.push('⭐ *Calificación:* ' + c.calificacion + (c.totalCalif ? ' (' + c.totalCalif + ' reseñas)' : ''));
+      if (c.viajes != null) l.push('🧾 *Viajes realizados:* ' + c.viajes);
+      if (c.telefono) l.push('📞 *Tel. conductor:* ' + c.telefono);
+      l.push('💰 *Tarifa:* ' + formatoMoneda(tarifaDelViaje(v)));
+      if (v.distancia_km) l.push('📏 *Distancia:* ' + v.distancia_km + ' km');
+      if (pos) l.push('', '🛰️ *Mi ubicación actual:* ' + urlUbicacion(pos));
+      l.push('🗺️ *Ruta al destino:* ' + linkMaps.href);
       l.push('', '🕒 ' + new Date().toLocaleString('es-PE'));
       return l.join('\n');
     }
-    function mostrarOpcionesCompartir(texto) {
-      const t = encodeURIComponent(texto), asunto = encodeURIComponent('Mi viaje BIKAR #' + viajeId);
-      $('sh-wa').href = 'https://wa.me/?text=' + t;
-      $('sh-mail').href = 'mailto:?subject=' + asunto + '&body=' + t;
-      $('sh-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(linkMaps.href) + '&text=' + t;
-      $('sh-sms').href = 'sms:?&body=' + t;
-      $('sh-copy').onclick = async () => {
-        try { await navigator.clipboard.writeText(texto); mostrarToast('Mensaje copiado'); }
-        catch (e) {
-          const ta = document.createElement('textarea'); ta.value = texto; document.body.appendChild(ta); ta.select();
-          try { document.execCommand('copy'); mostrarToast('Mensaje copiado'); } catch (err) { mostrarToast('No se pudo copiar'); }
-          document.body.removeChild(ta);
-        }
-      };
-      $('compartir-principal').style.display = 'none';
-      $('compartir-opciones').style.display = 'block';
+    function abrirOpcionesCompartir(texto) {
+      ultimoTextoCompartir = texto;
+      const t = encodeURIComponent(texto);
+      const asunto = encodeURIComponent('Mi viaje BIKAR #' + viajeId);
+      const enlace = encodeURIComponent(urlUbicacion(ultimaPos));
+      const apps = [
+        { n:'WhatsApp',           c:'#25d366', l:'W', u:'https://wa.me/?text=' + t,                              nueva:true  },
+        { n:'Correo electrónico', c:'#ea4335', l:'@', u:'mailto:?subject=' + asunto + '&body=' + t,              nueva:false },
+        { n:'Mensaje de texto',   c:'#34b7f1', l:'S', u:'sms:?&body=' + t,                                       nueva:false },
+        { n:'Telegram',           c:'#229ed9', l:'T', u:'https://t.me/share/url?url=' + enlace + '&text=' + t,   nueva:true  },
+        { n:'Messenger',          c:'#0084ff', l:'M', u:'fb-messenger://share/?link=' + enlace,                  nueva:false }
+      ];
+      $('enviar-opciones').innerHTML = apps.map((a) =>
+        '<a class="nav-app" href="' + a.u + '"' + (a.nueva ? ' target="_blank" rel="noopener"' : '') + '>' +
+        '<span class="logo" style="background:' + a.c + '">' + a.l + '</span><span>' + a.n + '</span></a>').join('');
+      Array.prototype.slice.call($('enviar-opciones').querySelectorAll('a')).forEach((a) => {
+        a.addEventListener('click', () => setTimeout(() => { cerrarModal('modal-enviar'); cerrarModal('modal-compartir'); }, 400));
+      });
+      abrirModal('modal-enviar');
     }
-    ['sh-wa', 'sh-mail', 'sh-tg', 'sh-sms'].forEach((id) => $(id).addEventListener('click', () => setTimeout(() => cerrarModal('modal-compartir'), 400)));
-    $('btn-compartir-ubicacion').addEventListener('click', async () => {
-      const b = $('btn-compartir-ubicacion');
-      b.disabled = true;
-      try {
-        if (!posCompartir) posCompartir = await obtenerPosicion(4000);
-        const texto = textoCompartir(posCompartir);
-        if (navigator.share) {
-          try {
-            await navigator.share({ title: 'Mi viaje BIKAR #' + viajeId, text: texto });
-            cerrarModal('modal-compartir');
-            return;
-          } catch (e) {
-            if (e && e.name === 'AbortError') return;      /* el usuario cerró el selector */
-          }
+    async function compartirTexto(texto) {
+      ultimoTextoCompartir = texto;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Mi viaje BIKAR #' + viajeId, text: texto });
+          cerrarModal('modal-compartir');
+          mostrarToast('Ubicación compartida');
+          return;
+        } catch (e) {
+          if (e && e.name === 'AbortError') return;   /* el usuario cerró el selector del móvil */
         }
-        mostrarOpcionesCompartir(texto);                    /* respaldo: lista de medios (WhatsApp, correo, etc.) */
-      } finally { b.disabled = false; }
+      }
+      abrirOpcionesCompartir(texto);                  /* respaldo: selector propio */
+    }
+    $('btn-compartir-ubicacion').addEventListener('click', () => {
+      if (ultimaPos) { compartirTexto(textoCompartir(ultimaPos)); return; }
+      let hecho = false;
+      const enviar = (p) => { if (hecho) return; hecho = true; compartirTexto(textoCompartir(p)); };
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((p) => { ultimaPos = p; enviar(p); }, () => enviar(null),
+          { enableHighAccuracy: true, timeout: 4000, maximumAge: 60000 });
+        setTimeout(() => enviar(ultimaPos), 4300);
+      } else enviar(null);
+    });
+    $('enviar-copiar').addEventListener('click', async () => {
+      const texto = ultimoTextoCompartir || textoCompartir(ultimaPos);
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(texto);
+        else {
+          const ta = document.createElement('textarea');
+          ta.value = texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        }
+        mostrarToast('Mensaje copiado');
+      } catch (e) { mostrarToast('No se pudo copiar el mensaje'); }
     });
 
     /* ============================================================
@@ -1356,12 +1484,25 @@
         resena: $('calif-resena').value.trim() || null
       };
       let ok = false;
-      try { const { error } = await db.from('calificaciones').insert(fila); ok = !error; if (error) console.warn(error); } catch (e) { console.warn(e); }
+      const colsCal = await columnasDe('calificaciones');
+      if (colsCal !== null) {
+        if (colsCal.length) Object.keys(fila).forEach((k) => { if (colsCal.indexOf(k) < 0) delete fila[k]; });
+        const r = await consultaSegura('calificaciones', (q) => q.insert(fila));
+        ok = !!r;
+      }
       if (!ok) {
-        const campo = rolUsuario === 'conductor' ? { calificacion_pasajero: estrellasSel, resena_conductor: fila.resena } : { calificacion_conductor: estrellasSel, resena_pasajero: fila.resena };
-        try { const { error } = await db.from('viajes').update(campo).eq('id', viajeId); ok = !error; } catch (e) {}
+        const campo = {};
+        if (rolUsuario === 'conductor') {
+          if (viajeTiene('calificacion_pasajero')) campo.calificacion_pasajero = estrellasSel;
+          if (viajeTiene('resena_conductor')) campo.resena_conductor = fila.resena || null;
+        } else {
+          if (viajeTiene('calificacion_conductor')) campo.calificacion_conductor = estrellasSel;
+          if (viajeTiene('resena_pasajero')) campo.resena_pasajero = fila.resena || null;
+        }
+        if (Object.keys(campo).length) { const r = await consultaSegura('viajes', (q) => q.update(campo).eq('id', viajeId)); ok = !!r; }
       }
       localStorage.setItem('bikar_calif_' + viajeId + '_' + rolUsuario, String(estrellasSel));
+      limpiarCacheStats();
       cerrarModal('modal-calificar');
       mostrarToast(ok ? '¡Gracias por tu calificación!' : 'Calificación guardada localmente');
     });
@@ -1380,10 +1521,10 @@
       cargarHistorialChat();
     }
     async function cargarHistorialChat() {
-      try {
-        const { data, error } = await db.from('mensajes_viaje').select('*').eq('viaje_id', viajeId).order('created_at', { ascending: true });
-        if (!error && data) data.forEach((m) => pintarMensaje({ uid: m.uid || ('db' + m.id), de: m.remitente_rol, texto: m.mensaje, ts: m.created_at }, true));
-      } catch (e) {}
+      const cols = await columnasDe('mensajes_viaje');
+      if (cols === null) return;                       /* la tabla no existe: el chat funciona en tiempo real */
+      const r = await consultaSegura('mensajes_viaje', (q) => q.select('*').eq('viaje_id', viajeId).order('created_at', { ascending: true }));
+      if (r && r.data) r.data.forEach((m) => pintarMensaje({ uid: m.uid || ('db' + m.id), de: m.remitente_rol, texto: m.mensaje, ts: m.created_at }, true));
     }
     function pintarMensaje(m, silencioso) {
       if (msgsVistos.has(m.uid)) return;
@@ -1416,7 +1557,12 @@
       $('chat-input').value = '';
       pintarMensaje(m, true);
       canalChat.send({ type: 'broadcast', event: 'msg', payload: m });
-      try { await db.from('mensajes_viaje').insert({ viaje_id: viajeId, remitente_rol: rolUsuario, mensaje: texto, uid: m.uid }); } catch (err) {}
+      const colsMsg = await columnasDe('mensajes_viaje');
+      if (colsMsg !== null) {
+        const fila = { viaje_id: viajeId, remitente_rol: rolUsuario, mensaje: texto, uid: m.uid };
+        if (colsMsg.length) Object.keys(fila).forEach((k) => { if (colsMsg.indexOf(k) < 0) delete fila[k]; });
+        await consultaSegura('mensajes_viaje', (q) => q.insert(fila));
+      }
     });
 
     /* Llamada de voz WebRTC (señalización por Supabase Realtime) */
