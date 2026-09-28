@@ -668,7 +668,7 @@
         /* Respaldo: calificaciones guardadas en la tabla viajes */
         if (!res.total) {
           try {
-            const r = await db.from('viajes').select(campoCalif).eq(campoViaje, id).not(campoCalif, 'is', null);
+            const r = await db.from('viajes').select(campoCalif).eq(campoViaje, id);
             if (!r.error && r.data && r.data.length) {
               const nums = r.data.map((x) => Number(x[campoCalif])).filter((n) => isFinite(n) && n > 0);
               if (nums.length) { res.total = nums.length; res.promedio = nums.reduce((a, b) => a + b, 0) / nums.length; }
