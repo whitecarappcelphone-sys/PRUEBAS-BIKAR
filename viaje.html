@@ -68,63 +68,99 @@
     @keyframes ringWave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.1);opacity:0}}
     @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
 
-    /* ANIMACIÓN SONAR DE ALTO LUJO (ÚNICAMENTE EN EL FONDO DE LA TARJETA DE ESTADO DEL VIAJE) */
+    /* ============================================================
+       [MODIFICACIÓN 1] ANIMACIÓN DE FONDO "BIKAR FLOW"
+       (ÚNICAMENTE EN EL FONDO DE LA TARJETA DE ESTADO DEL VIAJE)
+       Capas: aurora de profundidad · malla en deriva · ruta viva con
+       vehículo de luz · destello especular · micropartículas
+       ============================================================ */
     .sonar-luxury{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
     .sonar-luxury.on{display:block}
-    .sonar-core{position:absolute;top:38px;left:50%;width:0;height:0}
-    .sonar-halo{
-      position:absolute;left:-85px;top:-85px;width:170px;height:170px;border-radius:50%;
-      background:radial-gradient(circle,rgba(71,133,167,.26) 0%,rgba(19,73,137,.12) 45%,transparent 72%);
-      filter:blur(8px);animation:sonarHaloPulse 3s ease-in-out infinite alternate;
-    }
-    .sonar-sweep{
-      position:absolute;left:-230px;top:-230px;width:460px;height:460px;border-radius:50%;
-      background:conic-gradient(from 0deg,rgba(71,133,167,.24) 0deg,rgba(59,130,246,.08) 38deg,transparent 65deg,transparent 360deg);
-      mask-image:radial-gradient(circle,black 0%,black 62%,transparent 76%);
-      -webkit-mask-image:radial-gradient(circle,black 0%,black 62%,transparent 76%);
-      animation:sonarSweepRotate 4.4s linear infinite;
-    }
-    .sonar-ring{
-      position:absolute;left:-230px;top:-230px;width:460px;height:460px;border-radius:50%;
-      border:1.5px solid rgba(71,133,167,.42);
-      box-shadow:0 0 16px rgba(71,133,167,.25),inset 0 0 14px rgba(71,133,167,.12);
-      opacity:0;animation:sonarPing 4s cubic-bezier(.15,.85,.35,1) infinite;will-change:transform,opacity;
-    }
-    .sonar-ring.r2{animation-delay:1.33s}
-    .sonar-ring.r3{animation-delay:2.66s}
-    .sonar-grid-circle{
-      position:absolute;border-radius:50%;border:1px dashed rgba(71,133,167,.18);
-      transform:translate(-50%,-50%);pointer-events:none;
-    }
-    .sonar-grid-circle.g1{width:160px;height:160px}
-    .sonar-grid-circle.g2{width:320px;height:320px}
 
-    @keyframes sonarPing{
-      0%{transform:scale(.08);opacity:.85}
-      50%{opacity:.38}
-      100%{transform:scale(1.25);opacity:0}
-    }
-    @keyframes sonarSweepRotate{
-      from{transform:rotate(0deg)}
-      to{transform:rotate(360deg)}
-    }
-    @keyframes sonarHaloPulse{
-      0%{transform:scale(.85);opacity:.55}
-      100%{transform:scale(1.22);opacity:1}
-    }
+    /* Capa 1 · Aurora de profundidad */
+    .fx-aurora{position:absolute;inset:-32%;filter:blur(40px);opacity:.9}
+    .fx-blob{position:absolute;display:block;border-radius:50%;will-change:transform}
+    .fx-blob.b1{width:58%;height:72%;left:-10%;top:-12%;
+      background:radial-gradient(circle at 50% 50%,rgba(71,133,167,.40),rgba(71,133,167,0) 70%);
+      animation:fxBlob1 18s ease-in-out infinite alternate}
+    .fx-blob.b2{width:64%;height:80%;right:-14%;top:2%;
+      background:radial-gradient(circle at 50% 50%,rgba(19,73,137,.34),rgba(19,73,137,0) 70%);
+      animation:fxBlob2 23s ease-in-out infinite alternate}
+    .fx-blob.b3{width:50%;height:62%;left:24%;bottom:-26%;
+      background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.26),rgba(96,165,250,0) 70%);
+      animation:fxBlob3 27s ease-in-out infinite alternate}
+    @keyframes fxBlob1{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(13%,7%,0) scale(1.18)}}
+    @keyframes fxBlob2{0%{transform:translate3d(0,4%,0) scale(1.08)}100%{transform:translate3d(-12%,-7%,0) scale(.92)}}
+    @keyframes fxBlob3{0%{transform:translate3d(-7%,0,0) scale(.94)}100%{transform:translate3d(9%,-11%,0) scale(1.2)}}
 
-    body.dark-theme .sonar-halo{
-      background:radial-gradient(circle,rgba(96,165,250,.32) 0%,rgba(71,133,167,.18) 45%,transparent 75%);
-    }
-    body.dark-theme .sonar-sweep{
-      background:conic-gradient(from 0deg,rgba(96,165,250,.32) 0deg,rgba(59,130,246,.12) 42deg,transparent 72deg,transparent 360deg);
-    }
-    body.dark-theme .sonar-ring{
-      border-color:rgba(96,165,250,.65);
-      box-shadow:0 0 20px rgba(96,165,250,.45),inset 0 0 16px rgba(71,133,167,.24);
-    }
-    body.dark-theme .sonar-grid-circle{
-      border-color:rgba(96,165,250,.24);
+    /* Capa 2 · Malla de puntos con deriva (parallax) */
+    .fx-grid{position:absolute;inset:-40px;opacity:.6;
+      background-image:radial-gradient(rgba(19,73,137,.22) 1px,transparent 1.5px);
+      background-size:22px 22px;
+      -webkit-mask-image:radial-gradient(125% 95% at 50% 32%,#000 12%,transparent 78%);
+      mask-image:radial-gradient(125% 95% at 50% 32%,#000 12%,transparent 78%);
+      animation:fxGridDrift 22s linear infinite}
+    @keyframes fxGridDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-22px,-22px,0)}}
+
+    /* Capa 3 · Ruta viva + vehículo de luz */
+    .fx-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+    .fx-route-base{fill:none;stroke:rgba(71,133,167,.20);stroke-width:2.4;stroke-linecap:round;vector-effect:non-scaling-stroke}
+    .fx-route-dash{fill:none;stroke:url(#bkRouteGrad);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:14 18;
+      vector-effect:non-scaling-stroke;animation:fxDash 2.4s linear infinite}
+    @keyframes fxDash{to{stroke-dashoffset:-32}}
+    .fx-node{fill:none;stroke:rgba(71,133,167,.55);stroke-width:1.6;vector-effect:non-scaling-stroke;
+      transform-box:fill-box;transform-origin:center;animation:fxNode 3.4s ease-out infinite}
+    .fx-node.n2{animation-delay:1.15s}
+    @keyframes fxNode{0%{transform:scale(.35);opacity:.9}65%{opacity:.2}100%{transform:scale(2.6);opacity:0}}
+    .fx-node-dot{fill:rgba(71,133,167,.75)}
+    .fx-comet{fill:#eaf7ff}
+    .fx-comet-tail{fill:rgba(125,196,232,.45)}
+    .fx-comet-tail2{fill:rgba(125,196,232,.20)}
+
+    /* Capa 4 · Destello especular */
+    .fx-sweep{position:absolute;top:-70%;left:-45%;width:38%;height:240%;
+      background:linear-gradient(90deg,transparent,rgba(71,133,167,.14),transparent);
+      animation:fxSweep 8s ease-in-out infinite}
+    @keyframes fxSweep{
+      0%{transform:translateX(-20%) rotate(18deg);opacity:0}
+      10%{opacity:1}
+      48%{opacity:.85}
+      62%{transform:translateX(330%) rotate(18deg);opacity:0}
+      100%{transform:translateX(330%) rotate(18deg);opacity:0}}
+
+    /* Capa 5 · Micropartículas ascendentes */
+    .fx-dust{position:absolute;inset:0}
+    .fx-dust i{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;opacity:0;
+      background:rgba(71,133,167,.65);box-shadow:0 0 7px rgba(71,133,167,.55);
+      animation:fxDust 13s linear infinite;will-change:transform,opacity}
+    .fx-dust i:nth-child(1){left:11%;animation-delay:0s;animation-duration:12s}
+    .fx-dust i:nth-child(2){left:27%;animation-delay:2.6s;animation-duration:15s}
+    .fx-dust i:nth-child(3){left:43%;animation-delay:5.2s;animation-duration:11s}
+    .fx-dust i:nth-child(4){left:60%;animation-delay:1.4s;animation-duration:16s}
+    .fx-dust i:nth-child(5){left:75%;animation-delay:6.8s;animation-duration:13s}
+    .fx-dust i:nth-child(6){left:90%;animation-delay:3.7s;animation-duration:17s}
+    @keyframes fxDust{
+      0%{transform:translate3d(0,0,0) scale(.55);opacity:0}
+      14%{opacity:.85}
+      78%{opacity:.45}
+      100%{transform:translate3d(10px,-250px,0) scale(1.15);opacity:0}}
+
+    /* Ajustes en modo oscuro */
+    body.dark-theme .fx-blob.b1{background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.34),rgba(96,165,250,0) 70%)}
+    body.dark-theme .fx-blob.b2{background:radial-gradient(circle at 50% 50%,rgba(71,133,167,.34),rgba(71,133,167,0) 70%)}
+    body.dark-theme .fx-blob.b3{background:radial-gradient(circle at 50% 50%,rgba(59,130,246,.26),rgba(59,130,246,0) 70%)}
+    body.dark-theme .fx-grid{background-image:radial-gradient(rgba(96,165,250,.26) 1px,transparent 1.5px);opacity:.55}
+    body.dark-theme .fx-route-base{stroke:rgba(96,165,250,.22)}
+    body.dark-theme .fx-node{stroke:rgba(96,165,250,.6)}
+    body.dark-theme .fx-node-dot{fill:rgba(147,197,253,.85)}
+    body.dark-theme .fx-comet-tail{fill:rgba(147,197,253,.5)}
+    body.dark-theme .fx-comet-tail2{fill:rgba(147,197,253,.22)}
+    body.dark-theme .fx-sweep{background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
+    body.dark-theme .fx-dust i{background:rgba(147,197,253,.75);box-shadow:0 0 8px rgba(96,165,250,.6)}
+
+    @media (prefers-reduced-motion:reduce){
+      .fx-blob,.fx-grid,.fx-route-dash,.fx-node,.fx-sweep,.fx-dust i{animation:none}
+      .fx-sweep{opacity:0}
     }
 
     /* PERFIL DE LA CONTRAPARTE */
@@ -309,6 +345,27 @@
     .nav-app:hover{border-color:var(--primary-color)}
     .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
 
+    /* [MODIFICACIÓN 2] MODAL DE FOTO DEL VEHÍCULO: TEXTOS EN BLANCO EN MODO OSCURO */
+    body.dark-theme #modal-foto-vehiculo .modal-box,
+    body.dark-theme #modal-foto-vehiculo .modal-title,
+    body.dark-theme #modal-foto-vehiculo .modal-desc,
+    body.dark-theme #modal-foto-vehiculo #foto-vehiculo-placa,
+    body.dark-theme #modal-foto-vehiculo .modal-close,
+    body.dark-theme #modal-foto-vehiculo .btn-action,
+    body.dark-theme #modal-foto-vehiculo .btn-action span,
+    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario,
+    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario span{
+      color:#ffffff !important;
+    }
+    body.dark-theme #modal-foto-vehiculo .modal-close{border-color:rgba(255,255,255,.28)}
+    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario{
+      background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);
+    }
+    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario:hover{
+      background:rgba(255,255,255,.16);border-color:#ffffff;
+    }
+    body.dark-theme #modal-foto-vehiculo svg{color:#ffffff !important;stroke:#ffffff !important}
+
     /* Chat */
     .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
     .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:.86rem;line-height:1.35;word-break:break-word}
@@ -344,17 +401,51 @@
   <main>
     <!-- ESTADO -->
     <section class="status-card" id="card-status">
-      <!-- ANIMACIÓN SONAR DE ALTO LUJO EN EL FONDO (ÚNICAMENTE EN ESTADO) -->
-      <div class="sonar-luxury on" id="sonar-status">
-        <div class="sonar-core">
-          <div class="sonar-halo"></div>
-          <div class="sonar-sweep"></div>
-          <div class="sonar-grid-circle g1"></div>
-          <div class="sonar-grid-circle g2"></div>
-          <div class="sonar-ring"></div>
-          <div class="sonar-ring r2"></div>
-          <div class="sonar-ring r3"></div>
+      <!-- [MODIFICACIÓN 1] ANIMACIÓN "BIKAR FLOW" EN EL FONDO (ÚNICAMENTE EN ESTADO) -->
+      <div class="sonar-luxury on" id="sonar-status" aria-hidden="true">
+        <div class="fx-aurora">
+          <span class="fx-blob b1"></span>
+          <span class="fx-blob b2"></span>
+          <span class="fx-blob b3"></span>
         </div>
+        <div class="fx-grid"></div>
+        <svg class="fx-route" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice" focusable="false">
+          <defs>
+            <linearGradient id="bkRouteGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4785A7" stop-opacity="0"/>
+              <stop offset="26%" stop-color="#4785A7" stop-opacity=".85"/>
+              <stop offset="60%" stop-color="#60a5fa" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#134989" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="bkGlow" x="-150%" y="-150%" width="400%" height="400%">
+              <feGaussianBlur stdDeviation="4.5" result="bkBlur"/>
+              <feMerge><feMergeNode in="bkBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <path class="fx-route-base" d="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
+          <path class="fx-route-dash" d="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
+
+          <circle class="fx-node n1" cx="238" cy="84" r="6"/>
+          <circle class="fx-node-dot" cx="238" cy="84" r="2.6"/>
+          <circle class="fx-node n2" cx="508" cy="128" r="6"/>
+          <circle class="fx-node-dot" cx="508" cy="128" r="2.6"/>
+
+          <circle class="fx-comet-tail2" r="5.4">
+            <animateMotion dur="7s" repeatCount="indefinite" begin="-6.72s" calcMode="linear"
+              path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
+          </circle>
+          <circle class="fx-comet-tail" r="4.1">
+            <animateMotion dur="7s" repeatCount="indefinite" begin="-6.86s" calcMode="linear"
+              path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
+          </circle>
+          <circle class="fx-comet" r="3.3" filter="url(#bkGlow)">
+            <animateMotion dur="7s" repeatCount="indefinite" calcMode="linear"
+              path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
+          </circle>
+        </svg>
+        <div class="fx-sweep"></div>
+        <div class="fx-dust"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
 
       <div id="status-badge" class="status-badge solicitado">
@@ -1267,7 +1358,7 @@ function obtenerFotoVehiculo(info, v) {
        EXTRAS SEGÚN ESTADO
        ============================================================ */
     function actualizarExtras(estado) {
-      /* Animación SONAR de lujo: activa únicamente en la tarjeta de estado del viaje */
+      /* Animación de fondo: activa únicamente en la tarjeta de estado del viaje */
       const activoAuto = ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
       const sonar = $('sonar-status');
       if (sonar) sonar.classList.toggle('on', activoAuto);
