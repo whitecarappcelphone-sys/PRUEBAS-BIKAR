@@ -52,10 +52,12 @@
     @keyframes serviceCardIn{from{opacity:0;transform:translateX(24px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
     @keyframes cardPop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
-    @keyframes tripEnter{0%{opacity:0;transform:translateY(-26px) scale(.93)}60%{opacity:1;transform:translateY(5px) scale(1.012)}100%{opacity:1;transform:translateY(0) scale(1)}}
-    @keyframes tripGlow{0%,100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}50%{box-shadow:0 0 0 4px rgba(71,133,167,.38),0 18px 44px rgba(71,133,167,.38)}}
-    @keyframes tripSweep{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
-    @keyframes radarPing{0%{transform:scale(.4);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+
+    /* NUEVAS ANIMACIONES DINÁMICAS PARA SOLICITUDES DE VIAJE */
+    @keyframes viajeEntra{0%{opacity:0;transform:translateY(26px) scale(.94)}60%{opacity:1;transform:translateY(-4px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes barridoLuz{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+    @keyframes badgeNuevo{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}50%{box-shadow:0 0 0 7px rgba(16,185,129,0)}}
+    @keyframes bordeVivo{0%,100%{box-shadow:0 10px 26px rgba(71,133,167,.14)}50%{box-shadow:0 14px 34px rgba(71,133,167,.30)}}
 
     /* ================= MAPA ================= */
     #map{position:absolute;inset:0;width:100%;height:100vh;height:100dvh;z-index:1;background:var(--bg-color)}
@@ -290,34 +292,25 @@
     #ui-conductor{display:flex;flex-direction:column}
     #ui-conductor .panel-title,#ui-conductor .status-text{text-align:center}
     #contenedor-solicitudes{display:flex;flex-direction:column;gap:12px;padding:2px 2px 2px 0;transition:opacity .3s ease}
-    .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:20px;padding:16px 16px 16px 20px;
-      background:linear-gradient(180deg,var(--field-bg),var(--glass-bg));
-      text-align:left;animation:none;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
-    .tarjeta-viaje.entrada{animation:tripEnter .6s cubic-bezier(.2,.8,.2,1) var(--d,0s) both}
-    .tarjeta-viaje.entrada.nuevo{animation:tripEnter .6s cubic-bezier(.2,.8,.2,1) var(--d,0s) both,tripGlow 1.6s ease-in-out .6s 3}
-    .tarjeta-viaje.nuevo{border-color:rgba(16,185,129,.55)}
+    .tarjeta-viaje{position:relative;border:1px solid var(--field-border);border-radius:18px;padding:16px 16px 16px 20px;background:var(--field-bg);
+      text-align:left;animation:viajeEntra .55s cubic-bezier(.2,.9,.25,1.15) both;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
     .tarjeta-viaje::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:4px;border-radius:4px;
       background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 12px var(--glow-strong)}
-    .tarjeta-viaje.nuevo::before{background:linear-gradient(180deg,#10b981,#134989)}
-    .tarjeta-viaje.nuevo::after{content:"";position:absolute;top:0;left:0;width:45%;height:2px;
-      background:linear-gradient(90deg,transparent,#10b981,transparent);animation:tripSweep 1.8s ease-in-out infinite}
     .tarjeta-viaje:hover{transform:translateY(-2px);border-color:var(--primary-color);box-shadow:0 14px 32px rgba(71,133,167,.22)}
-    .tarjeta-viaje.saliendo{opacity:0;transform:translateX(-70px) scale(.94);max-height:0!important;padding-top:0;padding-bottom:0;
-      margin-bottom:-12px;border-width:0;pointer-events:none;
-      transition:transform .35s ease,opacity .3s ease,max-height .4s ease .1s,padding .4s ease .1s,margin .4s ease .1s,border-width .4s ease .1s}
+    .tarjeta-viaje.nueva{border-color:rgba(16,185,129,.45);animation:viajeEntra .55s cubic-bezier(.2,.9,.25,1.15) both,bordeVivo 2.6s ease-in-out infinite .6s}
+    .tarjeta-viaje .brillo-barrido{position:absolute;top:0;bottom:0;width:38%;pointer-events:none;
+      background:linear-gradient(100deg,transparent,rgba(71,133,167,.16),transparent);animation:barridoLuz 2.2s ease-in-out 2}
+    .viaje-badge-nuevo{position:absolute;top:12px;right:14px;z-index:2;padding:3px 9px;border-radius:999px;font-size:.55rem;font-weight:900;
+      letter-spacing:.14em;text-transform:uppercase;color:#10b981;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.45);
+      animation:badgeNuevo 1.8s ease-out infinite}
 
-    .viaje-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-    .viaje-header-izq{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+    .viaje-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
     .viaje-tipo-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
       background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.12));border:1px solid rgba(71,133,167,.35);
       font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--primary-color);text-transform:uppercase}
     .viaje-tipo-badge svg{width:13px;height:13px}
-    .viaje-nuevo-chip{padding:3px 8px;border-radius:999px;background:linear-gradient(90deg,#10b981,#059669);color:#fff;
-      font-size:.58rem;font-weight:800;letter-spacing:.12em;animation:pulseGreen 1.6s infinite}
-    .viaje-precio-badge{font-size:1.35rem;font-weight:800;color:var(--text-color);letter-spacing:-.02em;text-align:right;line-height:1.1}
+    .viaje-precio-badge{font-size:1.15rem;font-weight:800;color:var(--text-color);letter-spacing:-.02em;text-align:right}
     .viaje-precio-badge small{font-size:.6rem;font-weight:700;color:var(--primary-color);letter-spacing:.08em;display:block}
-    .viaje-hace{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;font-size:.66rem;font-weight:700;color:var(--muted-text)}
-    .viaje-hace .live-dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:pulseGreen 2s infinite}
 
     .viaje-ruta{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
     .viaje-punto{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;line-height:1.3}
@@ -336,15 +329,14 @@
     .viaje-metrica-item svg{width:14px;height:14px;color:var(--primary-color);flex-shrink:0}
     .viaje-metrica-sub{display:block;font-size:.6rem;font-weight:500;color:var(--muted-text)}
 
-    .viaje-footer{display:flex;flex-direction:column;align-items:stretch;gap:0;margin-top:4px}
-    .viaje-cta{width:100%}
+    .viaje-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px}
+    .viaje-cta{width:100%;display:flex;flex-direction:column;gap:8px}
     .viaje-cta .btn-main{padding:12px 36px 12px 16px;font-size:.88rem;border-radius:12px;width:100%}
-    .btn-rechazar{width:100%;margin-top:8px;padding:11px 16px;border-radius:12px;border:1px solid rgba(239,68,68,.45);
-      background:rgba(239,68,68,.08);color:#ef4444;font-size:.84rem;font-weight:700;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
-    .btn-rechazar svg{width:14px;height:14px}
-    .btn-rechazar:hover{background:rgba(239,68,68,.16);transform:translateY(-1px);border-color:#ef4444}
-    .btn-rechazar:active{transform:translateY(0)}
+    .btn-rechazar-viaje{width:100%;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:.82rem;font-weight:800;
+      color:#ef4444;background:rgba(239,68,68,.10);border:1.5px solid rgba(239,68,68,.40);transition:all .2s;
+      display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn-rechazar-viaje svg{width:14px;height:14px}
+    .btn-rechazar-viaje:hover{background:rgba(239,68,68,.20);transform:translateY(-1px);box-shadow:0 10px 22px rgba(239,68,68,.22)}
 
     .conductor-inactivo-card{padding:26px 18px;border-radius:18px;background:var(--field-bg);
       border:1.5px dashed rgba(239,68,68,.4);text-align:center;animation:cardPop .4s ease both}
@@ -453,17 +445,15 @@
     .btn-mini:hover{background:rgba(71,133,167,.22);transform:translateY(-1px)}
     .btn-mini svg{width:14px;height:14px}
 
-    /* MI VEHÍCULO */
-    .vehiculo-foto-principal{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:18px;
-      border:1px solid var(--field-border);background:var(--field-bg);box-shadow:0 12px 30px rgba(71,133,167,.22);
-      animation:cardPop .4s cubic-bezier(.2,.8,.2,1) both}
-    .vehiculo-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px}
-    .vehiculo-galeria img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:pointer;
-      border:2px solid transparent;transition:border-color .2s,transform .2s}
-    .vehiculo-galeria img:hover{transform:translateY(-2px)}
-    .vehiculo-galeria img.activa{border-color:var(--primary-color)}
-    .vehiculo-sin-foto{padding:26px 14px;text-align:center;border-radius:18px;background:var(--field-bg);border:1.5px dashed var(--field-border);
-      color:var(--muted-text);font-size:.8rem}
+    /* MODAL MI VEHÍCULO */
+    .vehiculo-foto-wrap{position:relative;width:100%;height:190px;border-radius:18px;overflow:hidden;margin:10px 0 14px;
+      background:var(--field-bg);border:1px solid var(--field-border);display:flex;align-items:center;justify-content:center}
+    .vehiculo-foto{width:100%;height:100%;object-fit:cover;display:block}
+    .vehiculo-sin-foto{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted-text);font-size:.78rem;font-weight:600}
+    .vehiculo-sin-foto svg{width:38px;height:38px;color:var(--primary-color);opacity:.7}
+    .vehiculo-chip{position:absolute;left:12px;bottom:12px;padding:6px 12px;border-radius:999px;font-size:.66rem;font-weight:800;
+      letter-spacing:.1em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,rgba(19,73,137,.92),rgba(71,133,167,.92));
+      box-shadow:0 8px 20px rgba(0,0,0,.3)}
 
     /* HISTORIAL */
     .historial-tabs{display:flex;gap:8px;margin:12px 0 10px;flex-shrink:0}
@@ -679,7 +669,7 @@
 
     <div class="servicios-footer">
       <button id="btn-confirmar-servicio" class="btn-main" disabled>Selecciona un servicio</button>
-      <p class="servicios-leyenda">Elige el tipo de servicio que necesitas: Moto Taxi, Moto Delivery, Taxi Auto o Taxi Carga.</p>
+      <p class="servicios-leyenda">Elige el tipo de servicio que necesitas. Tu solicitud será enviada a los conductores activos de esa categoría.</p>
     </div>
   </aside>
 
@@ -705,7 +695,7 @@
             Ver historial
           </button>
           <button type="button" class="btn-mini oculto" id="btn-perfil-vehiculo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14"/><path d="M6 17l-1-5 2-4h10l2 4-1 5"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>
             Mi vehículo
           </button>
           <button type="button" class="btn-mini" id="btn-perfil-tema">
@@ -717,17 +707,13 @@
     </div>
   </div>
 
-  <!-- MODAL MI VEHÍCULO (CONDUCTOR) -->
+  <!-- MODAL MI VEHÍCULO (SOLO CONDUCTOR) -->
   <div id="modal-vehiculo" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="vehiculo-titulo">
     <div class="modal-bikar-dialog">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-vehiculo" aria-label="Cerrar">×</button>
-      <span class="modal-kicker">BIKAR · Conductor</span>
+      <span class="modal-kicker">BIKAR · Mi unidad</span>
       <h2 class="modal-titulo" id="vehiculo-titulo">Mi vehículo</h2>
-      <div class="modal-bikar-scroll" style="margin-top:10px">
-        <div id="vehiculo-fotos"></div>
-        <div class="perfil-seccion-titulo">Datos del vehículo</div>
-        <div id="vehiculo-datos" class="perfil-datos"></div>
-      </div>
+      <div class="modal-bikar-scroll" id="vehiculo-contenido" style="margin-top:6px"></div>
     </div>
   </div>
 
@@ -873,10 +859,9 @@
     let conductorActivo = true; // Estado online/offline del conductor
     let viajeActivoPasajero = null; // Viaje en curso del pasajero
     let viajeActivoConductor = null; // Viaje en curso del conductor
-    let huboViajeActivo = false; // Para detectar cuando un viaje termina o se cancela
-    let viajesIdsVistos = null; // IDs de viajes ya mostrados al conductor (null = primera carga)
-    let seqViajes = 0;
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
+    let ultimoViajeActivoId = null; // Para detectar cancelaciones hechas en viaje.html
+    let idsSolicitudesVisibles = ''; // Para animar solo cuando llegan nuevas solicitudes
 
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
     let tokenOrigen = null, tokenDestino = null, marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
@@ -919,6 +904,13 @@
     const lsJSON = (k) => { try { return JSON.parse(lsGet(k) || 'null'); } catch (e) { return null; } };
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const tituloClave = (c) => c.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+
+    /* Viajes rechazados (declinados) por el conductor en este dispositivo */
+    function idsRechazados() { const a = lsJSON(K_RECHAZADOS); return Array.isArray(a) ? a.map(String) : []; }
+    function agregarRechazado(id) {
+      const a = idsRechazados();
+      if (a.indexOf(String(id)) === -1) { a.push(String(id)); lsSet(K_RECHAZADOS, JSON.stringify(a.slice(-200))); }
+    }
 
     let toastTimer;
     function mostrarToast(mensaje, icono = '✓') {
@@ -1343,9 +1335,8 @@
 
     function renderizarConductorInactivo() {
       const etiqueta = claveServicioConductor ? etiquetaServicio(claveServicioConductor) : 'tu categoría';
-      viajesIdsVistos = null;
-      seqViajes++;
       statusConductor.textContent = 'Estás inactivo. No recibirás solicitudes de viaje.';
+      idsSolicitudesVisibles = '';
       contSolicitudes.innerHTML =
         '<div class="conductor-inactivo-card">' +
           '<div class="conductor-inactivo-icono">' +
@@ -1357,6 +1348,19 @@
     }
 
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
+    /* Limpia por completo el estado de viaje activo (usado también al detectar cancelaciones) */
+    function limpiarViajeActivoUI(motivo) {
+      const habia = !!(viajeActivoPasajero || viajeActivoConductor);
+      alertaViajeActivo.classList.add('oculto');
+      menuItemMisViajes.classList.add('oculto');
+      viajeActivoConductor = null;
+      viajeActivoPasajero = null;
+      bloqueoViajeActivo.classList.add('oculto');
+      seccionSolicitarPasajero.classList.remove('oculto');
+      ultimoViajeActivoId = null;
+      if (habia && motivo) mostrarToast(motivo, '!');
+    }
+
     async function verificarViajeEnProgresoUsuario() {
       if (!usuarioActual || !db) return;
       const esConductor = (modoActual === 'conductor' || usuarioActual.tipo_usuario === 'conductor');
@@ -1373,17 +1377,14 @@
         }
 
         const { data, error } = await query.order('id', { ascending: false }).limit(1);
-        if (error) return;
 
-        let ultimoEstado = '';
-
-        if (data && data.length > 0) {
+        if (!error && data && data.length > 0) {
           const viaje = data[0];
           const est = String(viaje.estado || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
-          ultimoEstado = est;
 
-          // Estados finalizados o cancelados (Paso 4): cualquier variante de cancelado/finalizado
-          const esFinalizado = /finaliz|complet|termin|conclu|cancel|rechaz|anul/.test(est);
+          // Estados finalizados o cancelados (Paso 4)
+          const esCancelado = ['cancelado', 'rechazado', 'anulado'].includes(est);
+          const esFinalizado = ['finalizado', 'completado', 'terminado', 'concluido'].includes(est) || esCancelado;
 
           // Estados activos (Pasos 1, 2 y 3)
           const esPaso1 = ['solicitado', 'buscando', 'pendiente'].includes(est);
@@ -1393,10 +1394,10 @@
           const esActivo = !esFinalizado && (esPaso1 || esPaso2 || esPaso3);
 
           if (esActivo) {
-            huboViajeActivo = true;
             const rol = esConductor ? 'conductor' : 'pasajero';
             const url = 'viaje.html?id=' + viaje.id + '&rol=' + rol;
 
+            ultimoViajeActivoId = viaje.id;
             alertaViajeActivo.href = url;
             alertaViajeActivo.classList.remove('oculto');
             menuItemMisViajes.classList.remove('oculto');
@@ -1436,23 +1437,17 @@
             }
             return;
           }
+
+          // CANCELACIÓN INMEDIATA: si el viaje fue cancelado en viaje.html, se libera todo al volver a app
+          if (esCancelado) {
+            limpiarViajeActivoUI('El viaje fue cancelado');
+            if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
+            return;
+          }
         }
 
-        // Si no hay viaje o si el último viaje fue FINALIZADO / COMPLETADO / CANCELADO (Paso 4):
-        alertaViajeActivo.classList.add('oculto');
-        menuItemMisViajes.classList.add('oculto');
-        viajeActivoConductor = null;
-        viajeActivoPasajero = null;
-        bloqueoViajeActivo.classList.add('oculto');
-        seccionSolicitarPasajero.classList.remove('oculto');
-
-        // Si hasta hace un instante había un viaje activo y ahora terminó/canceló: liberar la interfaz de inmediato
-        if (huboViajeActivo) {
-          huboViajeActivo = false;
-          if (/cancel|rechaz|anul/.test(ultimoEstado)) mostrarToast('El viaje fue cancelado', '!');
-          else mostrarToast('El viaje ha finalizado');
-          if (esConductor && conductorActivo) cargarViajesSolicitados();
-        }
+        // Si no hay viaje o si el último viaje fue FINALIZADO / COMPLETADO (Paso 4):
+        limpiarViajeActivoUI(null);
       } catch (e) {
         console.warn('Error al verificar viaje activo:', e);
       }
@@ -1655,8 +1650,8 @@
       soat:'SOAT Vigente', tecnomecanica:'Revisión Técnica', tarjeta_propiedad:'Tarjeta de Propiedad',
       nombre_comercio:'Comercio', nombre_establecimiento:'Establecimiento', categoria:'Categoría',
       horario:'Horario', descripcion:'Descripción', estado:'Estado', verificado:'Verificado',
-      politicas_aceptadas:'Políticas aceptadas', acepto_politicas:'Políticas aceptadas', acepta_politicas:'Políticas aceptadas',
-      politica_aceptada:'Políticas aceptadas', terminos_aceptados:'Términos aceptados', acepto_terminos:'Términos aceptados',
+      politicas_aceptadas:'Políticas aceptadas', terminos_aceptados:'Términos aceptados',
+      acepta_politicas:'Políticas aceptadas', acepta_terminos:'Términos aceptados',
       created_at:'Fecha de registro', creado_en:'Fecha de registro', fecha_registro:'Fecha de registro'
     };
 
@@ -1667,9 +1662,11 @@
       'clave', 'token', 'hash', 'foto', 'foto_url', 'avatar', 'imagen', 'foto_perfil', 'docvehiculo'
     ];
 
+    /* Campos de aceptación de políticas / términos: en index.html es obligatorio aceptarlos */
+    const esCampoAceptacion = (clave) => /politic|terminos|términos|condicion|acepta|tratamiento_datos|privacidad/i.test(String(clave));
+
     function valorLegible(clave, valor) {
-      // Las políticas/términos son requisito obligatorio del registro: siempre figuran como aceptadas
-      if (/polit|terminos|condiciones/i.test(String(clave))) return 'Sí';
+      if (esCampoAceptacion(clave)) return 'Sí';
       if (valor === null || valor === undefined || valor === '' || typeof valor === 'object') return null;
       if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
       const txt = String(valor);
@@ -1723,10 +1720,10 @@
       }
       $('perfil-rol-badge').textContent = textoRol;
 
-      // Conductor: botón "Mi vehículo" en lugar de "Cambiar tema"
-      const esCond = rol === 'conductor';
-      $('btn-perfil-vehiculo').classList.toggle('oculto', !esCond);
-      $('btn-perfil-tema').classList.toggle('oculto', esCond);
+      // Botones: el conductor ve "Mi vehículo" en lugar de "Cambiar tema"
+      const esConductor = (rol === 'conductor');
+      $('btn-perfil-vehiculo').classList.toggle('oculto', !esConductor);
+      $('btn-perfil-tema').classList.toggle('oculto', esConductor);
 
       const cont = $('perfil-datos'), extra = $('perfil-extra');
       cont.innerHTML = ''; extra.innerHTML = '';
@@ -1763,106 +1760,87 @@
     fotoHeader.addEventListener('error', () => { fotoHeader.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
     $('perfil-foto-grande').addEventListener('error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
 
-    /* ============================ MI VEHÍCULO (CONDUCTOR) ============================ */
-    // Campos que son documentos / datos personales: NO se muestran en "Mi vehículo"
-    const RE_DOCUMENTO = /soat|tecno|revision|tarjeta|propiedad|licencia|brevete|cedula|dni|documento|antecedent|seguro|certific|pdf|vencim|expedic|polit|termin|acept|verific|estado|aprob|correo|email|telefono|celular|nombre|apellido|pass|token|hash|created|creado|fecha|_id$|^id$|auth_/i;
-    // Campos propios del vehículo
-    const RE_VEHICULO = /(placa|marca|modelo|color|cilindraje|capacidad|servicio|vehiculo|combustible|motor|chasis|serie|carroceria|puertas|pasajeros|peso|(^|_)(anio|ano|año)($|_))/i;
-    const CLAVES_FOTO_PERFIL = ['foto', 'foto_url', 'avatar', 'imagen', 'foto_perfil'];
-    const esValorImagen = (v) => typeof v === 'string' && v.length > 4 &&
-      (/^(data:image|blob:)/i.test(v) || /^https?:\/\//i.test(v) || /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(v));
+    /* ============================ MODAL MI VEHÍCULO (SOLO DATOS DEL VEHÍCULO) ============================ */
+    const CAMPOS_VEHICULO = [
+      'tipo_vehiculo','tipo_servicio','servicio','marca','modelo','linea','placa','color','anio','año','year',
+      'cilindraje','combustible','capacidad','pasajeros','numero_motor','numero_chasis','serie','clase'
+    ];
+    const LLAVES_FOTO_VEHICULO = [
+      'foto_vehiculo','foto_vehiculo_url','imagen_vehiculo','foto_moto','foto_carro','foto_auto',
+      'vehiculo_foto','foto_unidad','url_foto_vehiculo','fotovehiculo'
+    ];
 
-    function ordenVehiculo(clave) {
-      const c = clave.toLowerCase();
-      const orden = ['servicio', 'marca', 'modelo', 'placa', 'color', 'anio|ano|año'];
-      const idx = orden.findIndex((p) => new RegExp(p).test(c));
-      return idx === -1 ? 99 : idx;
+    function fotoDelVehiculo(fuente) {
+      const objs = [fuente || {}, documentacionVehiculo || {}, lsJSON(K_DOC) || {}, usuarioActual || {}];
+      for (const o of objs) {
+        for (const k of Object.keys(o)) {
+          const kl = k.toLowerCase();
+          const esFotoVeh = LLAVES_FOTO_VEHICULO.includes(kl) ||
+            (/(foto|imagen|img|url)/.test(kl) && /(vehic|moto|carro|auto|unidad|camion)/.test(kl));
+          if (esFotoVeh && o[k] && typeof o[k] === 'string') return o[k];
+        }
+      }
+      return '';
     }
 
     async function abrirModalVehiculo() {
-      if (!usuarioActual) return;
-      const u = usuarioActual;
+      const u = usuarioActual || {};
       let doc = documentacionVehiculo || lsJSON(K_DOC);
       if (!doc) doc = await filaDocumentos(u);
       if (doc) documentacionVehiculo = doc;
 
-      const fuente = Object.assign({}, limpiarNulos(u), limpiarNulos(doc || {}));
-      const fotos = [];
-      const clavesFoto = new Set();
-
-      // Fotos del vehículo (se excluyen fotos de documentos y la foto de perfil)
-      Object.keys(fuente).forEach((k) => {
-        const kl = k.toLowerCase();
-        if (CLAVES_FOTO_PERFIL.includes(kl)) return;
-        if (!/foto|imagen|img|photo|vehic|moto|carro|auto|unidad/.test(kl)) return;
-        if (RE_DOCUMENTO.test(kl) || /perfil|avatar|selfie|rostro|usuario/.test(kl)) return;
-        if (!esValorImagen(fuente[k])) return;
-        fotos.push(fuente[k]); clavesFoto.add(k);
+      const fuente = Object.assign({}, doc || {}, {});
+      const datos = {};
+      CAMPOS_VEHICULO.forEach((c) => {
+        const v = (fuente[c] !== undefined && fuente[c] !== null && fuente[c] !== '') ? fuente[c] : u[c];
+        if (v !== undefined && v !== null && v !== '') datos[c] = v;
       });
-      // Respaldo: foto/imagen del registro de documentos si difiere de la foto de perfil
-      if (!fotos.length && doc) {
-        const perfilFoto = fotoDeUsuario(u);
-        CLAVES_FOTO_PERFIL.forEach((k) => {
-          if (doc[k] && esValorImagen(doc[k]) && doc[k] !== perfilFoto && !fotos.includes(doc[k])) fotos.push(doc[k]);
-        });
-      }
 
-      const contFotos = $('vehiculo-fotos');
-      contFotos.innerHTML = '';
-      if (fotos.length) {
-        const principal = document.createElement('img');
-        principal.className = 'vehiculo-foto-principal';
-        principal.alt = 'Foto del vehículo';
-        principal.src = fotos[0];
-        contFotos.appendChild(principal);
-        if (fotos.length > 1) {
-          const gal = document.createElement('div');
-          gal.className = 'vehiculo-galeria';
-          fotos.forEach((src, idx) => {
-            const th = document.createElement('img');
-            th.src = src; th.alt = 'Foto ' + (idx + 1);
-            if (idx === 0) th.classList.add('activa');
-            th.addEventListener('click', () => {
-              principal.src = src;
-              gal.querySelectorAll('img').forEach((x) => x.classList.remove('activa'));
-              th.classList.add('activa');
-            });
-            gal.appendChild(th);
-          });
-          contFotos.appendChild(gal);
-        }
-      } else {
-        contFotos.innerHTML = '<div class="vehiculo-sin-foto">No hay foto del vehículo registrada.</div>';
-      }
-
-      // Datos del vehículo
-      const cont = $('vehiculo-datos');
+      const foto = fotoDelVehiculo(fuente);
+      const claveServ = normalizarClaveServicio(datos.tipo_servicio || datos.servicio || u.tipo_servicio);
+      const cont = $('vehiculo-contenido');
       cont.innerHTML = '';
-      const claves = Object.keys(fuente).filter((k) => {
-        if (clavesFoto.has(k)) return false;
-        if (OCULTAS.includes(k.toLowerCase())) return false;
-        if (RE_DOCUMENTO.test(k)) return false;
-        if (esValorImagen(fuente[k])) return false;
-        return RE_VEHICULO.test(k);
-      }).sort((a, b) => ordenVehiculo(a) - ordenVehiculo(b));
 
+      const wrap = document.createElement('div');
+      wrap.className = 'vehiculo-foto-wrap';
+      if (foto) {
+        const img = document.createElement('img');
+        img.className = 'vehiculo-foto';
+        img.src = foto; img.alt = 'Foto del vehículo';
+        img.addEventListener('error', () => {
+          wrap.innerHTML = '<div class="vehiculo-sin-foto">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14"/><path d="M6 17l-1-5 2-4h10l2 4-1 5"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>' +
+            '<span>No se pudo cargar la foto del vehículo</span></div>';
+        });
+        wrap.appendChild(img);
+      } else {
+        wrap.innerHTML = '<div class="vehiculo-sin-foto">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14"/><path d="M6 17l-1-5 2-4h10l2 4-1 5"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>' +
+          '<span>Sin foto del vehículo registrada</span></div>';
+      }
+      if (claveServ) {
+        const chip = document.createElement('span');
+        chip.className = 'vehiculo-chip';
+        chip.textContent = etiquetaServicio(claveServ);
+        wrap.appendChild(chip);
+      }
+      cont.appendChild(wrap);
+
+      const grid = document.createElement('div');
+      grid.className = 'perfil-datos';
       let i = 0;
-      claves.forEach((k) => {
-        let valor = valorLegible(k, fuente[k]);
+      Object.keys(datos).forEach((clave) => {
+        const valor = valorLegible(clave, datos[clave]);
         if (valor === null) return;
-        if (/tipo_servicio|^servicio$/i.test(k)) {
-          const c = normalizarClaveServicio(valor);
-          if (c) valor = etiquetaServicio(c);
-        }
-        cont.appendChild(tarjetaDato(ETIQUETAS[k] || tituloClave(k), valor, i++));
+        grid.appendChild(tarjetaDato(ETIQUETAS[clave] || tituloClave(clave), valor, i++));
       });
-      if (!i) cont.innerHTML = '<div class="perfil-vacio">No hay datos del vehículo registrados.</div>';
+      if (i) cont.appendChild(grid);
+      else cont.insertAdjacentHTML('beforeend', '<div class="perfil-vacio">Aún no hay datos del vehículo registrados.</div>');
 
-      modalPerfil.classList.add('oculto');
       modalVehiculo.classList.remove('oculto');
     }
 
-    $('btn-perfil-vehiculo').addEventListener('click', abrirModalVehiculo);
+    $('btn-perfil-vehiculo').addEventListener('click', () => { modalPerfil.classList.add('oculto'); abrirModalVehiculo(); });
     $('cerrar-modal-vehiculo').addEventListener('click', () => modalVehiculo.classList.add('oculto'));
     modalVehiculo.addEventListener('click', (e) => { if (e.target === modalVehiculo) modalVehiculo.classList.add('oculto'); });
 
@@ -2040,7 +2018,6 @@
       if (!bruto) { const f = await filaDocumentos(u); bruto = f && f.tipo_servicio; }
 
       claveServicioConductor = normalizarClaveServicio(bruto);
-
       if (claveServicioConductor) {
         u.tipo_servicio = etiquetaServicio(claveServicioConductor);
         guardarSesion();
@@ -2091,7 +2068,7 @@
     $('btn-cerrar-servicios').addEventListener('click', cerrarPanelServicios);
     backdrop.addEventListener('click', cerrarPanelServicios);
 
-    /* Muestra TODOS los tipos de servicio inscritos (Moto Taxi, Moto Delivery, Taxi Auto y Taxi Carga) */
+    /* Muestra TODOS los tipos de servicio inscritos en el registro: Moto Taxi, Moto Delivery, Taxi Auto y Taxi Carga */
     async function cargarServiciosDisponibles() {
       serviciosLista.innerHTML = '<div class="cargando"><div class="loading-pulse"><span></span><span></span><span></span></div>Buscando conductores activos…</div>';
 
@@ -2099,21 +2076,21 @@
 
       if (db) {
         try {
-          // Conductores inscritos con su tipo de servicio
-          const { data, error } = await db.from('documentos_conductor').select('tipo_servicio');
+          // Conductores registrados con su documentación de vehículo
+          const { data, error } = await db.from('documentos_conductor').select('*').limit(MAX_FILAS);
           if (!error && data) {
             data.forEach((f) => {
-              const c = normalizarClaveServicio(f.tipo_servicio);
+              const c = normalizarClaveServicio(f.tipo_servicio || f.servicio || f.tipo_vehiculo);
               if (c) conteoActivos[c] = (conteoActivos[c] || 0) + 1;
             });
           }
-          // También corroboramos con la tabla usuarios si tienen tipo_usuario = conductor
-          const { data: usersData, error: usersErr } = await db.from('usuarios').select('tipo_servicio, tipo_usuario');
+          // Conductores registrados en la tabla usuarios
+          const { data: usersData, error: usersErr } = await db.from('usuarios').select('*').limit(MAX_FILAS);
           if (!usersErr && usersData) {
             usersData.forEach((u) => {
-              if (u.tipo_usuario === 'conductor' && u.tipo_servicio) {
-                const c = normalizarClaveServicio(u.tipo_servicio);
-                if (c && !conteoActivos[c]) conteoActivos[c] = 1;
+              if (String(u.tipo_usuario || '').toLowerCase() === 'conductor') {
+                const c = normalizarClaveServicio(u.tipo_servicio || u.servicio);
+                if (c) conteoActivos[c] = (conteoActivos[c] || 0) + 1;
               }
             });
           }
@@ -2122,8 +2099,8 @@
         }
       }
 
-      // Siempre se listan los cuatro tipos de servicio del catálogo
-      const disponibles = CATALOGO;
+      // Se listan SIEMPRE los cuatro tipos de servicio disponibles en la plataforma
+      const disponibles = CATALOGO.slice();
 
       serviciosLista.innerHTML = '';
       servicioSeleccionado = null;
@@ -2134,8 +2111,8 @@
         const tarifa = tarifaDe(s);
         const n = conteoActivos[s.clave] || 0;
         const textoConductores = n > 0
-          ? '● ' + n + ' conductor' + (n > 1 ? 'es' : '') + ' activo' + (n > 1 ? 's' : '')
-          : '● Disponible';
+          ? ('● ' + n + ' conductor' + (n > 1 ? 'es' : '') + ' activo' + (n > 1 ? 's' : ''))
+          : '● Servicio disponible';
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'servicio-card';
@@ -2202,123 +2179,6 @@
     }
 
     /* ============================ PANEL CONDUCTOR ============================ */
-    const idConductorActual = () => usuarioActual
-      ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id)
-      : CONDUCTOR_ID_PRUEBA;
-
-    // Viajes que ESTE conductor rechazó (siguen visibles para los demás conductores)
-    function rechazadosDelConductor() {
-      const todo = lsJSON(K_RECHAZADOS);
-      const lista = todo && typeof todo === 'object' ? todo[String(idConductorActual())] : null;
-      return Array.isArray(lista) ? lista.map(String) : [];
-    }
-    function guardarRechazo(idViaje) {
-      let todo = lsJSON(K_RECHAZADOS);
-      if (!todo || typeof todo !== 'object' || Array.isArray(todo)) todo = {};
-      const k = String(idConductorActual());
-      const lista = Array.isArray(todo[k]) ? todo[k].map(String) : [];
-      if (!lista.includes(String(idViaje))) lista.push(String(idViaje));
-      todo[k] = lista.slice(-300);
-      lsSet(K_RECHAZADOS, JSON.stringify(todo));
-    }
-
-    function tiempoRelativo(ts) {
-      if (!ts) return 'Reciente';
-      const seg = Math.max(0, Math.round((Date.now() - ts) / 1000));
-      if (seg < 45) return 'Ahora mismo';
-      const min = Math.round(seg / 60);
-      if (min < 60) return 'Hace ' + min + ' min';
-      const h = Math.round(min / 60);
-      return 'Hace ' + h + ' h';
-    }
-
-    const SVG_DISTANCIA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>';
-    const SVG_RELOJ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
-    const SVG_RECHAZAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-
-    function crearTarjetaViaje(viaje, esNuevo, indice) {
-      const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
-      const distNum = Number(viaje.distancia_km || 0);
-      const duracionEst = viaje.duracion_min || Math.max(3, Math.round(distNum * 2.5));
-      const creado = fechaDeViaje(viaje);
-      const ts = creado ? creado.getTime() : 0;
-
-      const card = document.createElement('div');
-      card.className = 'tarjeta-viaje entrada' + (esNuevo ? ' nuevo' : '');
-      card.dataset.id = String(viaje.id);
-      card.style.setProperty('--d', (indice * 0.09) + 's');
-      card.innerHTML =
-        '<div class="viaje-header">' +
-          '<div class="viaje-header-izq">' +
-            '<span class="viaje-tipo-badge">' + iconoServicio(clave) + ' ' + esc(viaje.tipo_servicio || 'Servicio') + '</span>' +
-            (esNuevo ? '<span class="viaje-nuevo-chip">NUEVO</span>' : '') +
-          '</div>' +
-          '<div class="viaje-precio-badge">' + formatoMoneda(viaje.tarifa || 0) + '<small>TARIFA</small></div>' +
-        '</div>' +
-        '<div class="viaje-hace"><span class="live-dot"></span><span data-ts="' + ts + '">' + tiempoRelativo(ts) + '</span></div>' +
-        '<div class="viaje-ruta">' +
-          '<div class="viaje-punto"><span class="viaje-punto-dot origen">A</span><div class="viaje-punto-text">' +
-            esc(viaje.origen_nombre || 'Origen') + '<span class="viaje-punto-sub">Punto de recojo</span></div></div>' +
-          '<div class="viaje-linea-conector"></div>' +
-          '<div class="viaje-punto"><span class="viaje-punto-dot destino">B</span><div class="viaje-punto-text">' +
-            esc(viaje.destino_nombre || 'Destino') + '<span class="viaje-punto-sub">Punto de entrega</span></div></div>' +
-        '</div>' +
-        '<div class="viaje-metricas">' +
-          '<div class="viaje-metrica-item">' + SVG_DISTANCIA +
-            '<div><span>' + (distNum ? distNum.toFixed(1) + ' km' : 'Distancia N/D') + '</span><span class="viaje-metrica-sub">Distancia total</span></div>' +
-          '</div>' +
-          '<div class="viaje-metrica-item">' + SVG_RELOJ +
-            '<div><span>~' + duracionEst + ' min</span><span class="viaje-metrica-sub">Tiempo de recorrido</span></div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="viaje-footer">' +
-          '<div class="viaje-cta"><button type="button" class="btn-main btn-aceptar-viaje">Aceptar Viaje</button></div>' +
-          '<button type="button" class="btn-rechazar">' + SVG_RECHAZAR + ' Rechazar viaje</button>' +
-        '</div>';
-
-      card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
-      card.querySelector('.btn-rechazar').addEventListener('click', () => rechazarViaje(viaje, card));
-
-      if (esNuevo) {
-        setTimeout(() => {
-          card.classList.remove('nuevo');
-          const chip = card.querySelector('.viaje-nuevo-chip');
-          if (chip) chip.remove();
-        }, 12000);
-      }
-      return card;
-    }
-
-    function pintarEstadoLista() {
-      const etiqueta = claveServicioConductor ? etiquetaServicio(claveServicioConductor) : 'tu categoría';
-      const n = contSolicitudes.querySelectorAll('.tarjeta-viaje:not(.saliendo)').length;
-      let vacio = contSolicitudes.querySelector('.cargando');
-      if (!n) {
-        statusConductor.textContent = 'Esperando solicitudes de ' + etiqueta + '…';
-        if (!vacio) {
-          vacio = document.createElement('div');
-          vacio.className = 'cargando';
-          contSolicitudes.appendChild(vacio);
-        }
-        vacio.innerHTML = '<div class="loading-pulse"><span></span><span></span><span></span></div>' +
-          'No hay solicitudes pendientes en este momento para <b>' + esc(etiqueta) + '</b>.<br>Te notificaremos en cuanto un pasajero solicite un viaje.';
-      } else {
-        statusConductor.textContent = n + ' viaje(s) de ' + etiqueta + ' disponible(s)';
-        if (vacio) vacio.remove();
-      }
-    }
-
-    function rechazarViaje(viaje, card) {
-      guardarRechazo(viaje.id);
-      card.querySelectorAll('button').forEach((b) => { b.disabled = true; });
-      card.style.maxHeight = card.offsetHeight + 'px';
-      void card.offsetHeight;
-      card.classList.add('saliendo');
-      mostrarToast('Viaje rechazado · seguirá disponible para otros conductores', '×');
-      setTimeout(() => { card.remove(); pintarEstadoLista(); }, 520);
-      pintarEstadoLista();
-    }
-
     async function cargarViajesSolicitados() {
       if (modoActual !== 'conductor' || !db) return;
 
@@ -2329,18 +2189,14 @@
       }
 
       const etiqueta = claveServicioConductor ? etiquetaServicio(claveServicioConductor) : 'tu categoría';
-      const primera = (viajesIdsVistos === null);
-      const miSeq = ++seqViajes;
-
-      if (primera) {
+      const primeraCarga = (idsSolicitudesVisibles === '');
+      if (primeraCarga) {
         statusConductor.textContent = 'Buscando solicitudes de ' + etiqueta + '…';
         contSolicitudes.innerHTML = '<div class="cargando"><div class="loading-pulse"><span></span><span></span><span></span></div>Cargando viajes pendientes…</div>';
       }
 
       const { data, error } = await db.from('viajes').select('*')
         .eq('estado', 'solicitado').order('id', { ascending:false });
-
-      if (miSeq !== seqViajes || !conductorActivo) return; // llegó una respuesta más nueva
 
       if (error) {
         statusConductor.textContent = 'Error al cargar viajes: ' + error.message;
@@ -2355,41 +2211,82 @@
         viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
       }
 
-      // Excluir los viajes que este conductor ya rechazó (los demás conductores los siguen viendo)
-      const rechazados = new Set(rechazadosDelConductor());
-      viajes = viajes.filter(v => !rechazados.has(String(v.id)));
+      // Los viajes declinados por este conductor ya no se le muestran (sí a los demás conductores)
+      const rechazados = idsRechazados();
+      viajes = viajes.filter(v => rechazados.indexOf(String(v.id)) === -1);
 
-      const ids = new Set(viajes.map(v => String(v.id)));
-      const nuevos = primera ? [] : viajes.filter(v => !viajesIdsVistos.has(String(v.id)));
-      const idsNuevos = new Set(nuevos.map(v => String(v.id)));
-      viajesIdsVistos = ids;
+      const firma = viajes.map(v => v.id).join(',');
+      if (!primeraCarga && firma === idsSolicitudesVisibles) return; // Evita repintados innecesarios
+      idsSolicitudesVisibles = firma;
 
-      // Actualización sin parpadeo: se conservan tarjetas existentes y solo se animan las nuevas
-      Array.from(contSolicitudes.children).forEach((el) => {
-        if (!el.classList.contains('tarjeta-viaje')) el.remove();
-      });
-      const existentes = new Map();
-      Array.from(contSolicitudes.querySelectorAll(':scope > .tarjeta-viaje')).forEach((el) => {
-        if (el.classList.contains('saliendo')) return;
-        if (!ids.has(el.dataset.id)) el.remove();
-        else existentes.set(el.dataset.id, el);
-      });
-
-      let ref = contSolicitudes.firstElementChild;
-      viajes.forEach((viaje, i) => {
-        const id = String(viaje.id);
-        let el = existentes.get(id);
-        if (!el) el = crearTarjetaViaje(viaje, idsNuevos.has(id), primera ? i : 0);
-        if (el === ref) ref = ref.nextElementSibling;
-        else contSolicitudes.insertBefore(el, ref);
-      });
-
-      pintarEstadoLista();
-
-      if (nuevos.length) {
-        mostrarToast(nuevos.length === 1 ? 'Nueva solicitud de viaje' : nuevos.length + ' nuevas solicitudes de viaje', '+');
-        try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+      if (!viajes.length) {
+        statusConductor.textContent = 'Esperando solicitudes de ' + etiqueta + '…';
+        contSolicitudes.innerHTML = '<div class="cargando">No hay solicitudes pendientes en este momento para <b>' + esc(etiqueta) + '</b>.<br>Te notificaremos en cuanto un pasajero solicite un viaje.</div>';
+        return;
       }
+
+      statusConductor.textContent = viajes.length + ' viaje(s) de ' + etiqueta + ' disponible(s)';
+      contSolicitudes.innerHTML = '';
+
+      viajes.forEach((viaje, idx) => {
+        const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
+        const distNum = Number(viaje.distancia_km || 0);
+        const duracionEst = viaje.duracion_min || Math.max(3, Math.round(distNum * 2.5));
+
+        const card = document.createElement('div');
+        card.className = 'tarjeta-viaje' + (idx === 0 ? ' nueva' : '');
+        card.style.animationDelay = (idx * 0.09) + 's';
+        card.innerHTML =
+          '<span class="brillo-barrido"></span>' +
+          (idx === 0 ? '<span class="viaje-badge-nuevo">Nuevo</span>' : '') +
+          '<div class="viaje-header">' +
+            '<span class="viaje-tipo-badge">' + iconoServicio(clave) + ' ' + esc(viaje.tipo_servicio || 'Servicio') + '</span>' +
+            '<div class="viaje-precio-badge">' + formatoMoneda(viaje.tarifa || 0) + '<small>TARIFA</small></div>' +
+          '</div>' +
+          '<div class="viaje-ruta">' +
+            '<div class="viaje-punto"><span class="viaje-punto-dot origen">A</span><div class="viaje-punto-text">' +
+              esc(viaje.origen_nombre || 'Origen') + '<span class="viaje-punto-sub">Punto de recojo</span></div></div>' +
+            '<div class="viaje-linea-conector"></div>' +
+            '<div class="viaje-punto"><span class="viaje-punto-dot destino">B</span><div class="viaje-punto-text">' +
+              esc(viaje.destino_nombre || 'Destino') + '<span class="viaje-punto-sub">Punto de entrega</span></div></div>' +
+          '</div>' +
+          '<div class="viaje-metricas">' +
+            '<div class="viaje-metrica-item">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h5a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5"/></svg>' +
+              '<div><span>' + (distNum ? distNum.toFixed(1) + ' km' : 'Distancia N/D') + '</span><span class="viaje-metrica-sub">Distancia total</span></div>' +
+            '</div>' +
+            '<div class="viaje-metrica-item">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' +
+              '<div><span>~' + duracionEst + ' min</span><span class="viaje-metrica-sub">Tiempo de recorrido</span></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="viaje-footer">' +
+            '<div class="viaje-cta">' +
+              '<button type="button" class="btn-main btn-aceptar-viaje">Aceptar Viaje</button>' +
+              '<button type="button" class="btn-rechazar-viaje">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+                'Declinar viaje</button>' +
+            '</div>' +
+          '</div>';
+
+        card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
+        card.querySelector('.btn-rechazar-viaje').addEventListener('click', () => rechazarViaje(viaje, card));
+        contSolicitudes.appendChild(card);
+      });
+    }
+
+    /* Declinar / rechazar: el viaje desaparece solo para este conductor y sigue visible para los demás */
+    function rechazarViaje(viaje, card) {
+      agregarRechazado(viaje.id);
+      card.style.transition = 'opacity .28s ease, transform .28s ease';
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(40px) scale(.96)';
+      setTimeout(() => {
+        card.remove();
+        idsSolicitudesVisibles = '';
+        mostrarToast('Viaje declinado · Sigue disponible para otros conductores', '!');
+        cargarViajesSolicitados();
+      }, 290);
     }
 
     async function aceptarViaje(viaje) {
@@ -2406,7 +2303,16 @@
     function suscribirRealtime() {
       if (!db || !db.channel) return;
       db.channel('public:viajes')
-        .on('postgres_changes', { event:'*', schema:'public', table:'viajes' }, () => {
+        .on('postgres_changes', { event:'*', schema:'public', table:'viajes' }, (payload) => {
+          // Cancelación inmediata detectada en tiempo real
+          try {
+            const nuevo = payload && payload.new;
+            const est = nuevo ? String(nuevo.estado || '').toLowerCase() : '';
+            if (nuevo && ultimoViajeActivoId && String(nuevo.id) === String(ultimoViajeActivoId) &&
+                ['cancelado','rechazado','anulado'].includes(est)) {
+              limpiarViajeActivoUI('El viaje fue cancelado');
+            }
+          } catch (e) {}
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
           verificarViajeEnProgresoUsuario();
           if (abierto(modalHistorial)) cargarHistorial();
@@ -2427,17 +2333,16 @@
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       });
 
+      window.addEventListener('pageshow', () => {
+        verificarViajeEnProgresoUsuario();
+        if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
+      });
+
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
           verificarViajeEnProgresoUsuario();
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
         }
-      });
-
-      // Al volver desde viaje.html con el botón "atrás" (página restaurada de caché): sincronizar al instante
-      window.addEventListener('pageshow', () => {
-        verificarViajeEnProgresoUsuario();
-        if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       });
 
       // Polling ligero en segundo plano para garantizar sincronización en tiempo real
@@ -2446,13 +2351,6 @@
           verificarViajeEnProgresoUsuario();
         }
       }, 3500);
-
-      // Actualiza el "hace X min" de las tarjetas de viaje del conductor
-      setInterval(() => {
-        document.querySelectorAll('[data-ts]').forEach((el) => {
-          el.textContent = tiempoRelativo(Number(el.dataset.ts));
-        });
-      }, 20000);
     });
   })();
   </script>
