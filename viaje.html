@@ -52,7 +52,8 @@
     @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}100%{opacity:1;transform:scale(1)}}
     .status-titulo{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
     /* [AJUSTE 2] Descripción de estado con trazo más grueso para que resalte */
-    .status-desc{font-size:.875rem;color:var(--muted-text);margin-top:6px;line-height:1.45;font-weight:700;letter-spacing:-.005em}
+    .status-desc{font-size:.875rem;color:#000000;margin-top:6px;line-height:1.45;font-weight:700;letter-spacing:-.005em}
+    body.dark-theme .status-desc{color:#ffffff}
 
     .stepper{display:flex;justify-content:space-between;position:relative;margin:22px 0 4px}
     .stepper::before{content:'';position:absolute;top:14px;left:12%;right:12%;height:2px;background:var(--border-color);z-index:1}
@@ -195,6 +196,25 @@
     .vehiculo-mini-img{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);background:var(--card-bg)}
     .vehiculo-thumb-txt{font-size:.72rem;font-weight:700}
     .calificacion-debajo-placa{display:flex;align-items:center;gap:6px;margin-top:1px}
+
+    /* [AJUSTE] EN MODO OSCURO: TIPO DE SERVICIO, MARCA/MODELO, PLACA Y FOTO DEL VEHÍCULO EN NEGRO */
+    body.dark-theme #card-persona .vehicle-tag,
+    body.dark-theme #card-persona .mini-tag.placa-tag,
+    body.dark-theme #card-persona .mini-tag.placa-tag .placa,
+    body.dark-theme #card-persona .vehiculo-thumb-chip,
+    body.dark-theme #card-persona .vehiculo-thumb-txt{
+      color:#000000 !important;
+      background:rgba(255,255,255,.92);
+      border-color:rgba(255,255,255,.92);
+    }
+    body.dark-theme #card-persona .vehicle-tag svg,
+    body.dark-theme #card-persona .mini-tag.placa-tag svg,
+    body.dark-theme #card-persona .vehiculo-thumb-chip svg{
+      color:#000000 !important;
+      stroke:#000000 !important;
+    }
+    body.dark-theme #card-persona .mini-tag.placa-tag{border:1px dashed #000000}
+    body.dark-theme #card-persona .vehiculo-thumb-chip:hover{border-color:#000000}
 
     /* [MODIFICACIÓN 3 Y 7] BOTONES DE CONTACTO (CHAT Y LLAMADA APP ÚNICAMENTE) */
     .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
@@ -531,7 +551,7 @@
           <span class="dot a">A</span>
           <div>
             <div class="route-detail" id="txt-origen">Origen…</div>
-            <div class="route-sub">Punto de recojo</div>
+            <div class="route-sub">Punto de recogida</div>
           </div>
         </div>
         <div class="route-point">
@@ -598,7 +618,7 @@
   <div class="modal" id="modal-nav">
     <div class="modal-box">
       <div class="modal-head"><div class="modal-title">Navegar al origen</div><button class="modal-close" data-cerrar="modal-nav">✕</button></div>
-      <p class="modal-desc" id="nav-desc">Elige la app para llegar al punto de recojo.</p>
+      <p class="modal-desc" id="nav-desc">Elige la app para llegar al punto de recogida.</p>
       <div class="opciones">
         <a class="nav-app" id="nav-google" href="#" target="_blank" rel="noopener"><span class="logo" style="background:#1a73e8">G</span><span>Abrir en Google Maps</span></a>
         <a class="nav-app" id="nav-waze" href="#" target="_blank" rel="noopener"><span class="logo" style="background:#33ccff">W</span><span>Abrir en Waze</span></a>
@@ -1155,7 +1175,7 @@ function obtenerFotoVehiculo(info, v) {
     const TEXTOS_ESTADO = {
       solicitado: ['Buscando conductor', 'Esperando conductor', 'Tu solicitud está visible para los conductores cercanos.'],
       aceptado:   ['Viaje aceptado', 'Viaje aceptado', 'El conductor tomó tu servicio y se prepara para recogerte.'],
-      en_camino:  ['Conductor en camino', 'Conductor en camino', 'El vehículo se dirige al punto de recojo.'],
+      en_camino:  ['Conductor en camino', 'Conductor en camino', 'El vehículo se dirige al punto de recogida.'],
       en_progreso:['En curso', 'En curso hacia el destino', 'Vas a bordo. ¡Disfruta el trayecto con BIKAR!'],
       terminado:  ['Viaje finalizado', '¡Has llegado a tu destino!', 'Viaje completado exitosamente. Gracias por usar BIKAR.'],
       cancelado:  ['Cancelado', 'Viaje cancelado', 'Esta solicitud fue cancelada.']
@@ -1166,15 +1186,15 @@ function obtenerFotoVehiculo(info, v) {
       pasajero: {
         solicitado:  'Estamos mostrando tu solicitud a los conductores cercanos. Te avisaremos apenas uno la acepte.',
         aceptado:    '¡Listo! Un conductor aceptó tu viaje y ya se alista para recogerte.',
-        en_camino:   'Tu conductor se dirige al punto de recojo. Ten a la mano tu PIN de seguridad.',
+        en_camino:   'Tu conductor se dirige al punto de recogida. Ten a la mano tu PIN de seguridad.',
         en_progreso: 'Vas a bordo rumbo a tu destino. Relájate y disfruta el trayecto con BIKAR.',
         terminado:   '¡Llegaste a tu destino! Gracias por viajar con BIKAR.',
         cancelado:   'Esta solicitud fue cancelada. Puedes pedir un nuevo servicio cuando lo necesites.'
       },
       conductor: {
         solicitado:  'Este servicio está disponible. Acéptalo para quedar asignado al viaje.',
-        aceptado:    'Tomaste este servicio. Dirígete al punto de recojo del pasajero.',
-        en_camino:   'Vas rumbo al punto de recojo. Al llegar, solicita el PIN de 4 dígitos al pasajero.',
+        aceptado:    'Tomaste este servicio. Dirígete al punto de recogida del pasajero.',
+        en_camino:   'Vas rumbo al punto de recogida. Al llegar, solicita el PIN de 4 dígitos al pasajero.',
         en_progreso: 'Pasajero a bordo. Conduce con seguridad hasta el destino acordado.',
         terminado:   'Viaje completado con éxito. ¡Gracias por conducir con BIKAR!',
         cancelado:   'Este viaje fue cancelado y ya no está asignado a ti.'
@@ -1590,7 +1610,7 @@ function obtenerFotoVehiculo(info, v) {
       const lat = v.origen_lat, lon = v.origen_lon != null ? v.origen_lon : v.origen_lng;
       const hayCoords = lat != null && lon != null;
       const nombre = v.origen_nombre || '';
-      $('nav-desc').textContent = 'Punto de recojo: ' + (nombre || 'origen del viaje');
+      $('nav-desc').textContent = 'Punto de recogida: ' + (nombre || 'origen del viaje');
       $('nav-google').href = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + (hayCoords ? lat + ',' + lon : encodeURIComponent(nombre));
       $('nav-waze').href = hayCoords
         ? 'https://waze.com/ul?ll=' + lat + ',' + lon + '&navigate=yes'
