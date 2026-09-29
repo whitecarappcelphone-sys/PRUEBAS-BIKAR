@@ -835,8 +835,8 @@
     const PASAJERO_ID_PRUEBA = "5";
     const CONDUCTOR_ID_PRUEBA = "10";
     const MAX_FILAS = 500;
-    const VENTANA_ACTIVO_MS = 3 * 60 * 1000; // Un conductor cuenta como activo si reportó conexión en los últimos 3 min
-    const LATIDO_CONDUCTOR_MS = 25000;
+    const VENTANA_ACTIVO_MS = 10 * 60 * 1000; // Un conductor cuenta como activo si reportó conexión en los últimos 10 min
+    const LATIDO_CONDUCTOR_MS = 20000;
 
     /* ============================ TARIFAS REALES PERÚ (SOLES S/) ============================
        Ajustadas equivalentes al mercado de Uber/inDrive en Perú (Lima/provincias) con tarifas justas:
@@ -2277,9 +2277,9 @@
       ru.filas.forEach((u) => {
         if (estricto) {
           if (u.conductor_activo !== true) return;
-          if (ru.nivel === 0) {
-            const t = u.ultima_conexion ? new Date(u.ultima_conexion).getTime() : NaN;
-            if (isNaN(t) || (ahora - t) > VENTANA_ACTIVO_MS) return;
+          if (ru.nivel === 0 && u.ultima_conexion) {
+            const t = new Date(u.ultima_conexion).getTime();
+            if (!isNaN(t) && (ahora - t) > VENTANA_ACTIVO_MS) return;
           }
         }
         const cid = condDeUsuario.get(String(u.id));
@@ -2287,7 +2287,9 @@
           servDocUsuario.get(String(u.id)) ||
           (cid !== undefined && cid !== null && servDocCond.get(String(cid)));
         if (clave) conteo[clave] = (conteo[clave] || 0) + 1;
+        else console.warn('Conductor activo sin tipo de servicio registrado (usuario ' + u.id + '): revisa las tablas vehiculos / documentos_conductor.');
       });
+      if (!Object.keys(conteo).length) console.warn('Servicios: 0 conductores activos. Conductores activos encontrados:', ru.filas.filter((x) => x.conductor_activo === true).length);
       return conteo;
     }
 
