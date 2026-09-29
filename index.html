@@ -610,6 +610,7 @@
       </div>
       <div class="input-group"><input type="text" id="doc-marca" placeholder="Marca del Vehículo (Ej: Chevrolet)" required autocomplete="off"></div>
       <div class="input-group"><input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Spark)" required autocomplete="off"></div>
+      <div class="input-group"><input type="text" id="doc-color" placeholder="Color del Vehículo (Ej: Blanco)" required autocomplete="off"></div>
       <div class="input-group"><input type="text" id="doc-anio" inputmode="numeric" maxlength="4" placeholder="Año del Vehículo (Ej: 2021)" required autocomplete="off"></div>
       <p class="doc-nota">Si el vehículo tiene más de 3 años deberás adjuntar la revisión técnica.</p>
       <div class="input-group"><input type="text" id="reg-placa" placeholder="Placa del Vehículo" required autocomplete="off"></div>
@@ -1225,6 +1226,7 @@
       documentacionVehiculo.tipo_servicio = $('doc-tipo-servicio').value;
       documentacionVehiculo.marca = $('doc-marca').value.trim();
       documentacionVehiculo.modelo = $('reg-vehiculo').value.trim();
+      documentacionVehiculo.color = $('doc-color').value.trim();
       documentacionVehiculo.anio = anio;
       documentacionVehiculo.placa = $('reg-placa').value.trim();
       documentacionVehiculo.requiere_revision_tecnica = requiereRevisionTecnica();
@@ -1450,14 +1452,22 @@
           usuarioCreado.conductor_id = conductorId;
           const inputVehiculoModelo = document.getElementById('reg-vehiculo');
           const inputVehiculoPlaca = document.getElementById('reg-placa');
-          await supabaseClient.from('vehiculos').insert([{
-            conductor_id: conductorId,
-            tipo_servicio: documentacionVehiculo.tipo_servicio || null,
-            marca: documentacionVehiculo.marca || null,
-            modelo: documentacionVehiculo.modelo || (inputVehiculoModelo ? inputVehiculoModelo.value : null),
-            anio: documentacionVehiculo.anio || null,
-            placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null)
-          }]);
+          const { error: errVehiculo } = await supabaseClient
+  .from('vehiculos')
+  .insert([{
+    conductor_id: conductorId,
+    tipo_servicio: documentacionVehiculo.tipo_servicio || null,
+    marca: documentacionVehiculo.marca || null,
+    modelo: documentacionVehiculo.modelo || (inputVehiculoModelo ? inputVehiculoModelo.value : null),
+    anio: documentacionVehiculo.anio || null,
+    placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null),
+    color: documentacionVehiculo.color || null
+  }]);
+
+if (errVehiculo) {
+  console.error("ERROR AL GUARDAR VEHÍCULO:", errVehiculo);
+  mostrarAlerta("No se pudo guardar el vehículo: " + errVehiculo.message, "error");
+}
           await guardarDocumentacionConductor(nuevoUsuarioId, conductorId);
         } else if (errCond) {
           console.warn("No se pudo guardar en la tabla 'conductores':", errCond.message);
