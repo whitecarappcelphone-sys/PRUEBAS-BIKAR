@@ -784,6 +784,43 @@
     const btnThemeToggle = $('btn-theme-toggle');
     const themeIcon = $('theme-icon');
 
+    /* ================= SUPABASE STORAGE (FOTOS Y DOCUMENTOS) ================= */
+    /* Buckets públicos donde se guardan los archivos subidos.
+       Crea estos buckets ejecutando el SQL entregado (sección STORAGE)
+       o desde el panel: Storage → New bucket → nombre exacto → Público. */
+    const BUCKET_FOTOS = "fotos-perfil";
+    const BUCKET_DOCUMENTOS = "documentos-vehiculos";
+
+    function base64ABlob(dataUrl) {
+      const partes = dataUrl.split(',');
+      const mime = (partes[0].match(/:(.*?);/) || [])[1] || 'image/jpeg';
+      const binario = atob(partes[1]);
+      const bytes = new Uint8Array(binario.length);
+      for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+      return { blob: new Blob([bytes], { type: mime }), mime: mime };
+    }
+
+    /* Sube un archivo en Base64 a un bucket público de Supabase Storage y
+       devuelve su URL pública (visible en la tabla y en el panel Storage).
+       Si la subida falla, devuelve el Base64 original como respaldo. */
+    async function subirASupabaseStorage(dataUrl, bucket, carpeta, baseNombre) {
+      try {
+        if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return dataUrl || null;
+        const { blob, mime } = base64ABlob(dataUrl);
+        let extension = 'jpg';
+        if (mime === 'application/pdf') extension = 'pdf';
+        else if (mime.indexOf('/') !== -1) extension = mime.split('/')[1].replace('jpeg', 'jpg');
+        const nombreArchivo = carpeta + '/' + baseNombre + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.' + extension;
+        const { error: errUpload } = await supabaseClient.storage.from(bucket).upload(nombreArchivo, blob, { contentType: mime, upsert: true });
+        if (errUpload) { console.warn('No se pudo subir a Storage (' + bucket + '):', errUpload.message); return dataUrl; }
+        const { data: dataPublica } = supabaseClient.storage.from(bucket).getPublicUrl(nombreArchivo);
+        return (dataPublica && dataPublica.publicUrl) ? dataPublica.publicUrl : dataUrl;
+      } catch (errSubida) {
+        console.warn("Error al subir el archivo a Storage, se usará Base64:", errSubida);
+        return dataUrl;
+      }
+    }
+
     /* ================= SISTEMA DE ALERTAS ADAPTABLE CLARO/OSCURO (SIN DOMINIO) ================= */
     function mostrarAlerta(mensaje, tipo = 'info') {
       const previa = document.querySelector('.bikar-alerta-toast');
@@ -1198,6 +1235,21 @@
 
     async function guardarDocumentacionConductor(usuarioId, conductorId) {
       const archivos = documentacionVehiculo.archivos;
+
+      /* 1) Subir cada documento (foto o PDF) a Supabase Storage y obtener su URL pública.
+            Si la subida falla, la función devuelve el Base64 como respaldo. */
+      const urlsDocumentos = {};
+      for (const clave of Object.keys(archivos)) {
+        urlsDocumentos[clave] = await subirASupabaseStorage(
+          archivos[clave].data,
+          BUCKET_DOCUMENTOS,
+          'conductor_' + conductorId,
+          clave
+        );
+      }
+
+      /* 2) Registrar toda la documentación en la tabla 'documentos_conductor'
+            con las URLs públicas de los archivos (visibles desde Supabase). */
       const registro = {
         usuario_id: usuarioId,
         conductor_id: conductorId,
@@ -1207,12 +1259,12 @@
         anio: documentacionVehiculo.anio || null,
         placa: documentacionVehiculo.placa || null,
         requiere_revision_tecnica: !!documentacionVehiculo.requiere_revision_tecnica,
-        dni_ce: archivos.dni_ce?.data || null,
-        antecedente_policial: archivos.antecedente_policial?.data || null,
-        brevete: archivos.brevete?.data || null,
-        foto_vehiculo: archivos.foto_vehiculo?.data || null,
-        tarjeta_propiedad: archivos.tarjeta_propiedad?.data || null,
-        revision_tecnica: archivos.revision_tecnica?.data || null
+        dni_ce: urlsDocumentos.dni_ce || null,
+        antecedente_policial: urlsDocumentos.antecedente_policial || null,
+        brevete: urlsDocumentos.brevete || null,
+        foto_vehiculo: urlsDocumentos.foto_vehiculo || null,
+        tarjeta_propiedad: urlsDocumentos.tarjeta_propiedad || null,
+        revision_tecnica: urlsDocumentos.revision_tecnica || null
       };
       try {
         const resumen = { ...registro };
@@ -1319,6 +1371,12 @@
         return;
       }
 
+      /* Subir la foto de perfil a Supabase Storage (bucket 'fotos-perfil').
+         Se guarda la URL pública en la tabla; si la subida falla se guarda el Base64. */
+      const fotoUrl = fotoBase64
+        ? await subirASupabaseStorage(fotoBase64, BUCKET_FOTOS, rolSeleccionado || 'usuarios', ((regNumDoc && regNumDoc.value.trim()) || 'usuario'))
+        : null;
+
       const datosUsuario = {
         nombre: $('reg-nombre').value,
         auth_user_id: authData.user.id,
@@ -1327,7 +1385,9 @@
         tipo_documento: regTipoDoc ? regTipoDoc.value : 'DNI',
         numero_documento: regNumDoc ? regNumDoc.value : '',
         tipo_usuario: rolSeleccionado,
-        foto: fotoBase64
+        foto: fotoUrl,
+        politicas_aceptadas: checkPoliticasRegistro.checked,
+        fecha_aceptacion_politicas: new Date().toISOString()
       };
 
       const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
@@ -1343,18 +1403,64 @@
       const usuarioCreado = usuarioInsertado[0];
       const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
 
-      if (rolSeleccionado === 'conductor') {
-        const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
-        const vehiculoPlaca = document.getElementById('reg-placa')?.value;
+      /* Registrar en Supabase si el usuario ACEPTÓ (o no) las políticas de protección de datos */
+      try {
+        const { error: errPolitica } = await supabaseClient.from('politicas_aceptaciones').insert([{
+          usuario_id: nuevoUsuarioId,
+          rol: rolSeleccionado,
+          aceptado: checkPoliticasRegistro.checked,
+          version: 'v1.0',
+          fecha: new Date().toISOString()
+        }]);
+        if (errPolitica) console.warn("No se pudo registrar la aceptación de políticas (tabla 'politicas_aceptaciones'):", errPolitica.message);
+      } catch (errPoliticas) { console.warn("Error al registrar la aceptación de políticas:", errPoliticas); }
 
+      /* TABLA PASAJEROS: datos del rol pasajero */
+      if (rolSeleccionado === 'pasajero') {
+        try {
+          const { error: errPasajero } = await supabaseClient
+            .from('pasajeros').insert([{ usuario_id: nuevoUsuarioId }]);
+          if (errPasajero) console.warn("No se pudo guardar en la tabla 'pasajeros':", errPasajero.message);
+        } catch (errPas) { console.warn("Error al guardar el pasajero:", errPas); }
+      }
+
+      /* TABLA COMERCIOS: nombre del establecimiento, categoría y logo */
+      if (rolSeleccionado === 'comercio') {
+        try {
+          const inputComercioNombre = document.getElementById('reg-comercio-nombre');
+          const inputComercioCategoria = document.getElementById('reg-comercio-categoria');
+          const { error: errComercio } = await supabaseClient
+            .from('comercios').insert([{
+              usuario_id: nuevoUsuarioId,
+              nombre_establecimiento: inputComercioNombre ? inputComercioNombre.value : '',
+              categoria: inputComercioCategoria ? inputComercioCategoria.value : '',
+              logo: fotoUrl
+            }]);
+          if (errComercio) console.warn("No se pudo guardar en la tabla 'comercios':", errComercio.message);
+        } catch (errCom) { console.warn("Error al guardar el comercio:", errCom); }
+      }
+
+      /* TABLAS CONDUCTORES + VEHÍCULOS + DOCUMENTACIÓN DEL VEHÍCULO */
+      if (rolSeleccionado === 'conductor') {
         const { data: conductorInsertado, error: errCond } = await supabaseClient
           .from('conductores').insert([{ usuario_id: nuevoUsuarioId }]).select();
 
         if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
           const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
           usuarioCreado.conductor_id = conductorId;
-          await supabaseClient.from('vehiculos').insert([{ conductor_id: conductorId, modelo: vehiculoModelo, placa: vehiculoPlaca }]);
+          const inputVehiculoModelo = document.getElementById('reg-vehiculo');
+          const inputVehiculoPlaca = document.getElementById('reg-placa');
+          await supabaseClient.from('vehiculos').insert([{
+            conductor_id: conductorId,
+            tipo_servicio: documentacionVehiculo.tipo_servicio || null,
+            marca: documentacionVehiculo.marca || null,
+            modelo: documentacionVehiculo.modelo || (inputVehiculoModelo ? inputVehiculoModelo.value : null),
+            anio: documentacionVehiculo.anio || null,
+            placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null)
+          }]);
           await guardarDocumentacionConductor(nuevoUsuarioId, conductorId);
+        } else if (errCond) {
+          console.warn("No se pudo guardar en la tabla 'conductores':", errCond.message);
         }
       }
 
