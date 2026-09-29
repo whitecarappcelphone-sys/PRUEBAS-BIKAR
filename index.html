@@ -649,6 +649,16 @@
 
       <div class="doc-item" data-doc="brevete">
         <span class="doc-label">Brevete de conductor</span>
+         <!-- Número de licencia -->
+  <div class="input-group">
+    <input
+      type="text"
+      id="doc-licencia"
+      placeholder="Número de licencia"
+      required
+      autocomplete="off"
+    >
+  </div>
         <label class="doc-drop">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
@@ -1229,6 +1239,7 @@
       documentacionVehiculo.color = $('doc-color').value.trim();
       documentacionVehiculo.anio = anio;
       documentacionVehiculo.placa = $('reg-placa').value.trim();
+      documentacionVehiculo.licencia = $('doc-licencia').value.trim();
       documentacionVehiculo.requiere_revision_tecnica = requiereRevisionTecnica();
       marcarDocumentacionCompleta();
       cerrarModalDocumentacion();
@@ -1445,8 +1456,12 @@
       /* TABLAS CONDUCTORES + VEHÍCULOS + DOCUMENTACIÓN DEL VEHÍCULO */
       if (rolSeleccionado === 'conductor') {
         const { data: conductorInsertado, error: errCond } = await supabaseClient
-          .from('conductores').insert([{ usuario_id: nuevoUsuarioId }]).select();
-
+  .from('conductores')
+  .insert([{
+    usuario_id: nuevoUsuarioId,
+    licencia: documentacionVehiculo.licencia
+  }])
+  .select();
         if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
           const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
           usuarioCreado.conductor_id = conductorId;
