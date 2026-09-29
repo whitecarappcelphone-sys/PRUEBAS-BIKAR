@@ -1370,15 +1370,20 @@
     let columnasActividadOk = true;
     async function sincronizarEstadoConductorDB() {
       if (!db || !columnasActividadOk || !usuarioActual) return;
-      if (usuarioActual.tipo_usuario !== 'conductor' || usuarioActual.id == null) return;
+      if (String(usuarioActual.tipo_usuario || '').toLowerCase() !== 'conductor' || usuarioActual.id == null) return;
       try {
-        let { error } = await db.from('usuarios')
+        let res = await db.from('usuarios')
           .update({ conductor_activo: !!conductorActivo, ultima_conexion: new Date().toISOString() })
-          .eq('id', usuarioActual.id);
-        if (error) {
-          ({ error } = await db.from('usuarios').update({ conductor_activo: !!conductorActivo }).eq('id', usuarioActual.id));
+          .eq('id', usuarioActual.id).select('id');
+        if (res.error) {
+          res = await db.from('usuarios').update({ conductor_activo: !!conductorActivo }).eq('id', usuarioActual.id).select('id');
         }
-        if (error) { columnasActividadOk = false; console.warn('No se pudo sincronizar el estado del conductor (¿ejecutaste el SQL?):', error.message); }
+        if (res.error) {
+          columnasActividadOk = false;
+          console.warn('No se pudo sincronizar el estado del conductor (¿ejecutaste el SQL?):', res.error.message);
+        } else if (!res.data || !res.data.length) {
+          console.warn('El estado del conductor no se actualizó: revisa las políticas RLS de la tabla usuarios (SQL de BIKAR).');
+        }
       } catch (e) { console.warn('Estado conductor:', e); }
     }
 
@@ -1553,25 +1558,88 @@
       } catch (e) { return null; }
     }
 
-    const filaUsuario = (u) => traerTabla('usuarios', (f) =>
-      mismoId(f.id, u.id) || mismoTexto(f.correo, u.correo) || mismoTexto(f.usuario, u.usuario) || mismoTexto(f.email, u.correo));
-    const filaDocumentos = (u) => traerTabla('documentos_conductor', (f) => {
-      const idNum = u.conductor_id || u.id;
-      return mismoId(f.usuario_id, u.id) || mismoId(f.conductor_id, idNum) || mismoTexto(f.correo, u.correo);
-    });
+    // Fila del usuario por id (evita descargar toda la tabla); respaldo: búsqueda amplia
+    async function filaUsuarioPorId(u) {
+      if (!db || !u || u.id == null) return null;
+      try {
+        const { data, error } = await db.from('usuarios').select('*').eq('id', u.id).limit(1);
+        if (!error && data && data.length) return data[0];
+      } catch (e) {}
+      return null;
+    }
+    const filaUsuario = async (u) => (await filaUsuarioPorId(u)) || traerTabla('usuarios', (f) =>
+      mismoId(f.id, u.id) || mismoTexto(f.email, u.email || u.correo) || mismoTexto(f.numero_documento, u.numero_documento));
+
+    /* ---- Datos reales del conductor: usuarios → conductores → vehiculos / documentos_conductor ---- */
+    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa';
+    const COLS_DOC_FOTO = COLS_DOC + ',foto_vehiculo';
+    const BUCKET_DOCUMENTOS = 'documentos-vehiculos';
+    const CLAVES_DOC_ARCHIVO = ['dni_ce', 'antecedente_policial', 'brevete', 'foto_vehiculo', 'tarjeta_propiedad', 'revision_tecnica', 'requiere_revision_tecnica'];
+    let conductorIdCache = null;
+
+    // Consulta filas por una columna; si alguna columna no existe reintenta con todas (*)
+    async function consultarFilas(tabla, columnas, col, val) {
+      if (!db || val === null || val === undefined || val === '') return [];
+      const lista = columnas === '*' ? ['*'] : [columnas, '*'];
+      for (const cols of lista) {
+        try {
+          const { data, error } = await db.from(tabla).select(cols).eq(col, val).limit(20);
+          if (!error) return data || [];
+        } catch (e) { /* reintenta con todas las columnas */ }
+      }
+      return [];
+    }
+    const masReciente = (filas) => (filas || []).slice().sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0] || null;
+
+    // ID real del conductor (tabla 'conductores'), enlazado por usuario_id
+    async function resolverConductorId(u) {
+      if (!u) return null;
+      if (u.conductor_id !== null && u.conductor_id !== undefined && u.conductor_id !== '') return u.conductor_id;
+      if (conductorIdCache && conductorIdCache.usuario === String(u.id)) return conductorIdCache.id;
+      const f = masReciente(await consultarFilas('conductores', 'id,usuario_id', 'usuario_id', u.id));
+      conductorIdCache = { usuario: String(u.id), id: f ? f.id : null };
+      return conductorIdCache.id;
+    }
+
+    // Vehículo (tabla 'vehiculos' por conductor_id) y documentación (tabla 'documentos_conductor')
+    async function datosVehiculoDB(u, conFoto) {
+      const cid = await resolverConductorId(u);
+      const cols = conFoto ? COLS_DOC_FOTO : COLS_DOC;
+      let veh = null, doc = null;
+      if (cid != null) veh = masReciente(await consultarFilas('vehiculos', '*', 'conductor_id', cid));
+      if (u && u.id != null) doc = masReciente(await consultarFilas('documentos_conductor', cols, 'usuario_id', u.id));
+      if (!doc && cid != null) doc = masReciente(await consultarFilas('documentos_conductor', cols, 'conductor_id', cid));
+      return { cid, veh, doc };
+    }
+
+    // Resumen: tipo de servicio, marca, modelo, año y placa
+    async function resumenVehiculoDB(u) {
+      const { veh, doc } = await datosVehiculoDB(u, false);
+      if (!veh && !doc) return null;
+      const r = {};
+      ['tipo_servicio', 'marca', 'modelo', 'anio', 'placa'].forEach((k) => {
+        const v = (veh && veh[k] !== null && veh[k] !== undefined && veh[k] !== '') ? veh[k] : (doc ? doc[k] : null);
+        if (v !== null && v !== undefined && v !== '') r[k] = v;
+      });
+      return Object.keys(r).length ? r : null;
+    }
 
     async function enriquecerUsuario() {
       if (!usuarioActual) return;
       const u = usuarioActual;
-      const docLocal = lsJSON(K_DOC);
       const filaBD = await filaUsuario(u);
-      const docBD = docLocal ? null : await filaDocumentos(u);
+      const esConductor = String((filaBD && filaBD.tipo_usuario) || u.tipo_usuario || '').toLowerCase() === 'conductor';
+      const vehiculo = esConductor ? await resumenVehiculoDB(u) : null;
 
-      documentacionVehiculo = docBD || docLocal || null;
-      const mezcla = mezclar(mezclar(filaBD, docLocal), u);
+      documentacionVehiculo = vehiculo;
+      const mezcla = mezclar(filaBD, u);
       if (filaBD && filaBD.id != null && mezcla.id == null) mezcla.id = filaBD.id;
-      mezcla.foto = u.foto || u.foto_url || (filaBD && (filaBD.foto || filaBD.foto_url)) ||
-                    (docBD && (docBD.foto || docBD.foto_url)) || '';
+      mezcla.foto = u.foto || u.foto_url || (filaBD && (filaBD.foto || filaBD.foto_url)) || '';
+      if (esConductor) {
+        // Limpia restos de documentos de sesiones anteriores; los datos del vehículo vienen siempre de Supabase
+        CLAVES_DOC_ARCHIVO.concat(['marca', 'modelo', 'anio', 'placa']).forEach((k) => { delete mezcla[k]; });
+        if (vehiculo && vehiculo.tipo_servicio) mezcla.tipo_servicio = vehiculo.tipo_servicio;
+      }
       usuarioActual = mezcla;
       guardarSesion();
     }
@@ -1669,7 +1737,13 @@
       if (await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión')) cerrarSesion();
     });
 
-    function cerrarSesion() {
+    async function cerrarSesion() {
+      // Un conductor que cierra sesión deja de contarse como activo
+      try {
+        if (db && usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor' && usuarioActual.id != null) {
+          await db.from('usuarios').update({ conductor_activo: false }).eq('id', usuarioActual.id);
+        }
+      } catch (e) {}
       try { localStorage.removeItem(K_SESION); } catch (e) {}
       usuarioActual = null;
       documentacionVehiculo = null;
@@ -1721,6 +1795,7 @@
       horario:'Horario', descripcion:'Descripción', estado:'Estado', verificado:'Verificado',
       politicas_aceptadas:'Políticas aceptadas', acepto_politicas:'Políticas aceptadas', acepta_politicas:'Políticas aceptadas',
       politica_aceptada:'Políticas aceptadas', terminos_aceptados:'Términos aceptados', acepto_terminos:'Términos aceptados',
+      fecha_aceptacion_politicas:'Fecha de aceptación de políticas', tipo_documento:'Tipo de documento', numero_documento:'N° de documento',
       created_at:'Fecha de registro', creado_en:'Fecha de registro', fecha_registro:'Fecha de registro'
     };
 
@@ -1734,7 +1809,7 @@
 
     function valorLegible(clave, valor) {
       // Las políticas/términos son requisito obligatorio del registro: siempre figuran como aceptadas
-      if (/polit|terminos|condiciones/i.test(String(clave))) return 'Sí';
+      if (/^(politicas?_aceptadas?|acepto_politicas|acepta_politicas|terminos_aceptados|acepto_terminos)$/i.test(String(clave))) return 'Sí';
       if (valor === null || valor === undefined || valor === '' || typeof valor === 'object') return null;
       if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
       const txt = String(valor);
@@ -1815,9 +1890,14 @@
         }));
       }
 
-      let doc = documentacionVehiculo || lsJSON(K_DOC);
-      if (!doc && u.tipo_usuario === 'conductor') doc = await filaDocumentos(u);
-      if (doc) { documentacionVehiculo = doc; extra.appendChild(construirGrupo('Documentación del vehículo', doc)); }
+      let doc = documentacionVehiculo;
+      if (!doc && u.tipo_usuario === 'conductor') doc = await resumenVehiculoDB(u);
+      if (doc) {
+        documentacionVehiculo = doc;
+        const datosDoc = Object.assign({}, doc);
+        delete datosDoc.tipo_servicio;
+        extra.appendChild(construirGrupo('Datos del vehículo', datosDoc));
+      }
 
       modalPerfil.classList.remove('oculto');
     }
@@ -1829,113 +1909,36 @@
     $('perfil-foto-grande').addEventListener('error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
 
     /* ============================ MI VEHÍCULO (CONDUCTOR) ============================ */
-    // Campos que son documentos / datos personales: NO se muestran en "Mi vehículo"
-    const RE_DOCUMENTO = /soat|tecno|revision|tarjeta|propiedad|licencia|brevete|cedula|dni|documento|antecedent|seguro|certific|pdf|vencim|expedic|polit|termin|acept|verific|estado|aprob|correo|email|telefono|celular|nombre|apellido|pass|token|hash|created|creado|fecha|_id$|^id$|auth_/i;
-    // Campos propios del vehículo
-    const RE_VEHICULO = /(placa|marca|modelo|color|cilindraje|capacidad|servicio|vehiculo|combustible|motor|chasis|serie|carroceria|puertas|pasajeros|peso|(^|_)(anio|ano|año)($|_))/i;
-    const CLAVES_FOTO_PERFIL = ['foto', 'foto_url', 'avatar', 'imagen', 'foto_perfil'];
-    const esValorImagen = (v) => typeof v === 'string' && v.length > 4 &&
-      (/^(data:image|blob:)/i.test(v) || /^https?:\/\//i.test(v) || /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(v));
+    // Solo se muestran datos del vehículo (servicio, marca, modelo, año, placa) y su foto; nunca documentos personales
 
-    function ordenVehiculo(clave) {
-      const c = clave.toLowerCase();
-      const orden = ['servicio', 'marca', 'modelo', 'placa', 'color', 'anio|ano|año'];
-      const idx = orden.findIndex((p) => new RegExp(p).test(c));
-      return idx === -1 ? 99 : idx;
-    }
+    /* ---- Foto y datos reales del vehículo desde Supabase ---- */
+    const tsDeNombre = (n) => { const m = String(n).match(/_(\d{10,})_/); return m ? Number(m[1]) : 0; };
 
-    /* ---- Lectura real desde Supabase ---- */
-    const RE_FOTO_DOC = /soat|tecno|revision|tarjeta|propiedad|licencia|brevete|cedula|dni|documento|antecedent|seguro|certific|pdf/i;
-    const RE_FOTO_PERSONA = /perfil|avatar|selfie|rostro|usuario|persona/i;
-    const RE_CLAVE_FOTO = /foto|imagen|img|photo|url|vehic|moto|auto|carro|unidad/i;
-    // Datos que NO forman parte de "Mi vehículo" (documentos, datos personales, metadatos)
-    const RE_EXCLUIR_DATO = /(^|_)(id|uuid)($|_)|auth_|usuario|user|correo|email|telefono|celular|whatsapp|nombre|apellido|pass|token|hash|created|creado|updated|fecha|verific|aprob|estado|polit|termin|acept|conductor_activo|ultima_conexion|soat|tecno|revision|tarjeta|propiedad|licencia|brevete|cedula|dni|documento|antecedent|seguro|certific|pdf|vencim|expedic|direccion|ruc/i;
-    const BUCKETS_FOTOS = ['vehiculos', 'vehiculo', 'fotos', 'documentos', 'documentos_conductor', 'conductores', 'imagenes', 'bikar', 'uploads', 'public', 'avatars'];
-
-    // Busca la fila de un conductor en una tabla probando las columnas de enlace más comunes
-    async function buscarFilaConductor(tabla, u) {
-      if (!db || !u) return null;
-      const idNum = u.conductor_id || u.id;
-      const intentos = [
-        ['usuario_id', u.id], ['conductor_id', idNum], ['user_id', u.id], ['id_usuario', u.id],
-        ['auth_user_id', u.auth_user_id], ['correo', u.correo], ['email', u.email || u.correo]
-      ];
-      for (const par of intentos) {
-        const col = par[0], val = par[1];
-        if (val === null || val === undefined || val === '') continue;
-        try {
-          const { data, error } = await db.from(tabla).select('*').eq(col, val).limit(20);
-          if (!error && data && data.length) {
-            return data.slice().sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0];
-          }
-        } catch (e) { /* la columna puede no existir en esta tabla */ }
-      }
-      return null;
-    }
-
-    async function filaUsuarioPorId(u) {
-      if (!db || !u || u.id == null) return null;
+    // Convierte el valor guardado (URL pública, Base64 o ruta de Storage) en una URL utilizable
+    function imagenDesdeValor(valor) {
+      if (typeof valor !== 'string') return null;
+      const t = valor.trim();
+      if (!t) return null;
+      if (/^(data:image\/|https?:\/\/|blob:)/i.test(t)) return t;
+      if (/^[A-Za-z0-9+/=\r\n]{200,}$/.test(t)) return 'data:image/jpeg;base64,' + t.replace(/\s/g, '');
       try {
-        const { data, error } = await db.from('usuarios').select('*').eq('id', u.id).limit(1);
-        if (!error && data && data.length) return data[0];
-      } catch (e) {}
-      return null;
+        const r = db.storage.from(BUCKET_DOCUMENTOS).getPublicUrl(t.replace(/^\/+/, ''));
+        return r && r.data ? r.data.publicUrl : null;
+      } catch (e) { return null; }
     }
 
-    // Extrae URLs/rutas de imagen de un valor (texto, JSON, arreglo u objeto)
-    function extraerImagenes(valor) {
-      const salida = [];
-      const visitar = (v) => {
-        if (v === null || v === undefined) return;
-        if (Array.isArray(v)) { v.forEach(visitar); return; }
-        if (typeof v === 'object') { Object.keys(v).forEach((k) => visitar(v[k])); return; }
-        if (typeof v !== 'string') return;
-        const t = v.trim();
-        if (!t) return;
-        if (t[0] === '[' || t[0] === '{') { try { visitar(JSON.parse(t)); return; } catch (e) {} }
-        if (/^(data:image\/|blob:)/i.test(t)) salida.push(t);
-        else if (/^https?:\/\//i.test(t)) salida.push(t);
-        else if (/\.(png|jpe?g|webp|gif|avif|bmp)(\?|#|$)/i.test(t) && !/\s{2,}/.test(t)) salida.push(t);
-        else if (t.length > 200 && /^[A-Za-z0-9+/=\r\n]+$/.test(t)) salida.push('data:image/jpeg;base64,' + t.replace(/\s/g, ''));
-      };
-      visitar(valor);
-      return salida;
-    }
-
-    // Lista de URLs a probar (las rutas relativas se resuelven contra Supabase Storage)
-    function urlsCandidatas(ruta) {
-      if (/^(data:|blob:|https?:\/\/)/i.test(ruta)) return [ruta];
-      const limpia = encodeURI(ruta.replace(/^\/+/, '').replace(/^public\//, ''));
-      const base = SUPABASE_URL + '/storage/v1/object/public/';
-      const lista = [base + limpia];
-      BUCKETS_FOTOS.forEach((b) => lista.push(base + b + '/' + limpia));
-      return lista;
-    }
-
-    function asignarImagenConRespaldo(img, candidatos, alFallar) {
-      let i = 0;
-      img.onerror = () => {
-        i++;
-        if (i < candidatos.length) img.src = candidatos[i];
-        else { img.onerror = null; if (alFallar) alFallar(); }
-      };
-      img.src = candidatos[0];
-    }
-
-    function recogerFotosVehiculo(fila, esTablaVehiculo, fotoPerfilReal, salida, vistos) {
-      Object.keys(fila || {}).forEach((k) => {
-        const kl = k.toLowerCase();
-        if (RE_FOTO_DOC.test(kl) || RE_FOTO_PERSONA.test(kl)) return;
-        if (!RE_CLAVE_FOTO.test(kl)) return;
-        if (CLAVES_FOTO_PERFIL.includes(kl) && !esTablaVehiculo) return;
-        extraerImagenes(fila[k]).forEach((src) => {
-          if (fotoPerfilReal && src === fotoPerfilReal) return;
-          const cands = urlsCandidatas(src);
-          if (vistos.has(cands[0])) return;
-          vistos.add(cands[0]);
-          salida.push(cands);
-        });
-      });
+    // Respaldo: busca en Storage la última foto del vehículo que subió este conductor
+    async function fotoVehiculoDesdeStorage(cid) {
+      if (!db || cid === null || cid === undefined) return null;
+      try {
+        const carpeta = 'conductor_' + cid;
+        const { data, error } = await db.storage.from(BUCKET_DOCUMENTOS).list(carpeta, { limit: 100 });
+        if (error || !data) return null;
+        const fotos = data.filter((f) => /^foto_vehiculo_/.test(f.name)).sort((a, b) => tsDeNombre(b.name) - tsDeNombre(a.name));
+        if (!fotos.length) return null;
+        const r = db.storage.from(BUCKET_DOCUMENTOS).getPublicUrl(carpeta + '/' + fotos[0].name);
+        return r && r.data ? r.data.publicUrl : null;
+      } catch (e) { return null; }
     }
 
     async function abrirModalVehiculo() {
@@ -1948,87 +1951,51 @@
       modalPerfil.classList.add('oculto');
       modalVehiculo.classList.remove('oculto');
 
-      // Datos reales desde Supabase (documentos_conductor, vehiculos y usuarios)
-      const docLocal = lsJSON(K_DOC);
-      let docDB = await buscarFilaConductor('documentos_conductor', u);
-      if (!docDB) docDB = await filaDocumentos(u);
-      const vehDB = await buscarFilaConductor('vehiculos', u);
-      const filaU = await filaUsuarioPorId(u);
-      if (docDB) documentacionVehiculo = docDB;
+      // Datos reales: usuarios → conductores (conductor_id) → vehiculos y documentos_conductor
+      const { cid, veh, doc } = await datosVehiculoDB(u, true);
 
-      // Fotos del vehículo
-      const fotos = [], vistos = new Set();
-      const fotoPerfilReal = String((filaU && (filaU.foto || filaU.foto_url || filaU.avatar || filaU.foto_perfil)) ||
-        (!filaU && (u.foto || u.foto_url)) || '');
-      recogerFotosVehiculo(docDB, true, fotoPerfilReal, fotos, vistos);
-      recogerFotosVehiculo(vehDB, true, fotoPerfilReal, fotos, vistos);
-      recogerFotosVehiculo(docLocal, true, fotoPerfilReal, fotos, vistos);
-      recogerFotosVehiculo(filaU, false, fotoPerfilReal, fotos, vistos);
-
+      // Foto del vehículo (columna foto_vehiculo; respaldo: última foto en Storage)
+      let foto = imagenDesdeValor(doc && doc.foto_vehiculo);
+      if (!foto) foto = await fotoVehiculoDesdeStorage(cid);
       contFotos.innerHTML = '';
-      const sinFoto = () => {
-        contFotos.innerHTML = '<div class="vehiculo-sin-foto">No hay foto del vehículo registrada.</div>';
-      };
-      if (fotos.length) {
-        const principal = document.createElement('img');
-        principal.className = 'vehiculo-foto-principal';
-        principal.alt = 'Foto del vehículo';
-        asignarImagenConRespaldo(principal, fotos[0], () => {
-          if (fotos.length === 1) sinFoto(); else principal.style.display = 'none';
-        });
-        contFotos.appendChild(principal);
-        if (fotos.length > 1) {
-          const gal = document.createElement('div');
-          gal.className = 'vehiculo-galeria';
-          fotos.forEach((cands, idx) => {
-            const th = document.createElement('img');
-            th.alt = 'Foto ' + (idx + 1);
-            if (idx === 0) th.classList.add('activa');
-            asignarImagenConRespaldo(th, cands, () => th.remove());
-            th.addEventListener('click', () => {
-              principal.style.display = '';
-              asignarImagenConRespaldo(principal, cands, () => { principal.style.display = 'none'; });
-              gal.querySelectorAll('img').forEach((x) => x.classList.remove('activa'));
-              th.classList.add('activa');
-            });
-            gal.appendChild(th);
-          });
-          contFotos.appendChild(gal);
-        }
+      if (foto) {
+        const img = document.createElement('img');
+        img.className = 'vehiculo-foto-principal';
+        img.alt = 'Foto del vehículo';
+        img.onerror = () => { contFotos.innerHTML = '<div class="vehiculo-sin-foto">No se pudo cargar la foto del vehículo.</div>'; };
+        img.src = foto;
+        contFotos.appendChild(img);
       } else {
-        sinFoto();
+        contFotos.innerHTML = '<div class="vehiculo-sin-foto">No hay foto del vehículo registrada.</div>';
       }
 
-      // Datos del vehículo: todo lo que el conductor registró en la tabla de documentos (sin documentos ni datos personales)
-      const datos = new Map();
-      const esClaveFoto = (k) => /foto|imagen|img|photo|url/i.test(k);
-      const agregar = (k, v) => {
-        if (v === null || v === undefined || v === '' || typeof v === 'object') return;
-        const id = k.toLowerCase();
-        if (datos.has(id)) return;
-        if (OCULTAS.includes(id) || RE_EXCLUIR_DATO.test(id) || esClaveFoto(id)) return;
-        if (extraerImagenes(v).length && String(v).length > 60) return;
-        datos.set(id, { clave: k, valor: v });
-      };
-      [docDB, vehDB, docLocal].forEach((fila) => {
-        Object.keys(fila || {}).forEach((k) => agregar(k, fila[k]));
-      });
-      [filaU, u].forEach((fila) => {
-        Object.keys(fila || {}).forEach((k) => { if (RE_VEHICULO.test(k)) agregar(k, fila[k]); });
-      });
-
-      const lista = Array.from(datos.values()).sort((a, b) => ordenVehiculo(a.clave) - ordenVehiculo(b.clave));
-      let i = 0;
-      lista.forEach((d) => {
-        let valor = valorLegible(d.clave, d.valor);
-        if (valor === null) return;
-        if (/tipo_servicio|^servicio$/i.test(d.clave)) {
-          const c = normalizarClaveServicio(valor);
-          if (c) valor = etiquetaServicio(c);
+      // Datos del vehículo: servicio, marca, modelo, año y placa
+      const valorDe = (k) => {
+        const fuentes = [veh, doc];
+        for (let n = 0; n < fuentes.length; n++) {
+          const f = fuentes[n];
+          if (f && f[k] !== null && f[k] !== undefined && f[k] !== '') return f[k];
         }
-        cont.appendChild(tarjetaDato(ETIQUETAS[d.clave] || tituloClave(d.clave), valor, i++));
+        return null;
+      };
+      const campos = [['tipo_servicio', 'Servicio'], ['marca', 'Marca'], ['modelo', 'Modelo'], ['anio', 'Año'], ['placa', 'Placa']];
+      let i = 0;
+      campos.forEach((c) => {
+        let valor = valorDe(c[0]);
+        if (valor === null && c[0] === 'tipo_servicio') valor = u.tipo_servicio || null;
+        if (valor === null) return;
+        valor = String(valor);
+        if (c[0] === 'tipo_servicio') {
+          const clave = normalizarClaveServicio(valor);
+          if (clave) valor = etiquetaServicio(clave);
+        }
+        if (c[0] === 'placa') valor = valor.toUpperCase();
+        cont.appendChild(tarjetaDato(c[1], valor, i++));
       });
-      if (!i) cont.innerHTML = '<div class="perfil-vacio">No hay datos del vehículo registrados.</div>';
+      if (!i) {
+        cont.innerHTML = '<div class="perfil-vacio">No hay datos del vehículo registrados.</div>';
+        console.warn('Mi vehículo: sin filas en vehiculos/documentos_conductor para usuario', u.id, '(conductor_id:', cid, '). Ejecuta el SQL de BIKAR y revisa la consulta de diagnóstico.');
+      }
     }
 
     $('btn-perfil-vehiculo').addEventListener('click', abrirModalVehiculo);
@@ -2204,9 +2171,9 @@
     async function resolverServicioDelConductor() {
       claveServicioConductor = null;
       const u = usuarioActual || {};
-      let bruto = u.tipo_servicio || u.servicio || null;
-      if (!bruto) { const doc = lsJSON(K_DOC); bruto = doc && doc.tipo_servicio; }
-      if (!bruto) { const f = await filaDocumentos(u); bruto = f && f.tipo_servicio; }
+      // El servicio real del conductor está en 'vehiculos' / 'documentos_conductor' (no en 'usuarios')
+      const resumen = (documentacionVehiculo && documentacionVehiculo.tipo_servicio) ? documentacionVehiculo : await resumenVehiculoDB(u);
+      const bruto = (resumen && resumen.tipo_servicio) || u.tipo_servicio || u.servicio || null;
 
       claveServicioConductor = normalizarClaveServicio(bruto);
 
@@ -2261,45 +2228,65 @@
     backdrop.addEventListener('click', cerrarPanelServicios);
 
     /* Cuenta REAL de conductores activos por tipo de servicio desde Supabase */
+    // Lee una tabla probando listas de columnas (de más a menos completa); nivel = índice que funcionó
+    async function leerTabla(tabla, intentos, filtro) {
+      for (let i = 0; i < intentos.length; i++) {
+        try {
+          let q = db.from(tabla).select(intentos[i]).limit(MAX_FILAS);
+          if (filtro) q = q.eq(filtro[0], filtro[1]);
+          const r = await q;
+          if (!r.error) return { filas: r.data || [], nivel: i };
+        } catch (e) { /* prueba con menos columnas */ }
+      }
+      return { filas: [], nivel: -1 };
+    }
+
     async function obtenerConductoresActivos() {
       const conteo = {};
       if (!db) return conteo;
 
-      let usuarios = [], docs = [];
-      try {
-        const r = await db.from('usuarios').select('*').limit(MAX_FILAS);
-        if (!r.error && r.data) usuarios = r.data;
-      } catch (e) { console.warn('Usuarios:', e); }
-      try {
-        const r = await db.from('documentos_conductor').select('*').limit(MAX_FILAS);
-        if (!r.error && r.data) docs = r.data;
-      } catch (e) { console.warn('Documentos conductor:', e); }
+      const res = await Promise.all([
+        leerTabla('usuarios', ['id,tipo_usuario,conductor_activo,ultima_conexion', 'id,tipo_usuario,conductor_activo', 'id,tipo_usuario'], ['tipo_usuario', 'conductor']),
+        leerTabla('conductores', ['id,usuario_id']),
+        leerTabla('vehiculos', ['conductor_id,tipo_servicio']),
+        leerTabla('documentos_conductor', ['usuario_id,conductor_id,tipo_servicio'])
+      ]);
+      const ru = res[0], rc = res[1], rv = res[2], rd = res[3];
 
-      // Servicio inscrito en documentos_conductor (respaldo si usuarios no lo trae)
-      const servicioDoc = new Map();
-      docs.forEach((d) => {
-        const c = normalizarClaveServicio(d.tipo_servicio || d.servicio);
-        if (!c) return;
-        [d.usuario_id, d.conductor_id, d.user_id, d.id_usuario].forEach((k) => { if (k !== null && k !== undefined) servicioDoc.set(String(k), c); });
+      // usuarios.id → conductores.id
+      const condDeUsuario = new Map();
+      rc.filas.forEach((c) => { if (c.usuario_id !== null && c.usuario_id !== undefined) condDeUsuario.set(String(c.usuario_id), c.id); });
+      // Servicio registrado: vehiculos (por conductor_id) y documentos_conductor (por usuario_id / conductor_id)
+      const servVeh = new Map(), servDocUsuario = new Map(), servDocCond = new Map();
+      rv.filas.forEach((v) => {
+        const k = normalizarClaveServicio(v.tipo_servicio);
+        if (k && v.conductor_id !== null && v.conductor_id !== undefined) servVeh.set(String(v.conductor_id), k);
+      });
+      rd.filas.forEach((d) => {
+        const k = normalizarClaveServicio(d.tipo_servicio);
+        if (!k) return;
+        if (d.usuario_id !== null && d.usuario_id !== undefined) servDocUsuario.set(String(d.usuario_id), k);
+        if (d.conductor_id !== null && d.conductor_id !== undefined) servDocCond.set(String(d.conductor_id), k);
       });
 
-      const conductores = usuarios.filter((u) => String(u.tipo_usuario || '').toLowerCase() === 'conductor');
-      // Modo estricto: existen las columnas de actividad (conductor_activo / ultima_conexion)
-      const estricto = conductores.some((u) => 'conductor_activo' in u);
+      // Estricto: existen las columnas conductor_activo (nivel 0 o 1) y, en nivel 0, ultima_conexion
+      const estricto = ru.nivel === 0 || ru.nivel === 1;
+      if (!estricto) console.warn('usuarios.conductor_activo no existe: ejecuta el SQL de BIKAR para contar solo conductores activos.');
       const ahora = Date.now();
 
-      conductores.forEach((u) => {
-        const clave = normalizarClaveServicio(u.tipo_servicio || u.servicio) ||
-          servicioDoc.get(String(u.id)) || servicioDoc.get(String(u.conductor_id));
-        if (!clave) return;
+      ru.filas.forEach((u) => {
         if (estricto) {
           if (u.conductor_activo !== true) return;
-          if ('ultima_conexion' in u) {
+          if (ru.nivel === 0) {
             const t = u.ultima_conexion ? new Date(u.ultima_conexion).getTime() : NaN;
             if (isNaN(t) || (ahora - t) > VENTANA_ACTIVO_MS) return;
           }
         }
-        conteo[clave] = (conteo[clave] || 0) + 1;
+        const cid = condDeUsuario.get(String(u.id));
+        const clave = (cid !== undefined && cid !== null && servVeh.get(String(cid))) ||
+          servDocUsuario.get(String(u.id)) ||
+          (cid !== undefined && cid !== null && servDocCond.get(String(cid)));
+        if (clave) conteo[clave] = (conteo[clave] || 0) + 1;
       });
       return conteo;
     }
@@ -2657,13 +2644,27 @@
 
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
+          if (modoActual === 'conductor') sincronizarEstadoConductorDB();
           verificarViajeEnProgresoUsuario();
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
         }
       });
 
       // Al volver desde viaje.html con el botón "atrás" (página restaurada de caché): sincronizar al instante
+      // Al cerrar o salir de la página el conductor deja de contarse como activo (se reactiva solo al volver)
+      window.addEventListener('pagehide', () => {
+        if (!usuarioActual || modoActual !== 'conductor' || usuarioActual.id == null) return;
+        try {
+          fetch(SUPABASE_URL + '/rest/v1/usuarios?id=eq.' + encodeURIComponent(usuarioActual.id), {
+            method: 'PATCH', keepalive: true,
+            headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+            body: JSON.stringify({ conductor_activo: false })
+          });
+        } catch (e) {}
+      });
+
       window.addEventListener('pageshow', () => {
+        if (modoActual === 'conductor') sincronizarEstadoConductorDB();
         verificarViajeEnProgresoUsuario();
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       });
