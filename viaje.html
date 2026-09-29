@@ -35,7 +35,7 @@
 
     main{flex:1;max-width:600px;width:100%;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:16px}
     .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow);position:relative;overflow:hidden}
-    .card > *:not(.scanner-fantastico), .status-card > *:not(.scanner-fantastico){position:relative;z-index:1}
+    .card > *:not(.sonar-luxury), .status-card > *:not(.sonar-luxury){position:relative;z-index:1}
     .card-title{font-size:.8rem;text-transform:uppercase;color:var(--muted-text);font-weight:700;letter-spacing:.5px;margin-bottom:14px}
 
     /* ESTADO */
@@ -68,31 +68,63 @@
     @keyframes ringWave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.1);opacity:0}}
     @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
 
-    /* [MODIFICACIÓN 6] ANIMACIÓN TIPO AUTO FANTÁSTICO (KNIGHT RIDER) COMO DESTELLO EN EL FONDO */
-    .scanner-fantastico{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
-    .scanner-fantastico.on{display:block}
-    .scanner-fantastico::before{
-      content:'';position:absolute;top:0;bottom:0;width:170px;left:-170px;
-      background:radial-gradient(ellipse at center, rgba(71,133,167,.35) 0%, rgba(19,73,137,.2) 45%, transparent 75%);
-      filter:blur(14px);animation:autoFantasticoSweep 2.8s ease-in-out infinite alternate;will-change:transform;
+    /* ANIMACIÓN SONAR DE ALTO LUJO (ÚNICAMENTE EN EL FONDO DE LA TARJETA DE ESTADO DEL VIAJE) */
+    .sonar-luxury{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
+    .sonar-luxury.on{display:block}
+    .sonar-core{position:absolute;top:38px;left:50%;width:0;height:0}
+    .sonar-halo{
+      position:absolute;left:-85px;top:-85px;width:170px;height:170px;border-radius:50%;
+      background:radial-gradient(circle,rgba(71,133,167,.26) 0%,rgba(19,73,137,.12) 45%,transparent 72%);
+      filter:blur(8px);animation:sonarHaloPulse 3s ease-in-out infinite alternate;
     }
-    .scanner-fantastico::after{
-      content:'';position:absolute;top:0;left:-130px;width:130px;height:3px;
-      background:linear-gradient(90deg,transparent 0%,rgba(71,133,167,.7) 20%,#60a5fa 48%,#ffffff 52%,#60a5fa 56%,rgba(71,133,167,.7) 80%,transparent 100%);
-      box-shadow:0 0 16px 3px rgba(96,165,250,.95), 0 0 30px 6px rgba(71,133,167,.65);
-      border-radius:999px;animation:autoFantasticoSweep 2.8s ease-in-out infinite alternate;will-change:transform;
+    .sonar-sweep{
+      position:absolute;left:-230px;top:-230px;width:460px;height:460px;border-radius:50%;
+      background:conic-gradient(from 0deg,rgba(71,133,167,.24) 0deg,rgba(59,130,246,.08) 38deg,transparent 65deg,transparent 360deg);
+      mask-image:radial-gradient(circle,black 0%,black 62%,transparent 76%);
+      -webkit-mask-image:radial-gradient(circle,black 0%,black 62%,transparent 76%);
+      animation:sonarSweepRotate 4.4s linear infinite;
     }
-    @keyframes autoFantasticoSweep{
-      0%{transform:translateX(0);opacity:.5}
-      50%{opacity:1}
-      100%{transform:translateX(calc(100% + 550px));opacity:.5}
+    .sonar-ring{
+      position:absolute;left:-230px;top:-230px;width:460px;height:460px;border-radius:50%;
+      border:1.5px solid rgba(71,133,167,.42);
+      box-shadow:0 0 16px rgba(71,133,167,.25),inset 0 0 14px rgba(71,133,167,.12);
+      opacity:0;animation:sonarPing 4s cubic-bezier(.15,.85,.35,1) infinite;will-change:transform,opacity;
     }
-    body.dark-theme .scanner-fantastico::before{
-      background:radial-gradient(ellipse at center, rgba(96,165,250,.35) 0%, rgba(71,133,167,.25) 40%, rgba(19,73,137,.15) 60%, transparent 80%);
-      filter:blur(16px);
+    .sonar-ring.r2{animation-delay:1.33s}
+    .sonar-ring.r3{animation-delay:2.66s}
+    .sonar-grid-circle{
+      position:absolute;border-radius:50%;border:1px dashed rgba(71,133,167,.18);
+      transform:translate(-50%,-50%);pointer-events:none;
     }
-    body.dark-theme .scanner-fantastico::after{
-      box-shadow:0 0 20px 4px rgba(147,197,253,1), 0 0 38px 8px rgba(71,133,167,.75);
+    .sonar-grid-circle.g1{width:160px;height:160px}
+    .sonar-grid-circle.g2{width:320px;height:320px}
+
+    @keyframes sonarPing{
+      0%{transform:scale(.08);opacity:.85}
+      50%{opacity:.38}
+      100%{transform:scale(1.25);opacity:0}
+    }
+    @keyframes sonarSweepRotate{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+    @keyframes sonarHaloPulse{
+      0%{transform:scale(.85);opacity:.55}
+      100%{transform:scale(1.22);opacity:1}
+    }
+
+    body.dark-theme .sonar-halo{
+      background:radial-gradient(circle,rgba(96,165,250,.32) 0%,rgba(71,133,167,.18) 45%,transparent 75%);
+    }
+    body.dark-theme .sonar-sweep{
+      background:conic-gradient(from 0deg,rgba(96,165,250,.32) 0deg,rgba(59,130,246,.12) 42deg,transparent 72deg,transparent 360deg);
+    }
+    body.dark-theme .sonar-ring{
+      border-color:rgba(96,165,250,.65);
+      box-shadow:0 0 20px rgba(96,165,250,.45),inset 0 0 16px rgba(71,133,167,.24);
+    }
+    body.dark-theme .sonar-grid-circle{
+      border-color:rgba(96,165,250,.24);
     }
 
     /* PERFIL DE LA CONTRAPARTE */
@@ -312,8 +344,18 @@
   <main>
     <!-- ESTADO -->
     <section class="status-card" id="card-status">
-      <!-- [MODIFICACIÓN 6] Animación tipo Auto Fantástico como destello de fondo -->
-      <div class="scanner-fantastico on" id="scanner-status"></div>
+      <!-- ANIMACIÓN SONAR DE ALTO LUJO EN EL FONDO (ÚNICAMENTE EN ESTADO) -->
+      <div class="sonar-luxury on" id="sonar-status">
+        <div class="sonar-core">
+          <div class="sonar-halo"></div>
+          <div class="sonar-sweep"></div>
+          <div class="sonar-grid-circle g1"></div>
+          <div class="sonar-grid-circle g2"></div>
+          <div class="sonar-ring"></div>
+          <div class="sonar-ring r2"></div>
+          <div class="sonar-ring r3"></div>
+        </div>
+      </div>
 
       <div id="status-badge" class="status-badge solicitado">
         <span class="pulse-dot"></span>
@@ -333,9 +375,6 @@
 
     <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
-      <!-- [MODIFICACIÓN 6] Animación tipo Auto Fantástico como destello de fondo -->
-      <div class="scanner-fantastico on" id="radar"></div>
-
       <div class="card-title" id="titulo-persona">Información del conductor</div>
       <div class="profile-box">
         <img id="persona-foto" class="profile-img" alt="Foto de perfil" src="">
@@ -1217,9 +1256,8 @@
       personaSub.textContent = '';
       personaExtra.innerHTML = '';
       ocultarCardPin();
-      $('radar').classList.remove('on');
-      const scanStatus = $('scanner-status');
-      if (scanStatus) scanStatus.classList.remove('on');
+      const sonar = $('sonar-status');
+      if (sonar) sonar.classList.remove('on');
     }
 
     /* ============================================================
@@ -1233,11 +1271,10 @@
        EXTRAS SEGÚN ESTADO
        ============================================================ */
     function actualizarExtras(estado) {
-      /* [MODIFICACIÓN 6] Destello Auto Fantástico en ambas tarjetas */
+      /* Animación SONAR de lujo: activa únicamente en la tarjeta de estado del viaje */
       const activoAuto = ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
-      $('radar').classList.toggle('on', activoAuto);
-      const scanStatus = $('scanner-status');
-      if (scanStatus) scanStatus.classList.toggle('on', activoAuto);
+      const sonar = $('sonar-status');
+      if (sonar) sonar.classList.toggle('on', activoAuto);
 
       const bNav = $('btn-extra-nav'), bComp = $('btn-extra-compartir'), bCanc = $('btn-extra-cancelar');
       bNav.style.display = 'none'; bComp.style.display = 'none'; bCanc.style.display = 'none';
@@ -1804,9 +1841,8 @@
     function renderCargando() {
       personaNombre.innerHTML = '<span class="skeleton" style="width:150px;height:14px"></span>';
       personaSub.innerHTML = '<span class="skeleton" style="width:190px;height:11px;display:block;margin-top:6px"></span>';
-      $('radar').classList.add('on');
-      const scanStatus = $('scanner-status');
-      if (scanStatus) scanStatus.classList.add('on');
+      const sonar = $('sonar-status');
+      if (sonar) sonar.classList.add('on');
     }
 
     $('btn-refrescar').addEventListener('click', () => { obtenerDatosViaje(); mostrarToast('Actualizando…'); });
