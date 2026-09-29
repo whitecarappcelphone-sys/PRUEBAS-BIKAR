@@ -46,10 +46,13 @@
     .status-badge.en_camino,.status-badge.en_progreso{background:rgba(19,73,137,.15);color:var(--primary-color)}
     .status-badge.terminado{background:rgba(16,185,129,.15);color:var(--accent-green)}
     .status-badge.cancelado{background:rgba(239,68,68,.15);color:var(--accent-red)}
+    /* [AJUSTE 3] En modo oscuro el badge "en progreso" va en blanco */
+    body.dark-theme .status-badge.en_progreso{background:rgba(255,255,255,.14);color:#ffffff}
     .pulse-dot{width:10px;height:10px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite}
     @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}100%{opacity:1;transform:scale(1)}}
     .status-titulo{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
-    .status-desc{font-size:.85rem;color:var(--muted-text);margin-top:5px;line-height:1.45}
+    /* [AJUSTE 2] Descripción de estado con trazo más grueso para que resalte */
+    .status-desc{font-size:.875rem;color:var(--muted-text);margin-top:6px;line-height:1.45;font-weight:700;letter-spacing:-.005em}
 
     .stepper{display:flex;justify-content:space-between;position:relative;margin:22px 0 4px}
     .stepper::before{content:'';position:absolute;top:14px;left:12%;right:12%;height:2px;background:var(--border-color);z-index:1}
@@ -454,7 +457,7 @@
       </div>
       <h2 id="status-titulo" class="status-titulo">Solicitud enviada</h2>
       <p id="status-desc" class="status-desc">Tu solicitud está visible para los conductores cercanos.</p>
-      <p id="status-id" style="margin-top:10px;font-size:.68rem;font-weight:700;color:var(--muted-text);letter-spacing:.08em"></p>
+      <p id="status-id" style="display:none;margin-top:10px;font-size:.68rem;font-weight:700;color:var(--muted-text);letter-spacing:.08em"></p>
 
       <div class="stepper" id="stepper">
         <div class="step active"><div class="step-icon">1</div><span class="step-text">Solicitado</span></div>
@@ -1158,6 +1161,30 @@ function obtenerFotoVehiculo(info, v) {
       cancelado:  ['Cancelado', 'Viaje cancelado', 'Esta solicitud fue cancelada.']
     };
 
+    /* [AJUSTE 2] Mensajes de estado redactados según el rol activo */
+    const DESC_POR_ROL = {
+      pasajero: {
+        solicitado:  'Estamos mostrando tu solicitud a los conductores cercanos. Te avisaremos apenas uno la acepte.',
+        aceptado:    '¡Listo! Un conductor aceptó tu viaje y ya se alista para recogerte.',
+        en_camino:   'Tu conductor se dirige al punto de recojo. Ten a la mano tu PIN de seguridad.',
+        en_progreso: 'Vas a bordo rumbo a tu destino. Relájate y disfruta el trayecto con BIKAR.',
+        terminado:   '¡Llegaste a tu destino! Gracias por viajar con BIKAR.',
+        cancelado:   'Esta solicitud fue cancelada. Puedes pedir un nuevo servicio cuando lo necesites.'
+      },
+      conductor: {
+        solicitado:  'Este servicio está disponible. Acéptalo para quedar asignado al viaje.',
+        aceptado:    'Tomaste este servicio. Dirígete al punto de recojo del pasajero.',
+        en_camino:   'Vas rumbo al punto de recojo. Al llegar, solicita el PIN de 4 dígitos al pasajero.',
+        en_progreso: 'Pasajero a bordo. Conduce con seguridad hasta el destino acordado.',
+        terminado:   'Viaje completado con éxito. ¡Gracias por conducir con BIKAR!',
+        cancelado:   'Este viaje fue cancelado y ya no está asignado a ti.'
+      }
+    };
+    function descripcionEstado(estado, respaldo) {
+      const mapa = DESC_POR_ROL[rolUsuario === 'conductor' ? 'conductor' : 'pasajero'];
+      return (mapa && mapa[estado]) || respaldo;
+    }
+
     function renderizarUI() {
       if (!viajeActual) return;
       const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
@@ -1187,7 +1214,7 @@ function obtenerFotoVehiculo(info, v) {
       statusBadge.className = 'status-badge ' + estado;
       statusTexto.textContent = estado.replace(/_/g, ' ');
       statusTitulo.textContent = t[1];
-      statusDesc.textContent = t[2];
+      statusDesc.textContent = descripcionEstado(estado, t[2]);
       statusId.textContent = 'SOLICITUD #' + (viajeActual.id != null ? viajeActual.id : '—');
 
       /* Stepper */
