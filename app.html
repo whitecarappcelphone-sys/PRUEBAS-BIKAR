@@ -109,15 +109,28 @@
     .btn-conductor-estado.inactivo .estado-punto{background:#ef4444;box-shadow:0 0 8px #ef4444}
     .btn-conductor-estado:hover{transform:scale(1.05)}
 
-    /* ALERTA RADAR VIAJE EN PROGRESO (PASAJERO) */
+    /* ALERTA RADAR VIAJE EN PROGRESO (CAMBIA DE COLOR SEGÚN EL ESTADO) */
     #alerta-viaje-activo{position:absolute;top:calc(72px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
       z-index:3000;display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:999px;cursor:pointer;
       background:rgba(239,68,68,.92);color:#ffffff;font-size:.78rem;font-weight:800;letter-spacing:.02em;
       box-shadow:0 10px 28px rgba(239,68,68,.4);animation:radarSweep 1.8s infinite;
-      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:transform .2s;text-decoration:none}
+      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      transition:background .35s ease,box-shadow .35s ease,transform .2s;text-decoration:none;max-width:88vw}
+    #alerta-viaje-activo span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     #alerta-viaje-activo:hover{transform:translateX(-50%) scale(1.04)}
-    #alerta-viaje-activo svg{width:16px;height:16px;animation:spinRadar 3s linear infinite}
+    #alerta-viaje-activo svg{width:16px;height:16px;flex-shrink:0;animation:spinRadar 3s linear infinite}
     @keyframes spinRadar{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+    /* Colores dinámicos por estado del viaje */
+    @keyframes radarSweepAmbar{0%{box-shadow:0 0 0 0 rgba(245,158,11,.65)}70%{box-shadow:0 0 0 14px rgba(245,158,11,0)}100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}}
+    @keyframes radarSweepAzul{0%{box-shadow:0 0 0 0 rgba(71,133,167,.65)}70%{box-shadow:0 0 0 14px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
+    @keyframes radarSweepVerde{0%{box-shadow:0 0 0 0 rgba(16,185,129,.65)}70%{box-shadow:0 0 0 14px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+    #alerta-viaje-activo.estado-solicitado{background:linear-gradient(90deg,#f59e0b,#d97706);
+      box-shadow:0 10px 28px rgba(245,158,11,.42);animation:radarSweepAmbar 1.8s infinite}
+    #alerta-viaje-activo.estado-aceptado{background:linear-gradient(90deg,#134989,#4785A7);
+      box-shadow:0 10px 28px rgba(71,133,167,.45);animation:radarSweepAzul 1.9s infinite}
+    #alerta-viaje-activo.estado-encurso{background:linear-gradient(90deg,#059669,#10b981);
+      box-shadow:0 10px 28px rgba(16,185,129,.45);animation:radarSweepVerde 1.7s infinite}
 
     /* CHIP USUARIO */
     #mode-selector{position:absolute;top:calc(16px + env(safe-area-inset-top));left:70px;right:78px;z-index:2000;max-width:420px;animation:fadeIn .6s ease both}
@@ -150,14 +163,24 @@
     .panel-subtitle,.status-text{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
     .status-text{line-height:1.4;margin:4px 0 14px}
 
-    /* BLOQUEO POR VIAJE ACTIVO */
+    /* BLOQUEO POR VIAJE ACTIVO (CAMBIA DE COLOR SEGÚN EL ESTADO) */
     .viaje-bloqueo-box{padding:16px;border-radius:18px;background:rgba(239,68,68,.1);border:1.5px dashed rgba(239,68,68,.4);
-      margin-bottom:14px;text-align:center}
-    .viaje-bloqueo-tit{font-size:.88rem;font-weight:800;color:#ef4444;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px}
+      margin-bottom:14px;text-align:center;transition:background .35s ease,border-color .35s ease}
+    .viaje-bloqueo-tit{font-size:.88rem;font-weight:800;color:#ef4444;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .35s ease}
     .viaje-bloqueo-txt{font-size:.76rem;color:var(--muted-text);line-height:1.4;margin-bottom:10px}
     .btn-ir-seguimiento{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:999px;
-      background:#ef4444;color:#fff;font-size:.78rem;font-weight:800;border:none;cursor:pointer;box-shadow:0 8px 20px rgba(239,68,68,.35);transition:all .2s}
+      background:#ef4444;color:#fff;font-size:.78rem;font-weight:800;border:none;cursor:pointer;box-shadow:0 8px 20px rgba(239,68,68,.35);
+      transition:all .25s ease}
     .btn-ir-seguimiento:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(239,68,68,.45)}
+    .viaje-bloqueo-box.estado-solicitado{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.45)}
+    .viaje-bloqueo-box.estado-solicitado .viaje-bloqueo-tit{color:#f59e0b}
+    .viaje-bloqueo-box.estado-solicitado .btn-ir-seguimiento{background:linear-gradient(90deg,#f59e0b,#d97706);box-shadow:0 8px 20px rgba(245,158,11,.35)}
+    .viaje-bloqueo-box.estado-aceptado{background:rgba(71,133,167,.12);border-color:rgba(71,133,167,.45)}
+    .viaje-bloqueo-box.estado-aceptado .viaje-bloqueo-tit{color:var(--primary-color)}
+    .viaje-bloqueo-box.estado-aceptado .btn-ir-seguimiento{background:linear-gradient(90deg,#134989,#4785A7);box-shadow:0 8px 20px rgba(71,133,167,.35)}
+    .viaje-bloqueo-box.estado-encurso{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.45)}
+    .viaje-bloqueo-box.estado-encurso .viaje-bloqueo-tit{color:#10b981}
+    .viaje-bloqueo-box.estado-encurso .btn-ir-seguimiento{background:linear-gradient(90deg,#059669,#10b981);box-shadow:0 8px 20px rgba(16,185,129,.35)}
     .viaje-bloqueo-acciones{display:flex;flex-direction:column;align-items:center;gap:8px}
     .btn-cancelar-viaje{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:999px;
       background:transparent;color:#ef4444;font-size:.78rem;font-weight:800;border:1.5px solid rgba(239,68,68,.55);cursor:pointer;transition:all .2s}
@@ -352,6 +375,34 @@
     .viaje-metrica-item svg{width:14px;height:14px;color:var(--primary-color);flex-shrink:0}
     .viaje-metrica-sub{display:block;font-size:.6rem;font-weight:500;color:var(--muted-text)}
 
+    /* TARJETA DEL PASAJERO QUE SOLICITA (VISTA CONDUCTOR) */
+    .viaje-pasajero{position:relative;display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:11px 12px;border-radius:16px;
+      background:linear-gradient(135deg,rgba(71,133,167,.12),rgba(19,73,137,.06));border:1px solid rgba(71,133,167,.28);
+      box-shadow:inset 0 1px 0 var(--glass-highlight);animation:cardPop .42s cubic-bezier(.2,.8,.2,1) both;overflow:hidden}
+    .viaje-pasajero::after{content:"";position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.10) 50%,transparent 65%)}
+    .vp-foto-wrap{position:relative;flex-shrink:0;width:48px;height:48px}
+    .vp-foto{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;background:var(--field-bg);
+      border:2px solid var(--primary-color);box-shadow:0 6px 16px rgba(71,133,167,.35)}
+    .vp-verificado{position:absolute;right:-2px;bottom:-2px;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:.6rem;font-weight:900;border:2px solid var(--card-bg)}
+    .vp-info{flex:1;min-width:0}
+    .vp-etiqueta{display:block;font-size:.55rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--primary-color);margin-bottom:2px}
+    .vp-nombre{font-size:.9rem;font-weight:800;color:var(--text-color);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .vp-estrellas{display:flex;align-items:center;gap:1px;margin-top:3px}
+    .vp-estrellas i{font-style:normal;font-size:.78rem;line-height:1;color:rgba(148,163,184,.45)}
+    .vp-estrellas i.on{color:#f5b301;text-shadow:0 0 8px rgba(245,179,1,.45)}
+    .vp-estrellas .vp-nota{margin-left:6px;font-size:.7rem;font-weight:800;color:var(--text-color)}
+    .vp-estrellas .vp-conteo{margin-left:4px;font-size:.62rem;font-weight:600;color:var(--muted-text)}
+    .vp-score{flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:52px;padding:7px 8px;border-radius:13px;
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.32)}
+    .vp-score b{font-size:.98rem;font-weight:900;line-height:1}
+    .vp-score span{font-size:.5rem;font-weight:800;letter-spacing:.12em;margin-top:2px;opacity:.9}
+    .vp-cargando{display:flex;align-items:center;gap:10px;font-size:.72rem;font-weight:600;color:var(--muted-text)}
+    .vp-skeleton{width:48px;height:48px;border-radius:50%;background:linear-gradient(90deg,rgba(71,133,167,.14),rgba(71,133,167,.28),rgba(71,133,167,.14));
+      background-size:200% 100%;animation:vpShimmer 1.2s linear infinite}
+    @keyframes vpShimmer{0%{background-position:0% 0}100%{background-position:-200% 0}}
+
     .viaje-footer{display:flex;flex-direction:column;align-items:stretch;gap:0;margin-top:4px}
     .viaje-cta{width:100%}
     .viaje-cta .btn-main{padding:12px 36px 12px 16px;font-size:.88rem;border-radius:12px;width:100%}
@@ -418,6 +469,13 @@
     .menu-perfil-item.peligro:hover{border-color:#e05a5a;box-shadow:0 10px 26px rgba(224,90,90,.25),0 0 0 3px rgba(224,90,90,.12)}
     .menu-perfil-item.resaltado{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08)}
     .menu-perfil-item.resaltado .mi-ico{background:linear-gradient(135deg,#ef4444,#dc2626)}
+    /* Color del acceso "Mis viajes" según el estado actual del viaje */
+    .menu-perfil-item.resaltado.estado-solicitado{border-color:rgba(245,158,11,.55);background:rgba(245,158,11,.10)}
+    .menu-perfil-item.resaltado.estado-solicitado .mi-ico{background:linear-gradient(135deg,#f59e0b,#d97706)}
+    .menu-perfil-item.resaltado.estado-aceptado{border-color:rgba(71,133,167,.55);background:rgba(71,133,167,.12)}
+    .menu-perfil-item.resaltado.estado-aceptado .mi-ico{background:linear-gradient(135deg,#134989,#4785A7)}
+    .menu-perfil-item.resaltado.estado-encurso{border-color:rgba(16,185,129,.55);background:rgba(16,185,129,.10)}
+    .menu-perfil-item.resaltado.estado-encurso .mi-ico{background:linear-gradient(135deg,#059669,#10b981)}
 
     /* MODALES GENÉRICOS */
     .modal-bikar{position:fixed;inset:0;z-index:5500;display:flex;align-items:center;justify-content:center;
@@ -1403,6 +1461,18 @@
     }
 
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
+    /* Aplica el color correspondiente al estado del viaje en la alerta, el bloqueo y el acceso del menú */
+    function aplicarColorEstadoAlerta(clase) {
+      const clases = ['estado-solicitado', 'estado-aceptado', 'estado-encurso'];
+      alertaViajeActivo.classList.remove.apply(alertaViajeActivo.classList, clases);
+      bloqueoViajeActivo.classList.remove.apply(bloqueoViajeActivo.classList, clases);
+      menuItemMisViajes.classList.remove.apply(menuItemMisViajes.classList, clases);
+      if (!clase) return;
+      alertaViajeActivo.classList.add(clase);
+      bloqueoViajeActivo.classList.add(clase);
+      menuItemMisViajes.classList.add(clase);
+    }
+
     async function verificarViajeEnProgresoUsuario() {
       if (!usuarioActual || !db) return;
       const esConductor = (modoActual === 'conductor' || usuarioActual.tipo_usuario === 'conductor');
@@ -1453,22 +1523,37 @@
             const txtBloqueoTit = $('txt-bloqueo-tit');
             const txtBloqueoSub = $('txt-bloqueo-sub');
 
-            // Actualización dinámica del texto según el paso en el que se encuentra el viaje
+            // Actualización dinámica del texto y del color según el paso en el que se encuentra el viaje
             if (esPaso1) {
-              if (txtAlerta) txtAlerta.textContent = esConductor ? 'Solicitud pendiente · Toca para ver' : 'Buscando conductor… · Toca para ver';
-              if (txtMenu) txtMenu.textContent = 'Mis viajes (Solicitado)';
-              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Buscando tu conductor';
-              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Tu solicitud está activa. Esperando a que un conductor la acepte.';
+              aplicarColorEstadoAlerta('estado-solicitado');
+              if (txtAlerta) txtAlerta.textContent = esConductor
+                ? 'Solicitud pendiente · Confírmala para iniciar'
+                : 'Buscando un conductor disponible cerca de ti…';
+              if (txtMenu) txtMenu.textContent = esConductor
+                ? 'Mi viaje · Solicitud pendiente'
+                : 'Mi viaje · Buscando conductor';
+              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Buscando un conductor para ti';
+              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Tu solicitud ya fue enviada a los conductores cercanos. En breve uno la aceptará y verás sus datos.';
             } else if (esPaso2) {
-              if (txtAlerta) txtAlerta.textContent = esConductor ? 'Viaje aceptado · En camino al recojo' : '¡Conductor en camino! · Toca para ver';
-              if (txtMenu) txtMenu.textContent = esConductor ? 'Mi viaje (Hacia el recojo)' : 'Mis viajes (Conductor en camino)';
-              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Conductor asignado';
-              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Tu conductor ya aceptó el viaje y está dirigiéndose al punto de partida.';
+              aplicarColorEstadoAlerta('estado-aceptado');
+              if (txtAlerta) txtAlerta.textContent = esConductor
+                ? 'Viaje aceptado · Dirígete a la dirección del pasajero'
+                : 'Tu conductor está llegando a tu dirección';
+              if (txtMenu) txtMenu.textContent = esConductor
+                ? 'Mi viaje · Camino a recoger al pasajero'
+                : 'Mi viaje · Conductor llegando a tu dirección';
+              if (txtBloqueoTit) txtBloqueoTit.textContent = '¡Conductor asignado y en camino!';
+              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Tu conductor aceptó el servicio y ya se dirige a la dirección de partida. Prepárate para abordar.';
             } else if (esPaso3) {
-              if (txtAlerta) txtAlerta.textContent = 'Viaje en curso · Hacia el destino';
-              if (txtMenu) txtMenu.textContent = 'Mis viajes (En curso)';
-              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Viaje en curso';
-              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Te encuentras en camino hacia tu destino. Disfruta tu viaje.';
+              aplicarColorEstadoAlerta('estado-encurso');
+              if (txtAlerta) txtAlerta.textContent = esConductor
+                ? 'Viaje en curso · Llevando al pasajero a su destino'
+                : 'Viaje en curso · Vas rumbo a tu destino';
+              if (txtMenu) txtMenu.textContent = esConductor
+                ? 'Mi viaje · En ruta hacia el destino'
+                : 'Mi viaje · En ruta hacia tu destino';
+              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Viaje en curso hacia tu destino';
+              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Ya vas en camino con tu conductor. Puedes seguir el recorrido en tiempo real desde el mapa del viaje.';
             }
 
             if (esConductor) {
@@ -1489,6 +1574,7 @@
         // Si no hay viaje o si el último viaje fue FINALIZADO / COMPLETADO / CANCELADO (Paso 4):
         alertaViajeActivo.classList.add('oculto');
         menuItemMisViajes.classList.add('oculto');
+        aplicarColorEstadoAlerta(null);
         viajeActivoConductor = null;
         viajeActivoPasajero = null;
         bloqueoViajeActivo.classList.add('oculto');
@@ -2414,6 +2500,106 @@
     const SVG_RELOJ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
     const SVG_RECHAZAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
+    /* ---------- DATOS DEL PASAJERO QUE SOLICITA (FOTO, NOMBRE Y CALIFICACIÓN) ---------- */
+    const cachePasajeros = new Map();
+
+    function promedioCalificaciones(valores) {
+      const nums = (valores || []).map(Number).filter((n) => !isNaN(n) && n > 0);
+      if (!nums.length) return null;
+      return { promedio: nums.reduce((a, b) => a + b, 0) / nums.length, total: nums.length };
+    }
+
+    // Busca la calificación del pasajero (la que se registra en viaje.html)
+    async function calificacionDePasajero(id, filaUsuario) {
+      // 1) Columna directa en la tabla usuarios
+      if (filaUsuario) {
+        const directas = ['calificacion', 'calificacion_pasajero', 'rating', 'puntuacion', 'estrellas', 'promedio_calificacion'];
+        for (let i = 0; i < directas.length; i++) {
+          const v = Number(filaUsuario[directas[i]]);
+          if (!isNaN(v) && v > 0) return { promedio: v, total: Number(filaUsuario.total_calificaciones || filaUsuario.num_calificaciones || 0) };
+        }
+      }
+      // 2) Tabla de calificaciones (varios nombres posibles)
+      const tablas = ['calificaciones', 'calificaciones_pasajero', 'valoraciones'];
+      const columnasId = ['pasajero_id', 'usuario_id', 'calificado_id'];
+      for (let t = 0; t < tablas.length; t++) {
+        for (let c = 0; c < columnasId.length; c++) {
+          try {
+            const r = await db.from(tablas[t]).select('*').eq(columnasId[c], id).limit(200);
+            if (r.error || !r.data || !r.data.length) continue;
+            const vals = r.data.map((f) => f.calificacion ?? f.estrellas ?? f.puntuacion ?? f.rating ?? f.valor ?? f.puntaje);
+            const p = promedioCalificaciones(vals);
+            if (p) return p;
+          } catch (e) { /* siguiente combinación */ }
+        }
+      }
+      // 3) Calificaciones guardadas dentro de la tabla viajes
+      try {
+        const r = await db.from('viajes').select('*').eq('pasajero_id', id).limit(200);
+        if (!r.error && r.data && r.data.length) {
+          const vals = r.data.map((v) => v.calificacion_pasajero ?? v.calificacion_del_pasajero ?? v.estrellas_pasajero ?? v.rating_pasajero);
+          const p = promedioCalificaciones(vals);
+          if (p) return p;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function obtenerPasajero(id) {
+      if (id === null || id === undefined || id === '' || !db) return null;
+      const k = String(id);
+      if (cachePasajeros.has(k)) return cachePasajeros.get(k);
+      const promesa = (async () => {
+        let fila = null;
+        try {
+          const r = await db.from('usuarios').select('*').eq('id', id).limit(1);
+          if (!r.error && r.data && r.data.length) fila = r.data[0];
+        } catch (e) {}
+        const cal = await calificacionDePasajero(id, fila);
+        return {
+          nombre: fila ? nombreUsuario(fila) : 'Pasajero BIKAR',
+          foto: fila ? fotoDeUsuario(fila) : avatarPorDefecto('P'),
+          verificado: !!(fila && (fila.verificado === true || String(fila.estado || '').toLowerCase() === 'verificado')),
+          calificacion: cal ? cal.promedio : null,
+          totalCalificaciones: cal ? cal.total : 0
+        };
+      })();
+      cachePasajeros.set(k, promesa);
+      return promesa;
+    }
+
+    function estrellasHTML(valor) {
+      let h = '';
+      for (let i = 1; i <= 5; i++) h += '<i class="' + (valor >= i - 0.35 ? 'on' : '') + '">★</i>';
+      return h;
+    }
+
+    function pintarPasajeroEnTarjeta(caja, info) {
+      if (!caja) return;
+      if (!info) {
+        caja.innerHTML = '<div class="vp-cargando">No se pudieron cargar los datos del pasajero.</div>';
+        return;
+      }
+      const tieneCal = info.calificacion !== null && info.calificacion !== undefined;
+      const nota = tieneCal ? Number(info.calificacion).toFixed(1) : '—';
+      caja.innerHTML =
+        '<div class="vp-foto-wrap">' +
+          '<img class="vp-foto" alt="Foto del pasajero" src="' + esc(info.foto) + '">' +
+          (info.verificado ? '<span class="vp-verificado" title="Pasajero verificado">✓</span>' : '') +
+        '</div>' +
+        '<div class="vp-info">' +
+          '<span class="vp-etiqueta">Pasajero</span>' +
+          '<div class="vp-nombre">' + esc(info.nombre) + '</div>' +
+          '<div class="vp-estrellas">' + estrellasHTML(tieneCal ? Number(info.calificacion) : 0) +
+            '<span class="vp-nota">' + nota + '</span>' +
+            '<span class="vp-conteo">' + (info.totalCalificaciones ? '(' + info.totalCalificaciones + ' viajes calificados)' : '(sin calificaciones aún)') + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="vp-score"><b>' + nota + '</b><span>RATING</span></div>';
+      const img = caja.querySelector('.vp-foto');
+      if (img) img.addEventListener('error', function () { this.src = avatarPorDefecto(info.nombre); });
+    }
+
     function crearTarjetaViaje(viaje, esNuevo, indice) {
       const clave = normalizarClaveServicio(viaje.tipo_servicio || viaje.nombre_servicio) || 'default';
       const distNum = Number(viaje.distancia_km || 0);
@@ -2449,6 +2635,7 @@
             '<div><span>~' + duracionEst + ' min</span><span class="viaje-metrica-sub">Tiempo de recorrido</span></div>' +
           '</div>' +
         '</div>' +
+        '<div class="viaje-pasajero"><div class="vp-skeleton"></div><div class="vp-cargando">Cargando datos del pasajero…</div></div>' +
         '<div class="viaje-footer">' +
           '<div class="viaje-cta"><button type="button" class="btn-main btn-aceptar-viaje">Aceptar Viaje</button></div>' +
           '<button type="button" class="btn-rechazar">' + SVG_RECHAZAR + ' Rechazar viaje</button>' +
@@ -2456,6 +2643,12 @@
 
       card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
       card.querySelector('.btn-rechazar').addEventListener('click', () => rechazarViaje(viaje, card));
+
+      // Carga asíncrona de la foto, el nombre y la calificación del pasajero
+      const cajaPasajero = card.querySelector('.viaje-pasajero');
+      Promise.resolve(obtenerPasajero(viaje.pasajero_id))
+        .then((info) => pintarPasajeroEnTarjeta(cajaPasajero, info))
+        .catch(() => pintarPasajeroEnTarjeta(cajaPasajero, null));
 
       if (esNuevo) {
         setTimeout(() => {
