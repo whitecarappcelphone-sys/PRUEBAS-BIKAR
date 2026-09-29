@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
@@ -35,7 +34,8 @@
     .btn-icon svg{width:18px;height:18px}
 
     main{flex:1;max-width:600px;width:100%;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:16px}
-    .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow)}
+    .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .card > *:not(.scanner-fantastico), .status-card > *:not(.scanner-fantastico){position:relative;z-index:1}
     .card-title{font-size:.8rem;text-transform:uppercase;color:var(--muted-text);font-weight:700;letter-spacing:.5px;margin-bottom:14px}
 
     /* ESTADO */
@@ -68,45 +68,112 @@
     @keyframes ringWave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.1);opacity:0}}
     @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
 
+    /* [MODIFICACIÓN 6] ANIMACIÓN TIPO AUTO FANTÁSTICO (KNIGHT RIDER) COMO DESTELLO EN EL FONDO */
+    .scanner-fantastico{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
+    .scanner-fantastico.on{display:block}
+    .scanner-fantastico::before{
+      content:'';position:absolute;top:0;bottom:0;width:170px;left:-170px;
+      background:radial-gradient(ellipse at center, rgba(71,133,167,.35) 0%, rgba(19,73,137,.2) 45%, transparent 75%);
+      filter:blur(14px);animation:autoFantasticoSweep 2.8s ease-in-out infinite alternate;will-change:transform;
+    }
+    .scanner-fantastico::after{
+      content:'';position:absolute;top:0;left:-130px;width:130px;height:3px;
+      background:linear-gradient(90deg,transparent 0%,rgba(71,133,167,.7) 20%,#60a5fa 48%,#ffffff 52%,#60a5fa 56%,rgba(71,133,167,.7) 80%,transparent 100%);
+      box-shadow:0 0 16px 3px rgba(96,165,250,.95), 0 0 30px 6px rgba(71,133,167,.65);
+      border-radius:999px;animation:autoFantasticoSweep 2.8s ease-in-out infinite alternate;will-change:transform;
+    }
+    @keyframes autoFantasticoSweep{
+      0%{transform:translateX(0);opacity:.5}
+      50%{opacity:1}
+      100%{transform:translateX(calc(100% + 550px));opacity:.5}
+    }
+    body.dark-theme .scanner-fantastico::before{
+      background:radial-gradient(ellipse at center, rgba(96,165,250,.35) 0%, rgba(71,133,167,.25) 40%, rgba(19,73,137,.15) 60%, transparent 80%);
+      filter:blur(16px);
+    }
+    body.dark-theme .scanner-fantastico::after{
+      box-shadow:0 0 20px 4px rgba(147,197,253,1), 0 0 38px 8px rgba(71,133,167,.75);
+    }
+
     /* PERFIL DE LA CONTRAPARTE */
     .profile-box{display:flex;align-items:center;gap:14px}
     .profile-img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color);background:var(--field-bg);flex-shrink:0}
-    .profile-info{flex:1;min-width:0}
-    .profile-name{font-size:1.05rem;font-weight:800;word-break:break-word}
-    .profile-sub{font-size:.82rem;color:var(--muted-text);margin-top:2px}
-    .profile-extra{margin-top:7px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}
+    .profile-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+    .profile-name{font-size:1.05rem;font-weight:800;word-break:break-word;line-height:1.25}
+    .profile-sub{font-size:.8rem;color:var(--muted-text);line-height:1.3}
+    .profile-sub:empty{display:none}
+    .profile-extra{margin-top:5px;display:flex;flex-direction:column;gap:6px;width:100%}
+
+    .conductor-tags-top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
     .vehicle-tag,.mini-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--field-bg);color:var(--primary-color);border-radius:9px;font-weight:700;font-size:.74rem}
     .vehicle-tag svg,.mini-tag svg{width:13px;height:13px;flex-shrink:0}
     .mini-tag{color:var(--text-color)}
     .mini-tag.placa-tag{border:1px dashed var(--primary-color);color:var(--primary-color)}
     .mini-tag.rating-tag{color:var(--accent-amber)}
-    .mini-tag.viajes-tag{color:var(--brand)}
-    .placa{letter-spacing:1px;text-transform:uppercase}
-    .vehicle-profile{width:100%;display:flex;align-items:center;gap:12px;margin-top:1px}
-    .vehicle-profile-info{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
-    .vehicle-photo{width:86px;height:64px;object-fit:cover;border:1px solid var(--border-color);border-radius:10px;background:var(--field-bg);flex-shrink:0}
-    .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
-    .btn-contacto{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:12px;cursor:pointer;
-      font-size:.8rem;font-weight:800;text-decoration:none;transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color);position:relative}
-    .btn-contacto:hover{transform:translateY(-1px);border-color:var(--primary-color)}
-    .btn-contacto svg{width:15px;height:15px}
-    .btn-contacto.whatsapp{color:#128c7e;border-color:rgba(18,140,126,.35)}
-    .badge-chat{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-red);color:#fff;font-size:.65rem;display:none;place-items:center}
-    .btn-contacto.app-contact svg{transform-origin:center;animation:softRing 3.8s ease-in-out infinite}
-    #btn-llamada-app svg{animation-delay:.55s}
-    @keyframes softRing{0%,88%,100%{transform:rotate(0) scale(1)}90%{transform:rotate(-8deg) scale(1.04)}92%{transform:rotate(8deg) scale(1.04)}94%{transform:rotate(-6deg) scale(1.02)}96%{transform:rotate(6deg) scale(1.02)}98%{transform:rotate(0) scale(1)}}
-    body.dark-theme .btn-contacto.app-contact{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)}
-    body.dark-theme .btn-contacto.app-contact:hover{border-color:#fff}
-    body.dark-theme .btn-contacto.app-contact svg{color:#fff}
+    .placa{letter-spacing:1px;text-transform:uppercase;font-weight:800}
 
-    /* Destello de fondo estilo barrido */
-    #card-persona{position:relative;overflow:hidden}
-    #card-persona > *:not(.radar){position:relative;z-index:1}
-    .radar{position:absolute;inset:0;pointer-events:none;z-index:0;display:none;overflow:hidden}
-    .radar.on{display:block}
-    .radar::before{content:'';position:absolute;inset:-35% -55%;background:linear-gradient(105deg,transparent 42%,rgba(71,133,167,0) 47%,rgba(71,133,167,.035) 49%,rgba(163,218,245,.12) 50%,rgba(71,133,167,.07) 52%,rgba(71,133,167,0) 56%,transparent 62%);transform:translateX(-70%);animation:knightSweep 4.8s ease-in-out infinite}
-    .radar > .centro{display:none}
-    @keyframes knightSweep{0%,4%{transform:translateX(-70%)}48%{transform:translateX(70%)}52%{transform:translateX(70%)}96%,100%{transform:translateX(-70%)}}
+    /* [MODIFICACIÓN 4] PLACA CON FOTO REAL DEL VEHÍCULO Y CALIFICACIÓN DEBAJO */
+    .vehiculo-placa-bloque{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:2px}
+    .placa-foto-fila{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+    .vehiculo-thumb-chip{
+      display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 4px;
+      background:var(--field-bg);border:1px solid var(--border-color);border-radius:9px;
+      font-weight:700;font-size:.74rem;color:var(--text-color);cursor:pointer;transition:all .2s;
+    }
+    .vehiculo-thumb-chip:hover{border-color:var(--primary-color);transform:translateY(-1px)}
+    .vehiculo-mini-img{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);background:var(--card-bg)}
+    .vehiculo-thumb-txt{font-size:.72rem;font-weight:700}
+    .calificacion-debajo-placa{display:flex;align-items:center;gap:6px;margin-top:1px}
+
+    /* [MODIFICACIÓN 3 Y 7] BOTONES DE CONTACTO (CHAT Y LLAMADA APP ÚNICAMENTE) */
+    .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
+    .btn-contacto{
+      flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;
+      border-radius:12px;cursor:pointer;font-size:.84rem;font-weight:800;text-decoration:none;
+      transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color);position:relative;
+    }
+    .btn-contacto:hover{transform:translateY(-1px);border-color:var(--primary-color)}
+    .btn-contacto svg{width:16px;height:16px}
+    .badge-chat{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-red);color:#fff;font-size:.65rem;display:none;place-items:center}
+
+    /* [MODIFICACIÓN 3] ANIMACIÓN RING RING MUY TENUE EN LOS ICONOS DE CHAT Y LLAMAR POR APP */
+    #btn-chat-app svg, #btn-llamada-app svg{
+      animation:ringRingTenue 3.2s ease-in-out infinite;
+      transform-origin:center;
+    }
+    #btn-llamada-app svg{animation-delay:1.6s}
+    @keyframes ringRingTenue{
+      0%,65%,100%{transform:rotate(0) scale(1)}
+      68%{transform:rotate(-7deg) scale(1.05)}
+      72%{transform:rotate(7deg) scale(1.05)}
+      76%{transform:rotate(-5deg) scale(1.03)}
+      80%{transform:rotate(5deg) scale(1.03)}
+      84%{transform:rotate(-2deg)}
+      88%{transform:rotate(2deg)}
+      92%{transform:rotate(0) scale(1)}
+    }
+
+    /* [MODIFICACIÓN 7] EN MODO OSCURO, TEXTO E ICONOS DE CHAT Y LLAMAR POR APP CAMBIAN A BLANCO */
+    body.dark-theme #btn-chat-app,
+    body.dark-theme #btn-llamada-app,
+    body.dark-theme .btn-contacto{
+      color:#ffffff !important;
+      border-color:rgba(255,255,255,.2);
+      background:rgba(255,255,255,.08);
+    }
+    body.dark-theme #btn-chat-app svg,
+    body.dark-theme #btn-llamada-app svg,
+    body.dark-theme .btn-contacto svg{
+      color:#ffffff !important;
+      stroke:#ffffff !important;
+    }
+    body.dark-theme #btn-chat-app:hover,
+    body.dark-theme #btn-llamada-app:hover,
+    body.dark-theme .btn-contacto:hover{
+      color:#ffffff !important;
+      border-color:#ffffff;
+      background:rgba(255,255,255,.16);
+    }
 
     /* RUTA */
     .route-box{display:flex;flex-direction:column;gap:12px}
@@ -183,7 +250,7 @@
     .pin-inputs.error input{border-color:var(--accent-red);animation:shake .4s}
     @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-    /* TARJETA PIN COMPACTA (no bloqueante) */
+    /* TARJETA PIN COMPACTA */
     #card-pin{padding:14px 16px}
     #card-pin .card-title{margin-bottom:10px;display:flex;align-items:center;gap:7px}
     #card-pin .card-title svg{width:14px;height:14px;color:var(--primary-color)}
@@ -209,6 +276,7 @@
     .nav-app{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1px solid var(--border-color);background:var(--field-bg);color:var(--text-color);text-decoration:none;font-weight:700}
     .nav-app:hover{border-color:var(--primary-color)}
     .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
+
     /* Chat */
     .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
     .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:.86rem;line-height:1.35;word-break:break-word}
@@ -220,8 +288,7 @@
     .chat-form button svg{width:18px;height:18px}
     .llamada-estado{text-align:center;font-weight:800;font-size:1rem;margin-bottom:4px}
     .llamada-tiempo{text-align:center;color:var(--muted-text);font-size:.85rem;margin-bottom:10px}
-    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}.vehicle-photo{width:76px;height:58px}}
-    @media (prefers-reduced-motion:reduce){.btn-contacto.app-contact svg,.radar::before{animation:none}}
+    @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
 <body>
@@ -244,7 +311,10 @@
 
   <main>
     <!-- ESTADO -->
-    <section class="status-card">
+    <section class="status-card" id="card-status">
+      <!-- [MODIFICACIÓN 6] Animación tipo Auto Fantástico como destello de fondo -->
+      <div class="scanner-fantastico on" id="scanner-status"></div>
+
       <div id="status-badge" class="status-badge solicitado">
         <span class="pulse-dot"></span>
         <span id="status-texto">Buscando conductor</span>
@@ -263,16 +333,9 @@
 
     <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
-      <div class="radar" id="radar">
-        <div class="centro">
-          <div class="barrido"></div>
-          <div class="grid" style="width:160px;height:160px;margin:-80px 0 0 -80px"></div>
-          <div class="grid" style="width:320px;height:320px;margin:-160px 0 0 -160px"></div>
-          <div>
-            <div class="anillo"></div><div class="anillo"></div><div class="anillo"></div>
-          </div>
-        </div>
-      </div>
+      <!-- [MODIFICACIÓN 6] Animación tipo Auto Fantástico como destello de fondo -->
+      <div class="scanner-fantastico on" id="radar"></div>
+
       <div class="card-title" id="titulo-persona">Información del conductor</div>
       <div class="profile-box">
         <img id="persona-foto" class="profile-img" alt="Foto de perfil" src="">
@@ -282,23 +345,17 @@
           <div class="profile-extra" id="persona-extra"></div>
         </div>
       </div>
+
+      <!-- [MODIFICACIÓN 3] Únicamente botones de Chat y Llamar por app -->
       <div class="contacto" id="zona-contacto" style="display:none">
-        <a class="btn-contacto" id="btn-llamar" href="#">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg>
-          Llamar
-        </a>
-        <a class="btn-contacto whatsapp" id="btn-whatsapp" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
-          WhatsApp
-        </a>
-        <button class="btn-contacto app-contact" id="btn-chat-app" type="button" style="display:none">
+        <button class="btn-contacto" id="btn-chat-app" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Chat
+          <span>Chat</span>
           <span class="badge-chat" id="badge-chat">0</span>
         </button>
-        <button class="btn-contacto app-contact" id="btn-llamada-app" type="button" style="display:none">
+        <button class="btn-contacto" id="btn-llamada-app" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg>
-          Llamar por app
+          <span>Llamar por app</span>
         </button>
       </div>
     </section>
@@ -484,42 +541,65 @@
     </div>
   </div>
 
+  <!-- MODAL FOTO VEHÍCULO (AMPLIACIÓN) -->
+  <div class="modal z3" id="modal-foto-vehiculo">
+    <div class="modal-box" style="text-align:center;max-width:440px;padding:20px">
+      <div class="modal-head">
+        <div class="modal-title">Vehículo registrado</div>
+        <button class="modal-close" data-cerrar="modal-foto-vehiculo">✕</button>
+      </div>
+      <div style="margin:12px 0;border-radius:14px;overflow:hidden;background:var(--field-bg);border:1px solid var(--border-color);max-height:360px;display:flex;align-items:center;justify-content:center">
+        <img id="img-vehiculo-completa" src="" alt="Vehículo del conductor" style="width:100%;height:auto;max-height:340px;object-fit:contain;display:block">
+      </div>
+      <div id="foto-vehiculo-placa" style="font-size:.92rem;font-weight:800;letter-spacing:1px;color:var(--primary-color);margin-bottom:12px"></div>
+      <button class="btn-action btn-secundario" data-cerrar="modal-foto-vehiculo" style="padding:12px"><span>Cerrar</span></button>
+    </div>
+  </div>
+
   <div id="toast" class="toast">Notificación</div>
 
   <script>
   (function () {
     'use strict';
 
-    /* CONFIGURACIÓN */
+    /* ============================================================
+       CONFIGURACIÓN (mismas credenciales reales que index.html)
+       ============================================================ */
     const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
     const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-    window.supabaseClient = db;
+    window.supabaseClient = db;                      /* compatibilidad con otros scripts */
 
     const K_SESION = 'bikar_usuario';
     const FOTO_REPO_GITHUB = 'https://raw.githubusercontent.com/bikar-app/perfil/main/index.svg';
-    const INTERVALO_REFRESCO = 8000;
+    const INTERVALO_REFRESCO = 8000;                 /* respaldo si Realtime no está disponible */
 
-    /* ESTADO */
+    /* ============================================================
+       ESTADO
+       ============================================================ */
     const urlParams = new URLSearchParams(location.search);
     const viajeId = urlParams.get('id');
     let rolUsuario = (urlParams.get('rol') || 'pasajero').toLowerCase();
     let viajeActual = null, usuarioSesion = null, canalRealtime = null, timerRefresco = null, realtimeOK = false;
     const cachePerfiles = new Map();
 
-    /* DOM */
+    /* ============================================================
+       DOM
+       ============================================================ */
     const $ = (id) => document.getElementById(id);
     const statusBadge = $('status-badge'), statusTexto = $('status-texto');
     const statusTitulo = $('status-titulo'), statusDesc = $('status-desc'), statusId = $('status-id');
     const pasos = Array.prototype.slice.call($('stepper').querySelectorAll('.step'));
     const personaFoto = $('persona-foto'), personaNombre = $('persona-nombre'), personaSub = $('persona-sub');
     const personaExtra = $('persona-extra'), tituloPersona = $('titulo-persona'), zonaContacto = $('zona-contacto');
-    const btnLlamar = $('btn-llamar'), btnWhatsapp = $('btn-whatsapp'), linkMaps = $('link-maps');
+    const linkMaps = $('link-maps');
     const secAcciones = $('sec-acciones'), btnSiguiente = $('btn-siguiente-estado');
     const btnInicio = $('btn-inicio'), avisoRol = $('aviso-rol');
     const cardPin = $('card-pin');
 
-    /* ICONOS SVG */
+    /* ============================================================
+       ICONOS SVG
+       ============================================================ */
     const SVG = {
       auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-4l2-5h9l3 5h3a1 1 0 0 1 1 1v3h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>',
       moto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17" r="3"/><circle cx="5.5" cy="17" r="3"/><path d="M12 17V13l-3-3 4-2.5 2 2.5h2"/></svg>',
@@ -533,13 +613,16 @@
       siguiente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>',
       candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
       placa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h2M11 10h2M16 10h2M6 14h12"/></svg>',
-      viajes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 7h11l-2 3 2 3H4"/><circle cx="19" cy="19" r="2"/></svg>'
+      camara: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+      zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>'
     };
     const ICONO_SERVICIO = {
       moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, taxi_carga: SVG.caja, default: SVG.ruta
     };
 
-    /* HELPERS */
+    /* ============================================================
+       HELPERS
+       ============================================================ */
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const mismoId = (a, b) => a != null && b != null && String(a) === String(b);
     const lsJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
@@ -561,7 +644,9 @@
       mostrarToast._t = setTimeout(() => t.classList.remove('visible'), 3000);
     }
 
-    /* Consultas tolerantes: detectan tablas/columnas inexistentes. */
+    /* ============================================================
+       Consultas tolerantes
+       ============================================================ */
     const DEBUG = urlParams.get('debug') === '1';
     const logDebug = function () { if (DEBUG) console.info.apply(console, ['[BIKAR]'].concat(Array.prototype.slice.call(arguments))); };
     const tablasFallidas = new Set();
@@ -608,27 +693,9 @@
       return null;
     }
 
-    function fotoVehiculoDe(vehiculo, documento) {
-      const campos = ['foto_vehiculo','fotoVehiculo','imagen_vehiculo','imagenVehiculo','url_foto_vehiculo','foto_url','imagen_url','url_foto','url_imagen','vehicle_photo','vehicle_image','foto','imagen','image_url','image'];
-      const fuentes = [vehiculo, documento];
-      for (let i = 0; i < fuentes.length; i++) {
-        const fuente = fuentes[i];
-        if (!fuente) continue;
-        for (let j = 0; j < campos.length; j++) {
-          const valor = fuente[campos[j]];
-          if (typeof valor === 'string' && valor.trim()) return valor.trim();
-          if (valor && typeof valor === 'object') {
-            const url = valor.url || valor.publicUrl || valor.public_url || valor.src;
-            if (typeof url === 'string' && url.trim()) return url.trim();
-          }
-        }
-        const hallado = valorPorPatron(fuente, /foto|imagen|image|vehicle_photo|vehicle_image/i);
-        if (hallado) return String(hallado).trim();
-      }
-      return '';
-    }
-
-    /* TEMA */
+    /* ============================================================
+       TEMA
+       ============================================================ */
     function aplicarTema(oscuro) {
       document.body.classList.toggle('dark-theme', oscuro);
       $('ico-luna').style.display = oscuro ? 'none' : 'block';
@@ -638,7 +705,9 @@
     $('btn-tema').addEventListener('click', () => aplicarTema(!document.body.classList.contains('dark-theme')));
     aplicarTema((localStorage.getItem('bikar_tema') || 'oscuro') === 'oscuro');
 
-    /* NORMALIZACIÓN DE SERVICIO */
+    /* ============================================================
+       NORMALIZACIÓN DE SERVICIO
+       ============================================================ */
     function normalizarClaveServicio(raw) {
       if (raw === null || raw === undefined || raw === '') return null;
       let c = String(raw).toLowerCase().trim();
@@ -654,7 +723,9 @@
       return { moto_taxi:'Moto Taxi', moto_delivery:'Moto Delivery', taxi_auto:'Taxi Auto', taxi_carga:'Taxi Carga' }[clave] || 'Servicio BIKAR';
     }
 
-    /* CARGA DE DATOS */
+    /* ============================================================
+       CARGA DE DATOS
+       ============================================================ */
     async function obtenerDatosViaje(silencioso) {
       if (!db || !viajeId) return;
       try {
@@ -691,12 +762,9 @@
       return fila;
     }
     const correoDe = (u) => (u && (u.email || u.correo)) || null;
-    const usuarioSinCorreo = (u) => {
-      const alias = u && u.usuario;
-      return alias && !String(alias).includes('@') ? alias : null;
-    };
 
-    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa';
+    /* En BIKAR: viajes.conductor_id → conductores.id ; conductores.usuario_id → usuarios.id */
+    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa,foto_vehiculo,foto_auto,foto,foto_url';
     async function filaPorLlave(tabla, llave, valor, columnas) {
       if (valor == null) return null;
       let r = await consultaSegura(tabla, (q) => q.select(columnas || '*').eq(llave, valor).limit(1));
@@ -708,44 +776,69 @@
       const llave = 'cond:' + conductorId;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
       const info = { conductorId: conductorId, usuarioId: null, conductor: null, vehiculo: null, doc: null, usuario: null };
+
       info.conductor = await filaPorLlave('conductores', 'id', conductorId);
       if (!info.conductor) {
         const porUsuario = await filaPorLlave('conductores', 'usuario_id', conductorId);
         if (porUsuario) { info.conductor = porUsuario; if (porUsuario.id != null) info.conductorId = porUsuario.id; }
       }
       info.usuarioId = (info.conductor && info.conductor.usuario_id != null) ? info.conductor.usuario_id : conductorId;
+
+      /* Vehículo registrado */
       info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.conductorId);
       if (!info.vehiculo && info.usuarioId !== info.conductorId) info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.usuarioId);
+
+      /* Documentación del vehículo */
       info.doc = await filaPorLlave('documentos_conductor', 'conductor_id', info.conductorId, COLS_DOC);
       if (!info.doc) info.doc = await filaPorLlave('documentos_conductor', 'usuario_id', info.usuarioId, COLS_DOC);
+
+      /* Cuenta del conductor */
       info.usuario = await buscarUsuario(info.usuarioId);
       if (!info.usuario && info.usuarioId !== conductorId) info.usuario = await buscarUsuario(conductorId);
+
       logDebug('conductor resuelto', info);
       cachePerfiles.set(llave, info);
       return info;
     }
 
-    /* ESTADÍSTICAS */
+    /* [MODIFICACIÓN 4] Helper para extraer la foto real del vehículo guardada en Supabase */
+    function obtenerFotoVehiculo(info, v) {
+      const veh = info && info.vehiculo, doc = info && info.doc, cond = info && info.conductor, u = info && info.usuario;
+      const PAT = /foto.*(vehic|auto|carro|moto)|imagen.*(vehic|auto)|vehiculo.*foto/i;
+      const candidatas = [
+        valorPorPatron(veh, PAT),
+        valorPorPatron(doc, PAT),
+        valorPorPatron(cond, PAT),
+        valorPorPatron(v, PAT),
+        veh && (veh.foto_vehiculo || veh.foto || veh.foto_url || veh.imagen || veh.url_foto),
+        doc && (doc.foto_vehiculo || doc.foto_auto || doc.foto || doc.foto_url || doc.foto_carro || doc.foto_moto),
+        cond && (cond.foto_vehiculo || cond.foto_auto || cond.foto),
+        v && (v.foto_vehiculo || v.vehiculo_foto)
+      ];
+      for (let i = 0; i < candidatas.length; i++) {
+        const val = candidatas[i];
+        if (val && typeof val === 'string' && val.trim().length > 6) {
+          return val.trim();
+        }
+      }
+      return null;
+    }
+
+    /* Estadísticas de calificación promedio (los viajes se eliminan de la visualización según punto 5) */
     function limpiarCacheStats() {
       Array.from(cachePerfiles.keys()).forEach((k) => { if (String(k).indexOf('stats:') === 0) cachePerfiles.delete(k); });
     }
     async function estadisticasUsuario(id, rolPersona, usuarioId) {
       const llave = 'stats:' + rolPersona + ':' + id;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
-      const res = { viajes: null, promedio: null, total: 0 };
+      const res = { promedio: null, total: 0 };
       if (db && id != null) {
         const campoId = rolPersona === 'conductor' ? 'conductor_id' : 'pasajero_id';
         const cv = colsViaje().length ? colsViaje() : ((await columnasDe('viajes')) || []);
         const idsPersona = [id];
         if (usuarioId != null && String(usuarioId) !== String(id)) idsPersona.push(usuarioId);
-        if (cv.indexOf(campoId) >= 0) {
-          let r = null;
-          if (cv.indexOf('estado') >= 0) {
-            r = await consultaSegura('viajes', (q) => q.select('id', { count:'exact', head:true }).eq(campoId, id).eq('estado', 'terminado'));
-          }
-          if (!r) r = await consultaSegura('viajes', (q) => q.select('id', { count:'exact', head:true }).eq(campoId, id));
-          if (r && typeof r.count === 'number') res.viajes = r.count;
-        }
+
+        /* Promedio de estrellas recibidas (calificaciones) */
         const cc = await columnasDe('calificaciones');
         if (cc !== null && cc.length) {
           const colEstrellas = cc.indexOf('estrellas') >= 0 ? 'estrellas' : (cc.indexOf('calificacion') >= 0 ? 'calificacion' : (cc.indexOf('puntaje') >= 0 ? 'puntaje' : null));
@@ -762,6 +855,8 @@
             }
           }
         }
+
+        /* Respaldo: columnas de calificación dentro de viajes */
         if (res.promedio == null) {
           const col = rolPersona === 'conductor' ? 'calificacion_conductor' : 'calificacion_pasajero';
           if (cv.indexOf(col) >= 0 && cv.indexOf(campoId) >= 0) {
@@ -792,43 +887,62 @@
           return '<span class="mini-tag rating-tag">' + SVG.estrella + esc(info.calificacion) +
             (info.totalCalif ? ' <span style="color:var(--muted-text);font-weight:600">(' + esc(info.totalCalif) + ')</span>' : '') + '</span>';
         }
-        if (info.viajes != null || info.calificacion === null) return '<span class="mini-tag rating-tag">' + SVG.estrella + 'Sin calificaciones</span>';
-        return '';
-      };
-      const chipViajes = () => {
-        if (info.viajes == null) return '';
-        return '<span class="mini-tag viajes-tag">' + SVG.viajes + esc(info.viajes) + ' viaje' + (Number(info.viajes) === 1 ? '' : 's') + '</span>';
+        return '<span class="mini-tag rating-tag">' + SVG.estrella + 'Sin calificaciones</span>';
       };
 
       if (info.rol === 'conductor') {
-        if (info.tipo_servicio) {
+        /* Fila de servicio / modelo de vehículo */
+        const partesSrv = [];
+        if (info.tipo_servicio) partesSrv.push(info.tipo_servicio);
+        if (info.vehiculo) partesSrv.push(info.vehiculo);
+        if (partesSrv.length) {
           const claveSrv = normalizarClaveServicio(info.tipo_servicio);
-          chips.push('<span class="vehicle-tag">' + (ICONO_SERVICIO[claveSrv] || SVG.ruta) + esc(info.tipo_servicio) + '</span>');
+          chips.push('<div class="conductor-tags-top"><span class="vehicle-tag">' + (ICONO_SERVICIO[claveSrv] || SVG.ruta) + esc(partesSrv.join(' · ')) + '</span></div>');
         }
-        if (info.vehiculo) chips.push('<span class="mini-tag">' + SVG.auto + esc(info.vehiculo) + '</span>');
-        const placaHtml = '<span class="mini-tag placa-tag">' + SVG.placa + '<span class="placa">' +
-          (info.placa ? esc(info.placa) : 'Placa no registrada') + '</span></span>';
-        const fotoHtml = info.fotoVehiculo
-          ? '<img class="vehicle-photo" src="' + esc(info.fotoVehiculo) + '" alt="Foto del vehículo" loading="lazy" onerror="this.style.display=\'none\'">'
-          : '';
-        chips.push('<div class="vehicle-profile"><div class="vehicle-profile-info">' + placaHtml + chipRating() + '</div>' + fotoHtml + '</div>');
+
+        /* [MODIFICACIÓN 4]: Junto a la placa está la foto real del vehículo y la calificación debajo */
+        let bloquePlaca = '<div class="vehiculo-placa-bloque">' +
+          '<div class="placa-foto-fila">' +
+            '<span class="mini-tag placa-tag">' + SVG.placa + '<span class="placa">' +
+              (info.placa ? esc(info.placa) : 'Placa no registrada') + '</span></span>';
+
+        if (info.foto_vehiculo) {
+          bloquePlaca += '<button type="button" class="vehiculo-thumb-chip" id="btn-ver-foto-vehiculo" title="Ver foto completa del vehículo">' +
+            '<img src="' + esc(info.foto_vehiculo) + '" alt="Vehículo" class="vehiculo-mini-img" onerror="this.parentElement.style.display=\'none\'">' +
+            '<span class="vehiculo-thumb-txt">Foto vehículo</span>' +
+            SVG.zoom +
+            '</button>';
+        }
+
+        bloquePlaca += '</div>' +
+          '<div class="calificacion-debajo-placa">' + chipRating() + '</div>' +
+          '</div>';
+
+        chips.push(bloquePlaca);
       } else {
-        chips.push(chipRating());
+        /* [MODIFICACIÓN 1 Y 5]: Pasajero sin teléfono, sin correo y sin viajes */
+        chips.push('<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">' +
+          '<span class="mini-tag">' + SVG.usuario + 'Pasajero verificado</span>' +
+          chipRating() +
+          '</div>');
       }
+
       personaExtra.innerHTML = chips.filter(Boolean).join('');
 
-      if (info.telefono) {
-        const tel = String(info.telefono).replace(/[^\d+]/g, '');
-        zonaContacto.style.display = 'flex';
-        btnLlamar.href = 'tel:' + tel;
-        btnWhatsapp.href = 'https://wa.me/' + tel.replace(/^\+/, '') +
-          '?text=' + encodeURIComponent('Hola ' + (nombre.split(' ')[0] || '') + ', te contacto por tu viaje BIKAR #' + viajeId);
-      } else {
-        zonaContacto.style.display = 'none';
+      /* Evento para ver la foto ampliada del vehículo */
+      const btnVerFoto = $('btn-ver-foto-vehiculo');
+      if (btnVerFoto && info.foto_vehiculo) {
+        btnVerFoto.onclick = () => {
+          $('img-vehiculo-completa').src = info.foto_vehiculo;
+          $('foto-vehiculo-placa').textContent = info.placa ? ('PLACA: ' + String(info.placa).toUpperCase()) : '';
+          abrirModal('modal-foto-vehiculo');
+        };
       }
+
       actualizarContacto();
     }
 
+    /* [MODIFICACIÓN 3]: Solo Chat y Llamar por app; sin teléfono ni WhatsApp */
     function actualizarContacto() {
       const estado = String((viajeActual && viajeActual.estado) || 'solicitado').toLowerCase();
       const activo = ['aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
@@ -836,11 +950,11 @@
         ? (viajeActual && viajeActual.pasajero_id != null)
         : (viajeActual && viajeActual.conductor_id != null);
       const appOK = activo && hayContraparte;
-      btnLlamar.style.display = 'none';
-      btnWhatsapp.style.display = 'none';
+
       $('btn-chat-app').style.display = appOK ? 'inline-flex' : 'none';
       $('btn-llamada-app').style.display = appOK ? 'inline-flex' : 'none';
       zonaContacto.style.display = appOK ? 'flex' : 'none';
+
       if (appOK) prepararCanalChat();
     }
 
@@ -853,50 +967,61 @@
       return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
     }
 
+    /* [MODIFICACIÓN 2, 4 Y 5]: Conductor sin teléfono, sin viajes, con foto de vehículo y placa */
     async function cargarPerfilConductor(id) {
       const info = await resolverConductor(id);
       const u = info.usuario, doc = info.doc, veh = info.vehiculo;
       const st = await estadisticasUsuario(id, 'conductor', info.usuarioId);
+
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
-        || usuarioSinCorreo(u) || 'Conductor BIKAR';
+        || (u && (u.usuario || correoDe(u))) || 'Conductor BIKAR';
+
       const PAT_PLACA = /placa|matricul|patente/i;
       const placa = valorPorPatron(veh, PAT_PLACA) || valorPorPatron(doc, PAT_PLACA) ||
                     valorPorPatron(u, PAT_PLACA) || valorPorPatron(viajeActual, PAT_PLACA) || '';
+
+      const fotoVehiculo = obtenerFotoVehiculo(info, viajeActual);
+
       const marca = (doc && doc.marca) || '';
       const modelo = (doc && doc.modelo) || (veh && veh.modelo) || '';
       const anio = (doc && doc.anio) || (veh && veh.anio) || '';
       const tipoServ = (doc && doc.tipo_servicio) || (viajeActual && (viajeActual.tipo_servicio || viajeActual.nombre_servicio)) || '';
-      const fotoVehiculo = fotoVehiculoDe(veh, doc);
+
       logDebug('perfil conductor', { usuario: u, vehiculo: veh, documento: doc, placa: placa, fotoVehiculo: fotoVehiculo, stats: st });
+
       pintarPersona({
-        rol: 'conductor', nombre,
+        rol: 'conductor',
+        nombre: nombre,
         sub: 'Conductor verificado BIKAR',
         foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
         tipo_servicio: tipoServ,
         vehiculo: [marca, modelo, anio].filter(Boolean).join(' '),
         placa: placa,
-        fotoVehiculo: fotoVehiculo,
+        foto_vehiculo: fotoVehiculo,
         calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
-        totalCalif: st.total,
-        viajes: st.viajes
+        totalCalif: st.total
       });
     }
 
+    /* [MODIFICACIÓN 1 Y 5]: Pasajero sin teléfono, sin correo, sin viajes y con espacios pulidos */
     async function cargarPerfilPasajero(id) {
       const [u, st] = await Promise.all([buscarUsuario(id), estadisticasUsuario(id, 'pasajero')]);
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
-        || usuarioSinCorreo(u) || 'Pasajero BIKAR';
+        || (u && (u.usuario || correoDe(u))) || 'Pasajero BIKAR';
+
       pintarPersona({
-        rol: 'pasajero', nombre,
-        sub: 'Pasajero BIKAR',
+        rol: 'pasajero',
+        nombre: nombre,
+        sub: 'Pasajero verificado BIKAR',
         foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
         calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
-        totalCalif: st.total,
-        viajes: st.viajes
+        totalCalif: st.total
       });
     }
 
-    /* RENDER */
+    /* ============================================================
+       RENDER
+       ============================================================ */
     const INDICE_ESTADO = { solicitado:0, aceptado:1, en_camino:2, en_progreso:2, terminado:3, cancelado:-1 };
     const TEXTOS_ESTADO = {
       solicitado: ['Buscando conductor', 'Esperando conductor', 'Tu solicitud está visible para los conductores cercanos.'],
@@ -910,6 +1035,8 @@
     function renderizarUI() {
       if (!viajeActual) return;
       const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
+
+      /* Ruta, servicio y tarifa */
       $('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
       $('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
       const clave = normalizarClaveServicio(viajeActual.tipo_servicio || viajeActual.nombre_servicio);
@@ -929,6 +1056,7 @@
         : encodeURIComponent(viajeActual.destino_nombre || '');
       linkMaps.href = 'https://www.google.com/maps/dir/?api=1&destination=' + destinoMaps;
 
+      /* Badge + textos */
       const t = TEXTOS_ESTADO[estado] || TEXTOS_ESTADO.solicitado;
       statusBadge.className = 'status-badge ' + estado;
       statusTexto.textContent = estado.replace(/_/g, ' ');
@@ -936,12 +1064,14 @@
       statusDesc.textContent = t[2];
       statusId.textContent = 'SOLICITUD #' + (viajeActual.id != null ? viajeActual.id : '—');
 
+      /* Stepper */
       const idx = INDICE_ESTADO[estado] != null ? INDICE_ESTADO[estado] : 0;
       pasos.forEach((el, i) => {
         el.classList.toggle('active', i === idx);
         el.classList.toggle('completed', i < idx);
       });
 
+      /* Contraparte: pasajero ve al conductor / conductor ve al pasajero */
       if (rolUsuario === 'conductor') {
         tituloPersona.textContent = 'Datos del pasajero';
         if (viajeActual.pasajero_id != null) cargarPerfilPasajero(viajeActual.pasajero_id);
@@ -956,7 +1086,9 @@
       actualizarExtras(estado);
     }
 
-    /* ACCIONES SEGÚN EL ROL */
+    /* ============================================================
+       ACCIONES SEGÚN EL ROL
+       ============================================================ */
     function boton(html, deshabilitado, onClick, peligro) {
       btnSiguiente.className = 'btn-action' + (peligro ? ' btn-danger' : '');
       btnSiguiente.innerHTML = html;
@@ -973,6 +1105,7 @@
         btnInicio.style.display = 'flex';
         return;
       }
+
       if (rolUsuario === 'conductor') {
         const flujo = {
           solicitado: ['Aceptar viaje', 'aceptado', false],
@@ -993,6 +1126,8 @@
         });
         return;
       }
+
+      /* Pasajero */
       if (estado === 'solicitado') {
         avisoRol.textContent = 'Aún no hay conductor asignado. Puedes cancelar sin costo mientras esperas.';
         avisoRol.style.display = 'block';
@@ -1024,6 +1159,7 @@
       }
     }
 
+    /* Ocultar viaje al cancelar */
     async function ocultarViajeDeApp() {
       if (db && viajeId) {
         const posibles = { activo:false, visible:false, oculto:true, archivado:true, disponible:false, eliminado:true, finalizado:true };
@@ -1082,18 +1218,30 @@
       personaExtra.innerHTML = '';
       ocultarCardPin();
       $('radar').classList.remove('on');
+      const scanStatus = $('scanner-status');
+      if (scanStatus) scanStatus.classList.remove('on');
     }
 
-    /* MODALES */
+    /* ============================================================
+       MODALES
+       ============================================================ */
     function abrirModal(id) { $(id).classList.add('open'); }
     function cerrarModal(id) { $(id).classList.remove('open'); }
     document.querySelectorAll('[data-cerrar]').forEach((b) => b.addEventListener('click', () => cerrarModal(b.getAttribute('data-cerrar'))));
 
-    /* EXTRAS SEGÚN ESTADO */
+    /* ============================================================
+       EXTRAS SEGÚN ESTADO
+       ============================================================ */
     function actualizarExtras(estado) {
-      $('radar').classList.toggle('on', ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0);
+      /* [MODIFICACIÓN 6] Destello Auto Fantástico en ambas tarjetas */
+      const activoAuto = ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
+      $('radar').classList.toggle('on', activoAuto);
+      const scanStatus = $('scanner-status');
+      if (scanStatus) scanStatus.classList.toggle('on', activoAuto);
+
       const bNav = $('btn-extra-nav'), bComp = $('btn-extra-compartir'), bCanc = $('btn-extra-cancelar');
       bNav.style.display = 'none'; bComp.style.display = 'none'; bCanc.style.display = 'none';
+
       if (rolUsuario === 'conductor') {
         if (estado === 'en_camino') { bNav.style.display = 'flex'; }
         if (estado === 'aceptado' || estado === 'en_camino') { bCanc.style.display = 'flex'; }
@@ -1102,6 +1250,7 @@
         if (estado === 'aceptado' || estado === 'en_camino') bCanc.style.display = 'flex';
       }
 
+      /* PIN compacto */
       const pinPendiente = (estado === 'aceptado' || estado === 'en_camino');
       if (rolUsuario !== 'conductor') {
         if (pinPendiente && viajeActual.conductor_id != null) mostrarPinPasajero(estado);
@@ -1111,12 +1260,16 @@
         else { ocultarCardPin(); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
       }
 
+      /* Compartir ubicación */
       if (rolUsuario !== 'conductor' && estado === 'en_progreso' && !sessionStorage.getItem('bikar_share_' + viajeId)) {
         sessionStorage.setItem('bikar_share_' + viajeId, '1');
         setTimeout(() => { abrirModal('modal-compartir'); pedirPosicion(); }, 400);
       }
       if (estado !== 'en_progreso') cerrarModal('modal-compartir');
+
+      /* Calificación */
       if (estado === 'terminado' && !localStorage.getItem('bikar_calif_' + viajeId + '_' + rolUsuario)) abrirCalificacion();
+
       if (estado === 'cancelado' || estado === 'terminado') { cerrarModal('modal-chat'); if (llamada.pc) terminarLlamada(true); }
     }
 
@@ -1124,7 +1277,9 @@
     $('btn-extra-compartir').addEventListener('click', () => { abrirModal('modal-compartir'); pedirPosicion(); });
     $('btn-extra-cancelar').addEventListener('click', abrirModalCancelacion);
 
-    /* MODAL DE CANCELACIÓN */
+    /* ============================================================
+       MODAL DE CANCELACIÓN
+       ============================================================ */
     const MOTIVOS = {
       pasajero: ['El conductor tarda demasiado', 'Cambié de planes', 'Encontré otro medio de transporte', 'Me equivoqué en la dirección', 'La tarifa es muy alta', 'El conductor me pidió cancelar'],
       conductor: ['El pasajero no se presentó', 'No logro contactar al pasajero', 'El pasajero pidió cancelar', 'Dirección de origen incorrecta o inaccesible', 'Comportamiento inapropiado del pasajero', 'Problema con mi vehículo']
@@ -1165,7 +1320,9 @@
       }
     });
 
-    /* PIN DE SEGURIDAD COMPACTO */
+    /* ============================================================
+       PIN DE SEGURIDAD COMPACTO
+       ============================================================ */
     let pinIntentado = false;
     function pinDerivado() {
       let h = 2166136261;
@@ -1274,7 +1431,9 @@
     }
     $('pin-verificar').addEventListener('click', verificarPin);
 
-    /* NAVEGACIÓN AL ORIGEN */
+    /* ============================================================
+       NAVEGACIÓN AL ORIGEN
+       ============================================================ */
     function abrirModalNavegacion() {
       const v = viajeActual || {};
       const lat = v.origen_lat, lon = v.origen_lon != null ? v.origen_lon : v.origen_lng;
@@ -1289,7 +1448,9 @@
     }
     ['nav-google', 'nav-waze'].forEach((id) => $(id).addEventListener('click', () => setTimeout(() => cerrarModal('modal-nav'), 300)));
 
-    /* COMPARTIR UBICACIÓN */
+    /* ============================================================
+       COMPARTIR UBICACIÓN
+       ============================================================ */
     let ultimaPos = null, ultimoTextoCompartir = '';
     function pedirPosicion() {
       if (!navigator.geolocation) return;
@@ -1310,8 +1471,6 @@
       if (c.vehiculo) l.push('🚗 *Vehículo:* ' + c.vehiculo);
       if (c.placa) l.push('🔢 *Placa:* ' + String(c.placa).toUpperCase());
       if (c.calificacion) l.push('⭐ *Calificación:* ' + c.calificacion + (c.totalCalif ? ' (' + c.totalCalif + ' reseñas)' : ''));
-      if (c.viajes != null) l.push('🧾 *Viajes realizados:* ' + c.viajes);
-      if (c.telefono) l.push('📞 *Tel. conductor:* ' + c.telefono);
       l.push('💰 *Tarifa:* ' + formatoMoneda(tarifaDelViaje(v)));
       if (v.distancia_km) l.push('📏 *Distancia:* ' + v.distancia_km + ' km');
       if (pos) l.push('', '🛰️ *Mi ubicación actual:* ' + urlUbicacion(pos));
@@ -1375,7 +1534,9 @@
       } catch (e) { mostrarToast('No se pudo copiar el mensaje'); }
     });
 
-    /* CALIFICACIÓN */
+    /* ============================================================
+       CALIFICACIÓN
+       ============================================================ */
     let estrellasSel = 0;
     const ETIQ = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', '¡Excelente!'];
     $('estrellas').innerHTML = [1, 2, 3, 4, 5].map((n) => '<button type="button" data-n="' + n + '" aria-label="' + n + ' estrellas">' + SVG.estrella + '</button>').join('');
@@ -1428,7 +1589,9 @@
       mostrarToast(ok ? '¡Gracias por tu calificación!' : 'Calificación guardada localmente');
     });
 
-    /* CHAT INTERNO Y LLAMADA */
+    /* ============================================================
+       CHAT INTERNO Y LLAMADA EN LA APP
+       ============================================================ */
     let canalChat = null, noLeidos = 0;
     const msgsVistos = new Set();
     function prepararCanalChat() {
@@ -1583,7 +1746,9 @@
       cerrarModal('modal-llamada');
     }
 
-    /* TIEMPO REAL */
+    /* ============================================================
+       TIEMPO REAL
+       ============================================================ */
     function suscribirRealtime() {
       if (!db || !viajeId) return;
       try {
@@ -1614,17 +1779,22 @@
       if (timerRefresco) { clearInterval(timerRefresco); timerRefresco = null; }
     }
 
-    /* ARRANQUE */
+    /* ============================================================
+       ARRANQUE
+       ============================================================ */
     function inicializar() {
       usuarioSesion = lsJSON(K_SESION);
       if (!urlParams.get('rol') && usuarioSesion && usuarioSesion.tipo_usuario === 'conductor') rolUsuario = 'conductor';
+
       personaFoto.src = avatarDe('B');
       personaFoto.addEventListener('error', function () { this.src = avatarDe(personaNombre.textContent || 'B'); });
+
       if (!db) {
         estadoVacio('Sin conexión con el servidor', 'No se pudo inicializar Supabase. Revisa tu conexión a internet.');
         return;
       }
       if (!viajeId) { estadoVacio('Sin viaje activo', 'No se especificó un código de viaje válido.'); return; }
+
       renderCargando();
       obtenerDatosViaje();
       suscribirRealtime();
@@ -1635,6 +1805,8 @@
       personaNombre.innerHTML = '<span class="skeleton" style="width:150px;height:14px"></span>';
       personaSub.innerHTML = '<span class="skeleton" style="width:190px;height:11px;display:block;margin-top:6px"></span>';
       $('radar').classList.add('on');
+      const scanStatus = $('scanner-status');
+      if (scanStatus) scanStatus.classList.add('on');
     }
 
     $('btn-refrescar').addEventListener('click', () => { obtenerDatosViaje(); mostrarToast('Actualizando…'); });
