@@ -803,7 +803,7 @@
     const correoDe = (u) => (u && (u.email || u.correo)) || null;
 
     /* En BIKAR: viajes.conductor_id → conductores.id ; conductores.usuario_id → usuarios.id */
-    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa,foto_vehiculo,foto_auto,foto,foto_url';
+    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa,foto_vehiculo';
     async function filaPorLlave(tabla, llave, valor, columnas) {
       if (valor == null) return null;
       let r = await consultaSegura(tabla, (q) => q.select(columnas || '*').eq(llave, valor).limit(1));
@@ -840,28 +840,24 @@
       return info;
     }
 
-    /* [MODIFICACIÓN 4] Helper para extraer la foto real del vehículo guardada en Supabase */
-    function obtenerFotoVehiculo(info, v) {
-      const veh = info && info.vehiculo, doc = info && info.doc, cond = info && info.conductor, u = info && info.usuario;
-      const PAT = /foto.*(vehic|auto|carro|moto)|imagen.*(vehic|auto)|vehiculo.*foto/i;
-      const candidatas = [
-        valorPorPatron(veh, PAT),
-        valorPorPatron(doc, PAT),
-        valorPorPatron(cond, PAT),
-        valorPorPatron(v, PAT),
-        veh && (veh.foto_vehiculo || veh.foto || veh.foto_url || veh.imagen || veh.url_foto),
-        doc && (doc.foto_vehiculo || doc.foto_auto || doc.foto || doc.foto_url || doc.foto_carro || doc.foto_moto),
-        cond && (cond.foto_vehiculo || cond.foto_auto || cond.foto),
-        v && (v.foto_vehiculo || v.vehiculo_foto)
-      ];
-      for (let i = 0; i < candidatas.length; i++) {
-        const val = candidatas[i];
-        if (val && typeof val === 'string' && val.trim().length > 6) {
-          return val.trim();
-        }
-      }
-      return null;
-    }
+/* [MODIFICACIÓN 4] Helper para extraer la foto real del vehículo guardada en Supabase */
+function obtenerFotoVehiculo(info, v) {
+  const veh = info && info.vehiculo;
+  const doc = info && info.doc;
+  const cond = info && info.conductor;
+
+  const foto = 
+    (doc && doc.foto_vehiculo) || 
+    (veh && veh.foto_vehiculo) || 
+    (cond && cond.foto_vehiculo) || 
+    (v && (v.foto_vehiculo || v.vehiculo_foto));
+
+  if (foto && typeof foto === 'string' && foto.trim().length > 6) {
+    return foto.trim();
+  }
+
+  return null;
+}
 
     /* Estadísticas de calificación promedio (los viajes se eliminan de la visualización según punto 5) */
     function limpiarCacheStats() {
