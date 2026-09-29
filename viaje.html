@@ -69,98 +69,97 @@
     @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
 
     /* ============================================================
-       [MODIFICACIÓN 1] ANIMACIÓN DE FONDO "BIKAR FLOW"
+       ANIMACIÓN DE FONDO "RUTA VIVA" · TELEMETRÍA DE NAVEGACIÓN
        (ÚNICAMENTE EN EL FONDO DE LA TARJETA DE ESTADO DEL VIAJE)
-       Capas: aurora de profundidad · malla en deriva · ruta viva con
-       vehículo de luz · destello especular · micropartículas
        ============================================================ */
     .sonar-luxury{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
     .sonar-luxury.on{display:block}
+    .sonar-core{position:absolute;inset:0;overflow:hidden}
 
-    /* Capa 1 · Aurora de profundidad */
-    .fx-aurora{position:absolute;inset:-32%;filter:blur(40px);opacity:.9}
-    .fx-blob{position:absolute;display:block;border-radius:50%;will-change:transform}
-    .fx-blob.b1{width:58%;height:72%;left:-10%;top:-12%;
-      background:radial-gradient(circle at 50% 50%,rgba(71,133,167,.40),rgba(71,133,167,0) 70%);
-      animation:fxBlob1 18s ease-in-out infinite alternate}
-    .fx-blob.b2{width:64%;height:80%;right:-14%;top:2%;
-      background:radial-gradient(circle at 50% 50%,rgba(19,73,137,.34),rgba(19,73,137,0) 70%);
-      animation:fxBlob2 23s ease-in-out infinite alternate}
-    .fx-blob.b3{width:50%;height:62%;left:24%;bottom:-26%;
-      background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.26),rgba(96,165,250,0) 70%);
-      animation:fxBlob3 27s ease-in-out infinite alternate}
-    @keyframes fxBlob1{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(13%,7%,0) scale(1.18)}}
-    @keyframes fxBlob2{0%{transform:translate3d(0,4%,0) scale(1.08)}100%{transform:translate3d(-12%,-7%,0) scale(.92)}}
-    @keyframes fxBlob3{0%{transform:translate3d(-7%,0,0) scale(.94)}100%{transform:translate3d(9%,-11%,0) scale(1.2)}}
+    /* 1 · AURORA LÍQUIDA */
+    .fx-aurora{
+      position:absolute;inset:-30%;
+      background:
+        radial-gradient(42% 58% at 22% 20%, rgba(71,133,167,.20), transparent 72%),
+        radial-gradient(50% 62% at 82% 88%, rgba(19,73,137,.15), transparent 74%),
+        radial-gradient(32% 44% at 64% 8%, rgba(59,130,246,.12), transparent 72%);
+      filter:blur(16px);
+      animation:fxAurora 16s ease-in-out infinite alternate;
+    }
+    @keyframes fxAurora{
+      0%{transform:translate3d(-2%,-2%,0) scale(1) rotate(0deg)}
+      50%{transform:translate3d(2%,1.5%,0) scale(1.08) rotate(2deg)}
+      100%{transform:translate3d(3.5%,-1.5%,0) scale(1.15) rotate(-2deg)}
+    }
 
-    /* Capa 2 · Malla de puntos con deriva (parallax) */
-    .fx-grid{position:absolute;inset:-40px;opacity:.6;
-      background-image:radial-gradient(rgba(19,73,137,.22) 1px,transparent 1.5px);
-      background-size:22px 22px;
-      -webkit-mask-image:radial-gradient(125% 95% at 50% 32%,#000 12%,transparent 78%);
-      mask-image:radial-gradient(125% 95% at 50% 32%,#000 12%,transparent 78%);
-      animation:fxGridDrift 22s linear infinite}
-    @keyframes fxGridDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-22px,-22px,0)}}
+    /* 2 · MALLA DE PRECISIÓN */
+    .fx-malla{
+      position:absolute;inset:-48px;
+      background-image:radial-gradient(circle, rgba(71,133,167,.30) 1.1px, transparent 1.2px);
+      background-size:26px 26px;
+      -webkit-mask-image:radial-gradient(112% 108% at 50% 42%, rgba(0,0,0,.9) 8%, rgba(0,0,0,.45) 44%, transparent 76%);
+      mask-image:radial-gradient(112% 108% at 50% 42%, rgba(0,0,0,.9) 8%, rgba(0,0,0,.45) 44%, transparent 76%);
+      opacity:.55;
+      animation:fxMalla 30s linear infinite;
+    }
+    @keyframes fxMalla{from{background-position:0 0}to{background-position:26px 26px}}
 
-    /* Capa 3 · Ruta viva + vehículo de luz */
-    .fx-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-    .fx-route-base{fill:none;stroke:rgba(71,133,167,.20);stroke-width:2.4;stroke-linecap:round;vector-effect:non-scaling-stroke}
-    .fx-route-dash{fill:none;stroke:url(#bkRouteGrad);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:14 18;
-      vector-effect:non-scaling-stroke;animation:fxDash 2.4s linear infinite}
-    @keyframes fxDash{to{stroke-dashoffset:-32}}
-    .fx-node{fill:none;stroke:rgba(71,133,167,.55);stroke-width:1.6;vector-effect:non-scaling-stroke;
-      transform-box:fill-box;transform-origin:center;animation:fxNode 3.4s ease-out infinite}
-    .fx-node.n2{animation-delay:1.15s}
-    @keyframes fxNode{0%{transform:scale(.35);opacity:.9}65%{opacity:.2}100%{transform:scale(2.6);opacity:0}}
-    .fx-node-dot{fill:rgba(71,133,167,.75)}
-    .fx-comet{fill:#eaf7ff}
-    .fx-comet-tail{fill:rgba(125,196,232,.45)}
-    .fx-comet-tail2{fill:rgba(125,196,232,.20)}
+    /* 3 · ANILLOS ORBITALES */
+    .fx-anillo{position:absolute;left:50%;top:42%;border-radius:50%;border:1px dashed rgba(71,133,167,.30)}
+    .fx-anillo.a1{width:190px;height:190px;animation:fxGirar 52s linear infinite}
+    .fx-anillo.a2{width:310px;height:310px;border-style:solid;border-color:rgba(71,133,167,.14);animation:fxGirarInv 74s linear infinite}
+    .fx-anillo.a3{width:450px;height:450px;animation:fxGirar 108s linear infinite}
+    .fx-anillo.a4{width:620px;height:620px;border-color:rgba(71,133,167,.10);animation:fxGirarInv 150s linear infinite}
+    @keyframes fxGirar{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+    @keyframes fxGirarInv{from{transform:translate(-50%,-50%) rotate(360deg)}to{transform:translate(-50%,-50%) rotate(0deg)}}
 
-    /* Capa 4 · Destello especular */
-    .fx-sweep{position:absolute;top:-70%;left:-45%;width:38%;height:240%;
-      background:linear-gradient(90deg,transparent,rgba(71,133,167,.14),transparent);
-      animation:fxSweep 8s ease-in-out infinite}
-    @keyframes fxSweep{
-      0%{transform:translateX(-20%) rotate(18deg);opacity:0}
-      10%{opacity:1}
-      48%{opacity:.85}
-      62%{transform:translateX(330%) rotate(18deg);opacity:0}
-      100%{transform:translateX(330%) rotate(18deg);opacity:0}}
+    /* 4 · PULSOS DE POSICIÓN (GPS FIX) */
+    .fx-pulso{position:absolute;left:50%;top:42%;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;
+      border:1.5px solid rgba(71,133,167,.45);opacity:0;animation:fxPulso 6s cubic-bezier(.2,.75,.35,1) infinite}
+    .fx-pulso.p2{animation-delay:2s}
+    .fx-pulso.p3{animation-delay:4s}
+    @keyframes fxPulso{0%{transform:scale(.3);opacity:.7}70%{opacity:.14}100%{transform:scale(3.6);opacity:0}}
 
-    /* Capa 5 · Micropartículas ascendentes */
-    .fx-dust{position:absolute;inset:0}
-    .fx-dust i{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;opacity:0;
-      background:rgba(71,133,167,.65);box-shadow:0 0 7px rgba(71,133,167,.55);
-      animation:fxDust 13s linear infinite;will-change:transform,opacity}
-    .fx-dust i:nth-child(1){left:11%;animation-delay:0s;animation-duration:12s}
-    .fx-dust i:nth-child(2){left:27%;animation-delay:2.6s;animation-duration:15s}
-    .fx-dust i:nth-child(3){left:43%;animation-delay:5.2s;animation-duration:11s}
-    .fx-dust i:nth-child(4){left:60%;animation-delay:1.4s;animation-duration:16s}
-    .fx-dust i:nth-child(5){left:75%;animation-delay:6.8s;animation-duration:13s}
-    .fx-dust i:nth-child(6){left:90%;animation-delay:3.7s;animation-duration:17s}
-    @keyframes fxDust{
-      0%{transform:translate3d(0,0,0) scale(.55);opacity:0}
-      14%{opacity:.85}
-      78%{opacity:.45}
-      100%{transform:translate3d(10px,-250px,0) scale(1.15);opacity:0}}
+    /* 5 · BARRIDO DE LUZ DIAGONAL */
+    .fx-luz{
+      position:absolute;top:-60%;left:-75%;width:52%;height:230%;transform:rotate(14deg);
+      background:linear-gradient(90deg,transparent, rgba(71,133,167,.12), rgba(47,111,168,.20), rgba(255,255,255,.35), transparent);
+      filter:blur(12px);opacity:0;animation:fxLuz 12s ease-in-out infinite;
+    }
+    @keyframes fxLuz{0%{left:-75%;opacity:0}15%{opacity:.8}55%{opacity:.5}100%{left:135%;opacity:0}}
 
-    /* Ajustes en modo oscuro */
-    body.dark-theme .fx-blob.b1{background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.34),rgba(96,165,250,0) 70%)}
-    body.dark-theme .fx-blob.b2{background:radial-gradient(circle at 50% 50%,rgba(71,133,167,.34),rgba(71,133,167,0) 70%)}
-    body.dark-theme .fx-blob.b3{background:radial-gradient(circle at 50% 50%,rgba(59,130,246,.26),rgba(59,130,246,0) 70%)}
-    body.dark-theme .fx-grid{background-image:radial-gradient(rgba(96,165,250,.26) 1px,transparent 1.5px);opacity:.55}
-    body.dark-theme .fx-route-base{stroke:rgba(96,165,250,.22)}
-    body.dark-theme .fx-node{stroke:rgba(96,165,250,.6)}
-    body.dark-theme .fx-node-dot{fill:rgba(147,197,253,.85)}
-    body.dark-theme .fx-comet-tail{fill:rgba(147,197,253,.5)}
-    body.dark-theme .fx-comet-tail2{fill:rgba(147,197,253,.22)}
-    body.dark-theme .fx-sweep{background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
-    body.dark-theme .fx-dust i{background:rgba(147,197,253,.75);box-shadow:0 0 8px rgba(96,165,250,.6)}
+    /* 6 · RUTA TRAZADA + COMETA */
+    .fx-ruta{position:absolute;inset:0;width:100%;height:100%;opacity:.9}
+    .fx-ruta-linea{fill:none;stroke:url(#fxRutaGrad);stroke-width:2.4;stroke-linecap:round;opacity:.55}
+    .fx-ruta-trazo{fill:none;stroke:#2f6fa8;stroke-width:3.4;stroke-linecap:round;stroke-dasharray:78 920;filter:url(#fxGlow);animation:fxTrazo 9s linear infinite}
+    @keyframes fxTrazo{from{stroke-dashoffset:998}to{stroke-dashoffset:0}}
+    .fx-punto-halo{fill:rgba(71,133,167,.30);filter:url(#fxGlow)}
+    .fx-punto-nucleo{fill:#ffffff;stroke:rgba(47,111,168,.9);stroke-width:2.2}
+    .fx-hito{fill:rgba(71,133,167,.55);transform-box:fill-box;transform-origin:center;animation:fxHito 4.5s ease-in-out infinite}
+    .fx-hito.h2{animation-delay:1.5s}
+    .fx-hito.h3{animation-delay:3s}
+    @keyframes fxHito{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:.9;transform:scale(1.15)}}
 
-    @media (prefers-reduced-motion:reduce){
-      .fx-blob,.fx-grid,.fx-route-dash,.fx-node,.fx-sweep,.fx-dust i{animation:none}
-      .fx-sweep{opacity:0}
+    /* VARIANTE MODO OSCURO */
+    body.dark-theme .fx-aurora{
+      background:
+        radial-gradient(42% 58% at 22% 20%, rgba(96,165,250,.26), transparent 72%),
+        radial-gradient(50% 62% at 82% 88%, rgba(71,133,167,.22), transparent 74%),
+        radial-gradient(32% 44% at 64% 8%, rgba(59,130,246,.18), transparent 72%);
+    }
+    body.dark-theme .fx-malla{background-image:radial-gradient(circle, rgba(96,165,250,.34) 1.1px, transparent 1.2px);opacity:.6}
+    body.dark-theme .fx-anillo{border-color:rgba(96,165,250,.30)}
+    body.dark-theme .fx-anillo.a2{border-color:rgba(96,165,250,.16)}
+    body.dark-theme .fx-anillo.a4{border-color:rgba(96,165,250,.12)}
+    body.dark-theme .fx-pulso{border-color:rgba(96,165,250,.55)}
+    body.dark-theme .fx-luz{background:linear-gradient(90deg,transparent, rgba(96,165,250,.14), rgba(120,190,255,.22), rgba(190,225,255,.28), transparent)}
+    body.dark-theme .fx-ruta-trazo{stroke:#9fd0ff}
+    body.dark-theme .fx-punto-nucleo{fill:#eaf4ff;stroke:rgba(159,208,255,.95)}
+    body.dark-theme .fx-punto-halo{fill:rgba(96,165,250,.38)}
+    body.dark-theme .fx-hito{fill:rgba(96,165,250,.6)}
+
+    @media (prefers-reduced-motion: reduce){
+      .fx-aurora,.fx-malla,.fx-anillo,.fx-pulso,.fx-luz,.fx-ruta-trazo,.fx-hito{animation:none !important}
     }
 
     /* PERFIL DE LA CONTRAPARTE */
@@ -346,25 +345,32 @@
     .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
 
     /* [MODIFICACIÓN 2] MODAL DE FOTO DEL VEHÍCULO: TEXTOS EN BLANCO EN MODO OSCURO */
-    body.dark-theme #modal-foto-vehiculo .modal-box,
     body.dark-theme #modal-foto-vehiculo .modal-title,
-    body.dark-theme #modal-foto-vehiculo .modal-desc,
     body.dark-theme #modal-foto-vehiculo #foto-vehiculo-placa,
     body.dark-theme #modal-foto-vehiculo .modal-close,
-    body.dark-theme #modal-foto-vehiculo .btn-action,
-    body.dark-theme #modal-foto-vehiculo .btn-action span,
-    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario,
-    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario span{
+    body.dark-theme #modal-foto-vehiculo .modal-close span,
+    body.dark-theme #modal-foto-vehiculo .btn-secundario,
+    body.dark-theme #modal-foto-vehiculo .btn-secundario span{
       color:#ffffff !important;
     }
-    body.dark-theme #modal-foto-vehiculo .modal-close{border-color:rgba(255,255,255,.28)}
-    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario{
-      background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);
+    body.dark-theme #modal-foto-vehiculo .modal-close{
+      border-color:rgba(255,255,255,.28);
+      background:rgba(255,255,255,.06);
     }
-    body.dark-theme #modal-foto-vehiculo .btn-action.btn-secundario:hover{
-      background:rgba(255,255,255,.16);border-color:#ffffff;
+    body.dark-theme #modal-foto-vehiculo .modal-close:hover{
+      border-color:#ffffff;
+      background:rgba(255,255,255,.16);
     }
-    body.dark-theme #modal-foto-vehiculo svg{color:#ffffff !important;stroke:#ffffff !important}
+    body.dark-theme #modal-foto-vehiculo .btn-secundario{
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.08);
+    }
+    body.dark-theme #modal-foto-vehiculo .btn-secundario:hover{
+      color:#ffffff !important;
+      border-color:#ffffff;
+      background:rgba(255,255,255,.16);
+      filter:none;
+    }
 
     /* Chat */
     .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
@@ -401,51 +407,49 @@
   <main>
     <!-- ESTADO -->
     <section class="status-card" id="card-status">
-      <!-- [MODIFICACIÓN 1] ANIMACIÓN "BIKAR FLOW" EN EL FONDO (ÚNICAMENTE EN ESTADO) -->
-      <div class="sonar-luxury on" id="sonar-status" aria-hidden="true">
-        <div class="fx-aurora">
-          <span class="fx-blob b1"></span>
-          <span class="fx-blob b2"></span>
-          <span class="fx-blob b3"></span>
+      <!-- ANIMACIÓN "RUTA VIVA" EN EL FONDO (ÚNICAMENTE EN ESTADO) -->
+      <div class="sonar-luxury on" id="sonar-status">
+        <div class="sonar-core">
+          <div class="fx-aurora"></div>
+          <div class="fx-malla"></div>
+          <div class="fx-anillo a1"></div>
+          <div class="fx-anillo a2"></div>
+          <div class="fx-anillo a3"></div>
+          <div class="fx-anillo a4"></div>
+          <div class="fx-pulso p1"></div>
+          <div class="fx-pulso p2"></div>
+          <div class="fx-pulso p3"></div>
+          <div class="fx-luz"></div>
+          <svg class="fx-ruta" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="fxRutaGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4785A7" stop-opacity="0"/>
+                <stop offset="28%" stop-color="#4785A7" stop-opacity=".85"/>
+                <stop offset="72%" stop-color="#3b82f6" stop-opacity=".85"/>
+                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+              </linearGradient>
+              <filter id="fxGlow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="5" result="fxBlur"/>
+                <feMerge>
+                  <feMergeNode in="fxBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <path id="fxRutaPath" class="fx-ruta-linea" d="M-30 262 C 90 262, 118 168, 214 168 S 330 226, 404 158 S 520 66, 640 78"/>
+            <path class="fx-ruta-trazo" d="M-30 262 C 90 262, 118 168, 214 168 S 330 226, 404 158 S 520 66, 640 78"/>
+            <circle class="fx-hito h1" cx="150" cy="196" r="3.6"/>
+            <circle class="fx-hito h2" cx="352" cy="196" r="3.6"/>
+            <circle class="fx-hito h3" cx="512" cy="98" r="3.6"/>
+            <g>
+              <circle class="fx-punto-halo" r="17"/>
+              <circle class="fx-punto-nucleo" r="5"/>
+              <animateMotion dur="9s" repeatCount="indefinite" rotate="0">
+                <mpath href="#fxRutaPath" xlink:href="#fxRutaPath"/>
+              </animateMotion>
+            </g>
+          </svg>
         </div>
-        <div class="fx-grid"></div>
-        <svg class="fx-route" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice" focusable="false">
-          <defs>
-            <linearGradient id="bkRouteGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#4785A7" stop-opacity="0"/>
-              <stop offset="26%" stop-color="#4785A7" stop-opacity=".85"/>
-              <stop offset="60%" stop-color="#60a5fa" stop-opacity=".9"/>
-              <stop offset="100%" stop-color="#134989" stop-opacity="0"/>
-            </linearGradient>
-            <filter id="bkGlow" x="-150%" y="-150%" width="400%" height="400%">
-              <feGaussianBlur stdDeviation="4.5" result="bkBlur"/>
-              <feMerge><feMergeNode in="bkBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-
-          <path class="fx-route-base" d="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
-          <path class="fx-route-dash" d="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
-
-          <circle class="fx-node n1" cx="238" cy="84" r="6"/>
-          <circle class="fx-node-dot" cx="238" cy="84" r="2.6"/>
-          <circle class="fx-node n2" cx="508" cy="128" r="6"/>
-          <circle class="fx-node-dot" cx="508" cy="128" r="2.6"/>
-
-          <circle class="fx-comet-tail2" r="5.4">
-            <animateMotion dur="7s" repeatCount="indefinite" begin="-6.72s" calcMode="linear"
-              path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
-          </circle>
-          <circle class="fx-comet-tail" r="4.1">
-            <animateMotion dur="7s" repeatCount="indefinite" begin="-6.86s" calcMode="linear"
-              path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
-          </circle>
-          <circle class="fx-comet" r="3.3" filter="url(#bkGlow)">
-            <animateMotion dur="7s" repeatCount="indefinite" calcMode="linear"
-              path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
-          </circle>
-        </svg>
-        <div class="fx-sweep"></div>
-        <div class="fx-dust"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
 
       <div id="status-badge" class="status-badge solicitado">
@@ -1358,7 +1362,7 @@ function obtenerFotoVehiculo(info, v) {
        EXTRAS SEGÚN ESTADO
        ============================================================ */
     function actualizarExtras(estado) {
-      /* Animación de fondo: activa únicamente en la tarjeta de estado del viaje */
+      /* Animación "RUTA VIVA": activa únicamente en la tarjeta de estado del viaje */
       const activoAuto = ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
       const sonar = $('sonar-status');
       if (sonar) sonar.classList.toggle('on', activoAuto);
