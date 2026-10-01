@@ -1,17 +1,18 @@
 /* ============================================================
-   BIKAR · Service Worker
+   BIKAR · Service Worker  (v2)
    - Recibe notificaciones PUSH aunque la app esté cerrada o en segundo plano
-   - Muestra la notificación con vibración característica de BIKAR
+   - Las muestra en la barra / pantalla principal del móvil (conductor y pasajero)
    - Avisa a la app (si está abierta) para que reproduzca el sonido BIKAR
    - Al tocar la notificación abre / enfoca la app
    NOTA: este archivo debe estar en la misma carpeta que la página de la app.
    ============================================================ */
 'use strict';
 
-const SW_VERSION = 'bikar-sw-v1';
+const SW_VERSION = 'bikar-sw-v2';
 const ICONO = new URL('icon-192.png', self.registration.scope).href;
-// Vibración característica BIKAR (solo Android): tres pulsos cortos y uno largo
+// Vibración característica BIKAR (solo Android)
 const VIBRACION_VIAJE = [350, 120, 350, 120, 700, 200, 350, 120, 350];
+const VIBRACION_AVISO = [250, 100, 250, 100, 400];
 
 self.addEventListener('install', () => { self.skipWaiting(); });
 self.addEventListener('activate', (event) => { event.waitUntil(self.clients.claim()); });
@@ -26,20 +27,21 @@ self.addEventListener('push', (event) => {
     catch (e) { datos = { cuerpo: event.data.text() }; }
   }
 
-  const esViaje = datos.tipo === 'nuevo_viaje';
+  const tipo = datos.tipo || '';
+  const esViaje = tipo === 'nuevo_viaje';          // solicitud nueva (conductor)
   const titulo = datos.titulo || 'BIKAR';
   const opciones = {
     body: datos.cuerpo || 'Tienes una nueva notificación en BIKAR',
     icon: datos.icono || ICONO,
-    tag: datos.tag || (esViaje ? 'bikar-viaje-' + datos.viaje_id : 'bikar-aviso'),
-    renotify: true,                  // vuelve a sonar / vibrar aunque ya exista una notificación igual
+    tag: datos.tag || (datos.viaje_id ? 'bikar-viaje-' + datos.viaje_id : 'bikar-aviso'),
+    renotify: false,                 // si ya existe una con el mismo tag (p. ej. creada por la app) se reemplaza sin sonar dos veces
     requireInteraction: esViaje,     // en escritorio permanece hasta que el conductor la atienda
     silent: false,                   // usa el sonido de notificación del sistema
-    vibrate: esViaje ? VIBRACION_VIAJE : [200, 100, 200],
+    vibrate: esViaje ? VIBRACION_VIAJE : VIBRACION_AVISO,
     timestamp: Date.now(),
-    data: { url: datos.url || null, viaje_id: datos.viaje_id || null, tipo: datos.tipo || null },
-    actions: esViaje ? [{ action: 'ver', title: 'Ver solicitud' }] : []
+    data: { url: datos.url || null, viaje_id: datos.viaje_id || null, tipo: tipo || null }
   };
+  if (esViaje) opciones.actions = [{ action: 'ver', title: 'Ver solicitud' }];
 
   event.waitUntil((async () => {
     const ventanas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
@@ -57,7 +59,12 @@ self.addEventListener('push', (event) => {
     const appEnPrimerPlano = ventanas.some((c) => c.visibilityState === 'visible' && c.focused);
     if (appEnPrimerPlano && !esApple) return;
 
-    await self.registration.showNotification(titulo, opciones);
+    try {
+      await self.registration.showNotification(titulo, opciones);
+    } catch (e) {
+      // Si algún ajuste no lo admite el dispositivo, se muestra la versión básica para que el aviso NUNCA se pierda
+      await self.registration.showNotification(titulo, { body: opciones.body, icon: ICONO, tag: opciones.tag, data: opciones.data });
+    }
   })());
 });
 
@@ -65,7 +72,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const datos = event.notification.data || {};
-  const destino = new URL(datos.url || './', self.registration.scope).href;
+  const destino = new URL(datos.url || self.registration.scope, self.registration.scope).href;
   const rutaDestino = new URL(destino).pathname;
 
   event.waitUntil((async () => {
