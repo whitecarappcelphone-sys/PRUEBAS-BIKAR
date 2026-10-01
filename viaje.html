@@ -726,6 +726,7 @@
     const K_SESION = 'bikar_usuario';
     const FOTO_REPO_GITHUB = 'https://raw.githubusercontent.com/bikar-app/perfil/main/index.svg';
     const INTERVALO_REFRESCO = 8000;                 /* respaldo si Realtime no está disponible */
+    const URL_SW = 'sw.js';                          /* service worker de notificaciones push (misma carpeta) */
 
     /* ============================================================
        ESTADO
@@ -795,6 +796,180 @@
       t.classList.add('visible');
       clearTimeout(mostrarToast._t);
       mostrarToast._t = setTimeout(() => t.classList.remove('visible'), 3000);
+    }
+
+    /* ============================================================
+       NOTIFICACIONES Y SONIDO BIKAR (PASAJERO Y CONDUCTOR)
+       - Suena la melodía BIKAR cuando cambia el estado del viaje.
+       - Muestra una notificación del sistema (barra del móvil) si la página no está a la vista.
+       - Recibe los avisos push del service worker (sw.js) aunque la app esté en segundo plano o cerrada.
+       ============================================================ */
+    let audioCtx = null, swRegistro = null, sonidoPendiente = null;
+    let estadoVisto = null;      /* último estado visto del viaje (null = todavía no se ha leído) */
+    let propioEstado = null;     /* estado que el propio usuario acaba de aplicar: no se anuncia a sí mismo */
+    const avisosEstado = new Set(); /* "idViaje-grupo" ya anunciados (evita sonidos duplicados) */
+
+    /* Melodía característica BIKAR: [frecuencia Hz, inicio s, duración s] */
+    const MELODIA_BIKAR = [
+      [659.25, 0.00, 0.35], [880.00, 0.14, 0.35], [1108.73, 0.28, 0.35], [1318.51, 0.42, 0.75],
+      [1108.73, 0.95, 0.35], [1318.51, 1.09, 0.35], [1760.00, 1.23, 1.10]
+    ];
+
+    function crearAudio() {
+      if (audioCtx) return audioCtx;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      try { audioCtx = new AC(); } catch (e) { audioCtx = null; }
+      return audioCtx;
+    }
+
+    function tonoCampana(ctx, freq, inicio, dur, vol) {
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, inicio);
+      g.gain.exponentialRampToValueAtTime(vol, inicio + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, inicio + dur);
+      g.connect(ctx.destination);
+      [[freq, 'sine', 1], [freq * 2, 'triangle', 0.35], [freq * 3.01, 'sine', 0.12]].forEach((p) => {
+        const o = ctx.createOscillator(), og = ctx.createGain();
+        o.type = p[1]; o.frequency.value = p[0]; og.gain.value = p[2];
+        o.connect(og); og.connect(g);
+        o.start(inicio); o.stop(inicio + dur + 0.05);
+      });
+    }
+
+    function tocarMelodia(ctx, rep) {
+      const t0 = ctx.currentTime + 0.05;
+      for (let r = 0; r < rep; r++) {
+        MELODIA_BIKAR.forEach((n) => tonoCampana(ctx, n[0], t0 + r * 2.6 + n[1], n[2], 0.3));
+      }
+    }
+
+    /* Si el navegador aún no permite sonar (no hubo ningún toque en esta página) el sonido queda en espera
+       y suena en cuanto el usuario toque la pantalla (siempre que no hayan pasado más de 30 s). */
+    function sonarPendiente() {
+      const ctx = audioCtx, p = sonidoPendiente;
+      if (!ctx || !p || ctx.state !== 'running') return;
+      sonidoPendiente = null;
+      if (Date.now() - p.ts < 30000) tocarMelodia(ctx, p.rep);
+    }
+
+    function sonidoBikar(rep) {
+      const ctx = crearAudio();
+      if (!ctx) return;
+      rep = rep || 1;
+      if (ctx.state === 'running') { tocarMelodia(ctx, rep); return; }
+      sonidoPendiente = { rep: rep, ts: Date.now() };
+      ctx.resume().then(sonarPendiente).catch(() => {});
+    }
+
+    /* Los navegadores solo permiten sonar tras un toque del usuario: se desbloquea con el primer toque */
+    function desbloquearAudio() {
+      const ctx = crearAudio();
+      if (!ctx || ctx.state === 'running') return;
+      ctx.resume().then(sonarPendiente).catch(() => {});
+      try {
+        const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
+        s.buffer = b; s.connect(ctx.destination); s.start(0);
+      } catch (e) {}
+    }
+    ['pointerdown', 'touchstart', 'keydown', 'click'].forEach((ev) => document.addEventListener(ev, desbloquearAudio, { passive: true }));
+
+    /* Service worker: recibe los push y permite mostrar notificaciones del sistema */
+    async function registrarServiceWorker() {
+      if (!('serviceWorker' in navigator)) return null;
+      try { swRegistro = await navigator.serviceWorker.register(URL_SW); }
+      catch (e) { swRegistro = null; console.warn('Service Worker no disponible:', e && e.message); }
+      return swRegistro;
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (ev) => {
+        const d = ev && ev.data;
+        if (!d || typeof d !== 'object') return;
+        /* Llegó un push (o se tocó una notificación): se lee el viaje y, si cambió de estado, suena y se avisa */
+        if (d.tipo === 'push-estado' && (d.viaje_id == null || mismoId(d.viaje_id, viajeId))) obtenerDatosViaje(true);
+        else if (d.tipo === 'abrir-viaje') obtenerDatosViaje(true);
+      });
+    }
+
+    /* Notificación del sistema creada por la propia página (respaldo del push del servidor):
+       aparece en la barra / pantalla principal del móvil si la página está en segundo plano o con la pantalla bloqueada */
+    async function notificarSistema(titulo, cuerpo, op) {
+      op = op || {};
+      try {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+        const enPrimerPlano = !document.hidden && document.hasFocus();
+        if (enPrimerPlano && !op.forzar) return false;
+
+        const icono = new URL('icon-192.png', location.href).href;
+        const opciones = {
+          body: cuerpo || '', icon: icono, tag: op.tag || 'bikar-aviso',
+          renotify: false,          /* el mismo tag (p. ej. el push del servidor) reemplaza sin sonar dos veces */
+          silent: false, requireInteraction: false,
+          vibrate: [250, 100, 250, 100, 400], timestamp: Date.now(),
+          data: { url: op.url || location.href.split('#')[0], viaje_id: op.viaje_id || null, tipo: op.tipo || null }
+        };
+
+        let reg = swRegistro;
+        if (!reg && 'serviceWorker' in navigator) {
+          reg = await Promise.race([navigator.serviceWorker.ready, new Promise((r) => setTimeout(() => r(null), 3000))]);
+        }
+        if (reg && reg.showNotification) {
+          try { await reg.showNotification(titulo, opciones); }
+          catch (e) { await reg.showNotification(titulo, { body: opciones.body, icon: icono, tag: opciones.tag, data: opciones.data }); }
+          return true;
+        }
+        new Notification(titulo, { body: opciones.body, icon: icono, tag: opciones.tag });
+        return true;
+      } catch (e) {
+        console.warn('Notificación del sistema:', e && e.message);
+        return false;
+      }
+    }
+
+    /* Estado de la página → grupo usado por el servidor en las etiquetas de las notificaciones */
+    const GRUPO_POR_ESTADO = { aceptado:'aceptado', en_camino:'encamino', en_progreso:'encurso', terminado:'finalizado', cancelado:'cancelado' };
+
+    /* [título de la notificación, cuerpo, mensaje corto en pantalla] */
+    const AVISOS_PASAJERO = {
+      aceptado:    ['✅ ¡Conductor asignado!', 'Tu conductor aceptó el servicio y se prepara para recogerte.', '¡Conductor asignado!'],
+      en_camino:   ['🚗 Tu conductor va en camino', 'Se dirige a tu punto de recogida. Ten a la mano tu PIN de seguridad.', 'Tu conductor va en camino'],
+      en_progreso: ['🚖 Viaje en curso', 'Vas rumbo a tu destino. ¡Buen viaje!', 'Viaje en curso · ¡Buen viaje!'],
+      terminado:   ['🏁 Viaje finalizado', 'Gracias por viajar con BIKAR. Toca para calificar tu experiencia.', 'Viaje finalizado'],
+      cancelado:   ['❌ Viaje cancelado', 'Tu viaje fue cancelado. Puedes solicitar otro cuando quieras.', 'Tu viaje fue cancelado']
+    };
+    const AVISOS_CONDUCTOR = {
+      cancelado:   ['❌ Viaje cancelado', 'El pasajero canceló el viaje.', 'El pasajero canceló el viaje']
+    };
+
+    /* Suena el tono BIKAR, muestra un aviso y, si la página no está a la vista, una notificación del sistema.
+       Una sola vez por cambio de estado. */
+    function anunciarEstado(estado) {
+      const v = viajeActual || {};
+      const esCond = (rolUsuario === 'conductor');
+      const t = (esCond ? AVISOS_CONDUCTOR : AVISOS_PASAJERO)[estado];
+      if (!t) return;
+      /* Si el propio usuario canceló, no se le avisa de lo que acaba de hacer */
+      if (estado === 'cancelado' && String(v.cancelado_por || '').toLowerCase() === rolUsuario) return;
+
+      const grupo = GRUPO_POR_ESTADO[estado] || estado;
+      const k = String(viajeId) + '-' + grupo;
+      if (avisosEstado.has(k)) return;
+      avisosEstado.add(k);
+
+      sonidoBikar(1);
+      mostrarToast(t[2]);
+      try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
+      notificarSistema(t[0], t[1], { tag: 'bikar-estado-' + viajeId + '-' + grupo, viaje_id: viajeId, tipo: 'estado_viaje' });
+    }
+
+    /* Detecta un cambio de estado distinto al de la lectura anterior (la primera lectura nunca se anuncia) */
+    function detectarCambioEstado(estado) {
+      if (estadoVisto === null) { estadoVisto = estado; return; }
+      if (estado === estadoVisto) return;
+      estadoVisto = estado;
+      if (propioEstado === estado) { propioEstado = null; return; }  /* lo cambió este mismo usuario */
+      anunciarEstado(estado);
     }
 
     /* ============================================================
@@ -1209,6 +1384,9 @@ function obtenerFotoVehiculo(info, v) {
       if (!viajeActual) return;
       const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
 
+      /* Si el estado cambió respecto a la lectura anterior: suena el tono BIKAR y se avisa (pasajero y conductor) */
+      detectarCambioEstado(estado);
+
       /* Ruta, servicio y tarifa */
       $('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
       $('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
@@ -1313,6 +1491,7 @@ function obtenerFotoVehiculo(info, v) {
     async function cambiarEstadoViaje(nuevoEstado) {
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Actualizando…</span>';
+      propioEstado = nuevoEstado;   /* este cambio lo hace el propio usuario: no se anuncia con sonido */
       try {
         const cambios = { estado: nuevoEstado };
         if (nuevoEstado === 'aceptado' && usuarioSesion && viajeActual.conductor_id == null) {
@@ -1326,6 +1505,7 @@ function obtenerFotoVehiculo(info, v) {
         return true;
       } catch (e) {
         console.error(e);
+        propioEstado = null;
         mostrarToast('Error al actualizar el estado');
         renderizarUI();
         return false;
@@ -1360,6 +1540,7 @@ function obtenerFotoVehiculo(info, v) {
     async function cancelarViaje(motivo) {
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Cancelando…</span>';
+      propioEstado = 'cancelado';   /* la cancelación la hace el propio usuario: no se anuncia con sonido */
       try {
         const cambios = { estado: 'cancelado' };
         if (viajeTiene('motivo_cancelacion')) cambios.motivo_cancelacion = motivo || null;
@@ -1374,6 +1555,7 @@ function obtenerFotoVehiculo(info, v) {
         return true;
       } catch (e) {
         console.error(e);
+        propioEstado = null;
         mostrarToast('No se pudo cancelar el viaje');
         renderizarUI();
         return false;
@@ -1928,8 +2110,10 @@ function obtenerFotoVehiculo(info, v) {
             { event:'*', schema:'public', table:'viajes', filter:'id=eq.' + viajeId },
             (payload) => {
               viajeActual = payload.new || viajeActual;
+              const estadoAntes = estadoVisto;
               renderizarUI();
-              mostrarToast('El estado del viaje se actualizó');
+              /* Si el estado cambió se muestra el aviso específico (con sonido); si no, el aviso genérico de siempre */
+              if (estadoVisto === estadoAntes) mostrarToast('El estado del viaje se actualizó');
             })
           .subscribe((status) => {
             realtimeOK = (status === 'SUBSCRIBED');
@@ -1957,6 +2141,8 @@ function obtenerFotoVehiculo(info, v) {
       usuarioSesion = lsJSON(K_SESION);
       if (!urlParams.get('rol') && usuarioSesion && usuarioSesion.tipo_usuario === 'conductor') rolUsuario = 'conductor';
 
+      registrarServiceWorker();   /* habilita los avisos push y las notificaciones del sistema en esta página */
+
       personaFoto.src = avatarDe('B');
       personaFoto.addEventListener('error', function () { this.src = avatarDe(personaNombre.textContent || 'B'); });
 
@@ -1970,6 +2156,9 @@ function obtenerFotoVehiculo(info, v) {
       obtenerDatosViaje();
       suscribirRealtime();
       iniciarRefresco();
+
+      /* Al volver a la página (desde otra app o con la pantalla apagada) se lee el viaje al instante */
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) obtenerDatosViaje(true); });
     }
 
     function renderCargando() {
