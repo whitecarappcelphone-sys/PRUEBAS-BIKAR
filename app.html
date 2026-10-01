@@ -1007,6 +1007,8 @@
     let swRegistro = null, swListenerOk = false; // Service Worker
     let pushSuscrito = false;                    // true cuando este dispositivo quedó registrado para recibir push
     let audioCtx = null;                         // Contexto de audio para el sonido BIKAR
+    const viajesNotificados = new Set();         // Viajes ya mostrados como notificación del sistema
+    let promesaPushPasajero = null;              // Alta de notificaciones del pasajero en curso
     const viajesAvisados = new Set();            // Viajes ya avisados con sonido (evita sonidos duplicados)
 
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
@@ -1624,7 +1626,7 @@
       } else if (d.tipo === 'abrir-viaje') {
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       } else if (d.tipo === 'renovar-push') {
-        if (esConductorSesion()) suscribirPush(false);
+        if (usuarioActual) suscribirPush(false);
       }
     }
 
@@ -1647,7 +1649,8 @@
     }
 
     async function suscribirPush(pedirPermiso) {
-      if (!db || !usuarioActual || usuarioActual.id == null || !esConductorSesion() || !PUSH_SOPORTADO) return false;
+      if (!db || !usuarioActual || usuarioActual.id == null || !PUSH_SOPORTADO) return false;
+      const rolPush = esConductorSesion() ? 'conductor' : 'pasajero'; // el pasajero también recibe avisos de su viaje
       if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
       try {
         // El permiso se pide primero, mientras el toque del usuario sigue siendo válido
@@ -1675,8 +1678,8 @@
         const j = sub.toJSON(), keys = j.keys || {};
         const { error } = await db.rpc('bikar_registrar_push', {
           p_usuario_id: String(usuarioActual.id),
-          p_rol: 'conductor',
-          p_servicio: claveServicioConductor || null,
+          p_rol: rolPush,
+          p_servicio: rolPush === 'conductor' ? (claveServicioConductor || null) : null,
           p_endpoint: sub.endpoint,
           p_p256dh: keys.p256dh || '',
           p_auth: keys.auth || '',
@@ -1715,6 +1718,78 @@
       pushSuscrito = false;
     }
 
+    /* ---------- Notificación del sistema creada por la propia app ----------
+       Aparece en la barra / pantalla principal del móvil cuando la app está en segundo plano o con la pantalla bloqueada
+       y la app detecta el evento. Es el respaldo del push del servidor: si suena, también se muestra. */
+    const urlAppBase = () => location.href.split('#')[0].split('?')[0];
+
+    async function notificarSistema(titulo, cuerpo, op) {
+      op = op || {};
+      try {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+        // Con la app a la vista no hace falta: ya se ve la tarjeta, el aviso y suena el tono
+        const enPrimerPlano = !document.hidden && document.hasFocus();
+        if (enPrimerPlano && !op.forzar) return false;
+
+        const icono = new URL('icon-192.png', location.href).href;
+        const opciones = {
+          body: cuerpo || '', icon: icono, tag: op.tag || 'bikar-aviso',
+          renotify: false,          // el mismo tag (p. ej. el push del servidor) reemplaza sin sonar dos veces
+          silent: false, requireInteraction: !!op.persistente,
+          vibrate: op.vibrar || [250, 100, 250, 100, 400], timestamp: Date.now(),
+          data: { url: op.url || urlAppBase(), viaje_id: op.viaje_id || null, tipo: op.tipo || null }
+        };
+
+        let reg = null;
+        if ('serviceWorker' in navigator) {
+          reg = await registrarServiceWorker();
+          if (reg) reg = await Promise.race([navigator.serviceWorker.ready, new Promise((r) => setTimeout(() => r(null), 3000))]);
+        }
+        if (reg && reg.showNotification) {
+          try { await reg.showNotification(titulo, opciones); }
+          catch (e) { await reg.showNotification(titulo, { body: opciones.body, icon: icono, tag: opciones.tag, data: opciones.data }); }
+          return true;
+        }
+        new Notification(titulo, { body: opciones.body, icon: icono, tag: opciones.tag });
+        return true;
+      } catch (e) {
+        console.warn('Notificación del sistema:', e && e.message);
+        return false;
+      }
+    }
+
+    // Conductor: una notificación del sistema por cada solicitud nueva detectada
+    function notificarViajesNuevosSistema(lista) {
+      (lista || []).forEach((v) => {
+        const k = String(v.id);
+        if (viajesNotificados.has(k)) return;
+        viajesNotificados.add(k);
+        if (viajesNotificados.size > 300) Array.from(viajesNotificados).slice(0, 100).forEach((x) => viajesNotificados.delete(x));
+        const dist = Number(v.distancia_km || 0);
+        notificarSistema(
+          '🚖 Nueva solicitud · ' + (v.tipo_servicio || v.nombre_servicio || 'Servicio'),
+          formatoMoneda(v.tarifa) + (dist ? ' · ' + dist.toFixed(1) + ' km' : '') +
+            '\nA: ' + (v.origen_nombre || 'Origen') + '\nB: ' + (v.destino_nombre || 'Destino'),
+          { tag: 'bikar-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
+        );
+      });
+    }
+
+    // Pasajero: pide el permiso (con un toque suyo) y registra este dispositivo para recibir los avisos de su viaje:
+    // conductor asignado, viaje en curso, finalizado o cancelado — aunque la app esté cerrada.
+    async function iniciarPushPasajero(pedirPermiso) {
+      if (!usuarioActual || esConductorSesion() || !PUSH_SOPORTADO) return false;
+      if (pushSuscrito) return true;
+      if (Notification.permission === 'denied') return false;
+      if (Notification.permission === 'default') {
+        if (!pedirPermiso) return false;
+        try { await Notification.requestPermission(); } catch (e) {}
+      }
+      if (Notification.permission !== 'granted') return false;
+      if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
+      return await suscribirPush(false);
+    }
+
     /* ---------- Aviso visual para el conductor ---------- */
     function pintarAvisoPush(estado) {
       if (!avisoPush) return;
@@ -1742,13 +1817,19 @@
         pintarAvisoPush(esIOS && !esPWAInstalada() ? 'instalar' : 'nosoportado');
         return;
       }
+      if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
+      if (Notification.permission === 'default' && !pedirPermiso) { pintarAvisoPush('activar'); return; }
+      if (Notification.permission === 'default') {
+        // El permiso se pide aquí (dentro del toque del usuario) y NO depende de la llave VAPID
+        try { await Notification.requestPermission(); } catch (e) {}
+        if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
+        if (Notification.permission !== 'granted') { pintarAvisoPush('activar'); return; }
+      }
       if (!vapidListo()) {
-        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.');
+        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código. Solo habrá avisos con la app abierta o en segundo plano.');
         pintarAvisoPush(null);
         return;
       }
-      if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
-      if (Notification.permission === 'default' && !pedirPermiso) { pintarAvisoPush('activar'); return; }
 
       const ok = await suscribirPush(pedirPermiso);
       if (ok) pintarAvisoPush(null);
@@ -1762,9 +1843,14 @@
       btnActivarPush.disabled = true;
       await iniciarPushConductor(true);
       btnActivarPush.disabled = false;
-      if (pushSuscrito) {
-        mostrarToast('Notificaciones activadas · Recibirás los viajes con la app cerrada', '✓');
+      const permitido = ('Notification' in window) && Notification.permission === 'granted';
+      if (pushSuscrito || permitido) {
+        mostrarToast(pushSuscrito
+          ? 'Notificaciones activadas · Recibirás los viajes con la app cerrada'
+          : 'Notificaciones activadas en este dispositivo', '✓');
         sonidoNuevoViaje(1); // Vista previa del sonido BIKAR
+        // Notificación de prueba en la barra del móvil: confirma que el dispositivo muestra los avisos de BIKAR
+        notificarSistema('🔔 BIKAR · Avisos activados', 'Así te llegarán las solicitudes de viaje.', { forzar: true, tag: 'bikar-prueba' });
       }
     });
 
@@ -2083,6 +2169,7 @@
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
         btnConductorEstado.classList.add('oculto');
+        iniciarPushPasajero(false); // Si ya dio el permiso, registra / renueva los avisos de su viaje en este dispositivo
         if (usuario.tipo_usuario === 'comercio' && !uiPasajero.querySelector('.comercio-info')) {
           uiPasajero.insertAdjacentHTML('afterbegin',
             '<div class="comercio-info"><b>Comercio activo:</b> ' +
@@ -2590,6 +2677,7 @@
         mostrarToast('Selecciona origen y destino', '!');
         return;
       }
+      promesaPushPasajero = iniciarPushPasajero(true); // Pide el permiso de notificaciones (dentro del toque del usuario)
       abrirPanelServicios();
     });
 
@@ -2747,6 +2835,10 @@
       if (!servicioSeleccionado) return;
       btnConfirmarServicio.disabled = true;
       btnConfirmarServicio.textContent = 'Solicitando…';
+      // Antes de pasar al seguimiento se termina de registrar este dispositivo para los avisos (máx. 6 s)
+      if (promesaPushPasajero) {
+        try { await Promise.race([promesaPushPasajero, new Promise((r) => setTimeout(r, 6000))]); } catch (e) {}
+      }
       await solicitarViaje(servicioSeleccionado);
     });
 
@@ -2827,6 +2919,24 @@
       return { promedio: nums.reduce((a, b) => a + b, 0) / nums.length, total: nums.length };
     }
 
+    // Detecta qué columnas tiene realmente la tabla 'calificaciones' (una sola vez) para no pedir columnas
+    // que no existen: PostgREST responde 400 y el navegador lo muestra como error rojo en la consola.
+    let esquemaCalifPromesa = null, esquemaCalifTs = 0, esquemaCalifFijo = false;
+    function esquemaCalificaciones() {
+      if (esquemaCalifPromesa && (esquemaCalifFijo || Date.now() - esquemaCalifTs < 60000)) return esquemaCalifPromesa;
+      esquemaCalifTs = Date.now();
+      esquemaCalifPromesa = (async () => {
+        let columnas = [];
+        try {
+          const r = await db.from('calificaciones').select('*').limit(1);
+          if (!r.error && r.data && r.data.length) columnas = Object.keys(r.data[0]);
+        } catch (e) { /* tabla no accesible: se omite */ }
+        esquemaCalifFijo = columnas.length > 0; // si la tabla está vacía se vuelve a revisar al minuto
+        return columnas;
+      })();
+      return esquemaCalifPromesa;
+    }
+
     // Busca la calificación del pasajero (la que se registra en viaje.html)
     async function calificacionDePasajero(id, filaUsuario) {
       // 1) Columna directa en la tabla usuarios
@@ -2837,18 +2947,18 @@
           if (!isNaN(v) && v > 0) return { promedio: v, total: Number(filaUsuario.total_calificaciones || filaUsuario.num_calificaciones || 0) };
         }
       }
-      // 2) Tabla de calificaciones (varios nombres posibles)
-      const tablas = ['calificaciones', 'calificaciones_pasajero', 'valoraciones'];
-      const columnasId = ['pasajero_id', 'usuario_id', 'calificado_id'];
-      for (let t = 0; t < tablas.length; t++) {
+      // 2) Tabla de calificaciones: solo se consultan las columnas que existen de verdad
+      const columnasTabla = await esquemaCalificaciones();
+      if (columnasTabla.length) {
+        const columnasId = ['pasajero_id', 'usuario_id', 'calificado_id'].filter((c) => columnasTabla.includes(c));
         for (let c = 0; c < columnasId.length; c++) {
           try {
-            const r = await db.from(tablas[t]).select('*').eq(columnasId[c], id).limit(200);
+            const r = await db.from('calificaciones').select('*').eq(columnasId[c], id).limit(200);
             if (r.error || !r.data || !r.data.length) continue;
             const vals = r.data.map((f) => f.calificacion ?? f.estrellas ?? f.puntuacion ?? f.rating ?? f.valor ?? f.puntaje);
             const p = promedioCalificaciones(vals);
             if (p) return p;
-          } catch (e) { /* siguiente combinación */ }
+          } catch (e) { /* siguiente columna */ }
         }
       }
       // 3) Calificaciones guardadas dentro de la tabla viajes
@@ -3010,6 +3120,7 @@
       banner.innerHTML = SVG_RECHAZAR + ' Viaje cancelado';
       el.insertBefore(banner, el.firstChild);
       mostrarToast('Viaje cancelado por el pasajero', '!');
+      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { tag: 'bikar-cancelado-' + el.dataset.id });
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       pintarEstadoLista();
       setTimeout(() => {
@@ -3116,6 +3227,7 @@
 
       if (nuevos.length) {
         avisarViajesNuevos(nuevos.map(v => v.id)); // Sonido BIKAR (una sola vez por viaje)
+        notificarViajesNuevosSistema(nuevos);      // Notificación en la barra del móvil si la app no está a la vista
         mostrarToast(nuevos.length === 1 ? 'Nueva solicitud de viaje' : nuevos.length + ' nuevas solicitudes de viaje', '+');
         try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
       }
