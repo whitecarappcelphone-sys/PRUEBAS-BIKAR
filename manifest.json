@@ -4,7 +4,7 @@
   "description": "BIKAR: solicita y recibe viajes en tiempo real.",
   "lang": "es",
   "dir": "ltr",
-  "start_url": "./",
+  "start_url": "app.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
