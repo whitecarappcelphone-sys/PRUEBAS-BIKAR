@@ -699,6 +699,18 @@
 
   <!-- PANEL PASAJERO -->
   <div id="ui-pasajero" class="ui-panel oculto">
+    <!-- AVISO: ACTIVAR NOTIFICACIONES PUSH (PASAJERO) -->
+    <div id="aviso-push-pasajero" class="aviso-push oculto" role="status">
+      <div class="aviso-push-icono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="aviso-push-txt">
+        <span class="aviso-push-tit" id="aviso-push-pasajero-tit">Activa los avisos de tu viaje</span>
+        <span class="aviso-push-sub" id="aviso-push-pasajero-sub">Te avisaremos cuando un conductor acepte tu viaje, aunque tengas la app cerrada.</span>
+      </div>
+      <button type="button" class="btn-mini oculto" id="btn-activar-push-pasajero">Activar</button>
+    </div>
+
     <div id="bloqueo-viaje-activo" class="viaje-bloqueo-box oculto">
       <div class="viaje-bloqueo-tit">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -1008,6 +1020,8 @@
     let pushSuscrito = false;                    // true cuando este dispositivo quedó registrado para recibir push
     let audioCtx = null;                         // Contexto de audio para el sonido BIKAR
     const viajesNotificados = new Set();         // Viajes ya mostrados como notificación del sistema
+    const estadosViajeVistos = new Map();        // id de viaje → último estado visto (para detectar cambios)
+    const avisosEstado = new Set();              // "idViaje-estado" ya avisados con sonido (evita duplicados)
     let promesaPushPasajero = null;              // Alta de notificaciones del pasajero en curso
     const viajesAvisados = new Set();            // Viajes ya avisados con sonido (evita sonidos duplicados)
 
@@ -1040,6 +1054,7 @@
     const bloqueoViajeActivo = $('bloqueo-viaje-activo'), seccionSolicitarPasajero = $('seccion-solicitar-pasajero');
     const btnIrViajeActivo = $('btn-ir-viaje-activo'), btnCancelarViaje = $('btn-cancelar-viaje');
     const avisoPush = $('aviso-push'), avisoPushTit = $('aviso-push-tit'), avisoPushSub = $('aviso-push-sub'), btnActivarPush = $('btn-activar-push');
+    const avisoPushPas = $('aviso-push-pasajero'), avisoPushPasTit = $('aviso-push-pasajero-tit'), avisoPushPasSub = $('aviso-push-pasajero-sub'), btnActivarPushPas = $('btn-activar-push-pasajero');
     const CAPAS = [modalConfirmar, modalAyuda, modalVehiculo, modalPerfil, modalHistorial];
     const abierto = (el) => el && !el.classList.contains('oculto');
 
@@ -1623,6 +1638,10 @@
           avisarViajesNuevos([d.viaje_id]);
           cargarViajesSolicitados();
         }
+      } else if (d.tipo === 'push-estado') {
+        // Llegó un aviso de cambio de estado del viaje (conductor asignado, en curso, finalizado, cancelado)
+        anunciarEstadoViaje(d.viaje_id, d.estado, null, true);
+        verificarViajeEnProgresoUsuario();
       } else if (d.tipo === 'abrir-viaje') {
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       } else if (d.tipo === 'renovar-push') {
@@ -1778,22 +1797,95 @@
     // Pasajero: pide el permiso (con un toque suyo) y registra este dispositivo para recibir los avisos de su viaje:
     // conductor asignado, viaje en curso, finalizado o cancelado — aunque la app esté cerrada.
     async function iniciarPushPasajero(pedirPermiso) {
-      if (!usuarioActual || esConductorSesion() || !PUSH_SOPORTADO) return false;
-      if (pushSuscrito) return true;
-      if (Notification.permission === 'denied') return false;
-      if (Notification.permission === 'default') {
-        if (!pedirPermiso) return false;
-        try { await Notification.requestPermission(); } catch (e) {}
+      if (!usuarioActual || esConductorSesion()) return false;
+      if (!PUSH_SOPORTADO) {
+        pushSuscrito = false;
+        pintarAvisoPush(esIOS && !esPWAInstalada() ? 'instalar' : 'nosoportado');
+        return false;
       }
-      if (Notification.permission !== 'granted') return false;
-      if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
-      return await suscribirPush(false);
+      if (pushSuscrito) { pintarAvisoPush(null); return true; }
+      if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return false; }
+      if (Notification.permission === 'default') {
+        if (!pedirPermiso) { pintarAvisoPush('activar'); return false; }
+        try { await Notification.requestPermission(); } catch (e) {}
+        if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return false; }
+      }
+      if (Notification.permission !== 'granted') { pintarAvisoPush('activar'); return false; }
+      if (!vapidListo()) {
+        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código. Solo habrá avisos con la app abierta o en segundo plano.');
+        pintarAvisoPush(null);
+        return false;
+      }
+      const ok = await suscribirPush(false);
+      pintarAvisoPush(ok ? null : 'error');
+      return ok;
+    }
+
+    /* ---------- Cambios de estado del viaje: sonido BIKAR + aviso (pasajero y conductor) ---------- */
+    function grupoEstadoViaje(est) {
+      const e = String(est || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
+      if (/cancel|rechaz|anul/.test(e)) return 'cancelado';
+      if (/finaliz|complet|termin|conclu/.test(e)) return 'finalizado';
+      if (['en_camino', 'en_curso', 'en_progreso', 'en_viaje', 'iniciado'].includes(e)) return 'encurso';
+      if (['aceptado', 'asignado'].includes(e)) return 'aceptado';
+      if (['solicitado', 'buscando', 'pendiente'].includes(e)) return 'solicitado';
+      return '';
+    }
+
+    // textos: [título de la notificación, cuerpo, mensaje corto del aviso en pantalla, icono del aviso]
+    const TEXTOS_ESTADO_PASAJERO = {
+      aceptado:   ['✅ ¡Conductor asignado!', 'Tu conductor aceptó el servicio y va hacia tu dirección de partida. Prepárate para abordar.', '¡Conductor asignado! Va hacia tu dirección', '✓'],
+      encurso:    ['🚖 Viaje en curso', 'Vas rumbo a tu destino. ¡Buen viaje!', 'Viaje en curso · Vas rumbo a tu destino', '✓'],
+      finalizado: ['🏁 Viaje finalizado', 'Gracias por viajar con BIKAR. Toca para ver tu viaje y calificar.', 'Viaje finalizado', '✓'],
+      cancelado:  ['❌ Viaje cancelado', 'Tu viaje fue cancelado. Puedes solicitar otro cuando quieras.', 'Tu viaje fue cancelado', '!']
+    };
+    const TEXTOS_ESTADO_CONDUCTOR = {
+      cancelado:  ['❌ Viaje cancelado', 'El pasajero canceló el viaje.', 'El pasajero canceló el viaje', '!']
+    };
+
+    // Suena el tono BIKAR (y muestra la notificación del sistema si la app no está a la vista) UNA sola vez por cambio de estado
+    function anunciarEstadoViaje(idViaje, estado, viaje, desdePush) {
+      if (!usuarioActual || idViaje === null || idViaje === undefined) return;
+      const esCond = esConductorSesion();
+      const grupo = grupoEstadoViaje(estado);
+      const t = (esCond ? TEXTOS_ESTADO_CONDUCTOR : TEXTOS_ESTADO_PASAJERO)[grupo];
+      if (!t) return;
+      // Si el propio pasajero canceló, no se le avisa de lo que acaba de hacer
+      if (!esCond && grupo === 'cancelado' && viaje && String(viaje.cancelado_por || '').toLowerCase() === 'pasajero') return;
+
+      const k = String(idViaje) + '-' + grupo;
+      if (avisosEstado.has(k)) return;
+      avisosEstado.add(k);
+      if (avisosEstado.size > 200) Array.from(avisosEstado).slice(0, 80).forEach((x) => avisosEstado.delete(x));
+
+      sonidoNuevoViaje(1);
+      mostrarToast(t[2], t[3]);
+      try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
+      if (!desdePush) {
+        // El service worker ya muestra su propia notificación cuando llega el push; esta es el respaldo local
+        notificarSistema(t[0], t[1], {
+          tag: 'bikar-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
+          url: new URL('viaje.html?id=' + idViaje + '&rol=' + (esCond ? 'conductor' : 'pasajero'), location.href).href
+        });
+      }
     }
 
     /* ---------- Aviso visual para el conductor ---------- */
     function pintarAvisoPush(estado) {
-      if (!avisoPush) return;
-      const textos = {
+      // Mismo recuadro para los dos roles: el del conductor (panel de viajes) o el del pasajero (panel de solicitar viaje)
+      const pas = !esConductorSesion();
+      const caja = pas ? avisoPushPas : avisoPush;
+      const tit = pas ? avisoPushPasTit : avisoPushTit;
+      const sub = pas ? avisoPushPasSub : avisoPushSub;
+      const btn = pas ? btnActivarPushPas : btnActivarPush;
+      if (!caja) return;
+      const textos = pas ? {
+        activar:     { t: 'Activa los avisos de tu viaje', s: 'Te avisaremos cuando un conductor acepte tu viaje, llegue o lo cancele, aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
+        bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de BIKAR en los ajustes del navegador o del sitio para recibir los avisos de tu viaje.', b: null, alerta: true },
+        instalar:    { t: 'Instala BIKAR en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre BIKAR desde su icono y activa los avisos.', b: null, alerta: false },
+        nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir los avisos de tu viaje.', b: null, alerta: true },
+        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
+      } : {
         activar:     { t: 'Activa los avisos de viajes', s: 'Recibe cada solicitud con el sonido BIKAR aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
         bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de BIKAR en los ajustes del navegador o del sitio para recibir viajes con la app cerrada.', b: null, alerta: true },
         instalar:    { t: 'Instala BIKAR en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre BIKAR desde su icono y activa los avisos.', b: null, alerta: false },
@@ -1801,13 +1893,13 @@
         error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
       };
       const x = textos[estado];
-      if (!x) { avisoPush.classList.add('oculto'); return; }
-      avisoPushTit.textContent = x.t;
-      avisoPushSub.textContent = x.s;
-      avisoPush.classList.toggle('alerta', !!x.alerta);
-      if (x.b) { btnActivarPush.textContent = x.b; btnActivarPush.classList.remove('oculto'); }
-      else btnActivarPush.classList.add('oculto');
-      avisoPush.classList.remove('oculto');
+      if (!x) { caja.classList.add('oculto'); return; }
+      tit.textContent = x.t;
+      sub.textContent = x.s;
+      caja.classList.toggle('alerta', !!x.alerta);
+      if (x.b) { btn.textContent = x.b; btn.classList.remove('oculto'); }
+      else btn.classList.add('oculto');
+      caja.classList.remove('oculto');
     }
 
     async function iniciarPushConductor(pedirPermiso) {
@@ -1854,6 +1946,22 @@
       }
     });
 
+    // Botón «Activar» del pasajero
+    btnActivarPushPas.addEventListener('click', async () => {
+      desbloquearAudio();
+      btnActivarPushPas.disabled = true;
+      await iniciarPushPasajero(true);
+      btnActivarPushPas.disabled = false;
+      const permitido = ('Notification' in window) && Notification.permission === 'granted';
+      if (pushSuscrito || permitido) {
+        mostrarToast(pushSuscrito
+          ? 'Notificaciones activadas · Te avisaremos de tu viaje aunque cierres la app'
+          : 'Notificaciones activadas en este dispositivo', '✓');
+        sonidoNuevoViaje(1); // Vista previa del sonido BIKAR
+        notificarSistema('🔔 BIKAR · Avisos activados', 'Así te llegarán los avisos de tu viaje.', { forzar: true, tag: 'bikar-prueba' });
+      }
+    });
+
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
     /* Aplica el color correspondiente al estado del viaje en la alerta, el bloqueo y el acceso del menú */
     function aplicarColorEstadoAlerta(clase) {
@@ -1891,6 +1999,12 @@
           const viaje = data[0];
           const est = String(viaje.estado || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
           ultimoEstado = est;
+
+          // Si el estado cambió desde la última lectura (no en la primera carga de la página): suena el tono BIKAR
+          const grupoPrevio = estadosViajeVistos.get(String(viaje.id));
+          const grupoActual = grupoEstadoViaje(est);
+          estadosViajeVistos.set(String(viaje.id), grupoActual);
+          if (grupoPrevio !== undefined && grupoPrevio !== grupoActual) anunciarEstadoViaje(viaje.id, grupoActual, viaje, false);
 
           // Estados finalizados o cancelados (Paso 4): cualquier variante de cancelado/finalizado
           const esFinalizado = /finaliz|complet|termin|conclu|cancel|rechaz|anul/.test(est);
@@ -2000,6 +2114,7 @@
       btnCancelarViaje.disabled = false;
       if (error) { mostrarToast('No se pudo cancelar: ' + error.message, '!'); return; }
       mostrarToast('Viaje cancelado', '✓');
+      estadosViajeVistos.set(String(v.id), 'cancelado'); // cancelación propia: no se anuncia con sonido
       huboViajeActivo = false;
       viajeActivoPasajero = null;
       await verificarViajeEnProgresoUsuario();
