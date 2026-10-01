@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#121212">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-bikar.svg" type="image/svg+xml">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="BIKAR">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>BIKAR · Viajes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -602,6 +608,22 @@
     .btn-conf-cancelar:hover{border-color:var(--primary-color);color:var(--primary-color)}
     .btn-conf-aceptar{color:#fff;border:none;background:linear-gradient(90deg,#a32626,#e05a5a);box-shadow:0 10px 24px rgba(224,90,90,.32)}
     .btn-conf-aceptar:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(224,90,90,.4)}
+
+    /* AVISO DE NOTIFICACIONES PUSH (PANEL CONDUCTOR) */
+    .aviso-push{display:flex;align-items:center;gap:11px;margin:2px 0 14px;padding:12px;border-radius:16px;text-align:left;
+      background:linear-gradient(135deg,rgba(71,133,167,.14),rgba(19,73,137,.07));border:1px solid rgba(71,133,167,.38);
+      box-shadow:inset 0 1px 0 var(--glass-highlight);animation:cardPop .4s cubic-bezier(.2,.8,.2,1) both}
+    .aviso-push-icono{flex-shrink:0;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.35);
+      animation:pulseDot 2s ease-out infinite}
+    .aviso-push-icono svg{width:19px;height:19px}
+    .aviso-push-txt{flex:1;min-width:0}
+    .aviso-push-tit{display:block;font-size:.8rem;font-weight:800;color:var(--text-color);line-height:1.25}
+    .aviso-push-sub{display:block;margin-top:2px;font-size:.68rem;font-weight:500;line-height:1.35;color:var(--muted-text)}
+    .aviso-push.alerta{border-color:rgba(239,68,68,.45);background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(239,68,68,.05))}
+    .aviso-push.alerta .aviso-push-icono{background:linear-gradient(135deg,#ef4444,#a32626);animation:none}
+    .aviso-push .btn-mini{flex-shrink:0}
+    .aviso-push .btn-mini:disabled{opacity:.6;cursor:not-allowed;transform:none}
   </style>
   <script>
     (function(){
@@ -706,6 +728,19 @@
   <div id="ui-conductor" class="ui-panel oculto">
     <h3 class="panel-title">Viajes Solicitados</h3>
     <p id="status-text-conductor" class="status-text">Buscando solicitudes de tu categoría...</p>
+
+    <!-- AVISO: ACTIVAR NOTIFICACIONES PUSH (SOLO CONDUCTOR) -->
+    <div id="aviso-push" class="aviso-push oculto" role="status">
+      <div class="aviso-push-icono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="aviso-push-txt">
+        <span class="aviso-push-tit" id="aviso-push-tit">Activa los avisos de viajes</span>
+        <span class="aviso-push-sub" id="aviso-push-sub">Recibe cada solicitud con el sonido BIKAR aunque tengas la app cerrada.</span>
+      </div>
+      <button type="button" class="btn-mini oculto" id="btn-activar-push">Activar</button>
+    </div>
+
     <div id="contenedor-solicitudes"></div>
   </div>
 
@@ -885,6 +920,13 @@
     const db = (window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null);
 
     const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-BIKAR/";
+
+    /* ---- Notificaciones push (Web Push) ----
+       1) Genera las llaves con:  npx web-push generate-vapid-keys
+       2) Pega aquí SOLO la llave PÚBLICA (la privada va en los secretos de Supabase) */
+    const URL_SW = "sw.js";
+    const VAPID_PUBLIC_KEY = "PEGA_AQUI_TU_VAPID_PUBLIC_KEY";
+
     const K_SESION = "bikar_usuario";
     const K_DOC = "bikar_documentacion_vehiculo";
     const K_TEMA = "bikar_tema";
@@ -893,7 +935,7 @@
     const PASAJERO_ID_PRUEBA = "5";
     const CONDUCTOR_ID_PRUEBA = "10";
     const MAX_FILAS = 500;
-    const VENTANA_ACTIVO_MS = 10 * 60 * 1000; // Un conductor cuenta como activo si reportó conexión en los últimos 10 min
+    const VENTANA_ACTIVO_MS = 10 * 60 * 1000; // Un conductor cuenta como activo si reportó conexión en los últimos 10 min (o si tiene notificaciones push activas)
     const LATIDO_CONDUCTOR_MS = 20000;
 
     /* ============================ TARIFAS REALES PERÚ (SOLES S/) ============================
@@ -960,6 +1002,12 @@
     let seqViajes = 0;
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
 
+    // Notificaciones push y sonido
+    let swRegistro = null, swListenerOk = false; // Service Worker
+    let pushSuscrito = false;                    // true cuando este dispositivo quedó registrado para recibir push
+    let audioCtx = null;                         // Contexto de audio para el sonido BIKAR
+    const viajesAvisados = new Set();            // Viajes ya avisados con sonido (evita sonidos duplicados)
+
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
     let tokenOrigen = null, tokenDestino = null, marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
     let popupDir = null, popupSub = null;
@@ -988,6 +1036,7 @@
     const alertaViajeActivo = $('alerta-viaje-activo'), menuItemMisViajes = $('menu-item-mis-viajes');
     const bloqueoViajeActivo = $('bloqueo-viaje-activo'), seccionSolicitarPasajero = $('seccion-solicitar-pasajero');
     const btnIrViajeActivo = $('btn-ir-viaje-activo'), btnCancelarViaje = $('btn-cancelar-viaje');
+    const avisoPush = $('aviso-push'), avisoPushTit = $('aviso-push-tit'), avisoPushSub = $('aviso-push-sub'), btnActivarPush = $('btn-activar-push');
     const CAPAS = [modalConfirmar, modalAyuda, modalVehiculo, modalPerfil, modalHistorial];
     const abierto = (el) => el && !el.classList.contains('oculto');
 
@@ -1415,6 +1464,8 @@
 
       if (conductorActivo) {
         mostrarToast('Estás ACTIVO · Recibiendo viajes', '✓');
+        desbloquearAudio();          // El toque del conductor habilita el sonido BIKAR
+        iniciarPushConductor(true);  // Pide permiso de notificaciones si aún no lo dio
         await cargarViajesSolicitados();
       } else {
         mostrarToast('Estás INACTIVO · No recibirás viajes', '!');
@@ -1459,6 +1510,262 @@
           '<div class="conductor-inactivo-sub">Actualmente no recibirás solicitudes de <b>' + esc(etiqueta) + '</b> porque tu estado es inactivo.<br>Toca el botón verde/rojo arriba a la derecha para conectarte.</div>' +
         '</div>';
     }
+
+    /* ============================ NOTIFICACIONES PUSH Y SONIDO BIKAR (CONDUCTOR) ============================
+       - Service Worker (sw.js): recibe los push aunque la app esté cerrada o en segundo plano.
+       - Suscripción Web Push guardada en Supabase (tabla push_suscripciones, vía RPC).
+       - Sonido BIKAR sintetizado con Web Audio cuando la app está abierta (primer plano o segundo plano).
+       - Un conductor con push activo sigue contando como ACTIVO aunque cierre la app.
+    ============================================================================================ */
+    const PUSH_SOPORTADO = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+    const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+    const esPWAInstalada = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    const esConductorSesion = () => !!usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor';
+    const vapidListo = () => !!VAPID_PUBLIC_KEY && !/^PEGA/i.test(VAPID_PUBLIC_KEY) && VAPID_PUBLIC_KEY.length > 40;
+
+    /* ---------- Sonido BIKAR ---------- */
+    // Melodía característica: [frecuencia Hz, inicio s, duración s]
+    const MELODIA_BIKAR = [
+      [659.25, 0.00, 0.35], [880.00, 0.14, 0.35], [1108.73, 0.28, 0.35], [1318.51, 0.42, 0.75],
+      [1108.73, 0.95, 0.35], [1318.51, 1.09, 0.35], [1760.00, 1.23, 1.10]
+    ];
+
+    function crearAudio() {
+      if (audioCtx) return audioCtx;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      try { audioCtx = new AC(); } catch (e) { audioCtx = null; }
+      return audioCtx;
+    }
+
+    // Los navegadores solo permiten sonar tras un toque del usuario: se desbloquea con el primer toque
+    function desbloquearAudio() {
+      const ctx = crearAudio();
+      if (!ctx || ctx.state === 'running') return;
+      ctx.resume().catch(() => {});
+      try {
+        const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
+        s.buffer = b; s.connect(ctx.destination); s.start(0);
+      } catch (e) {}
+    }
+    ['pointerdown', 'touchstart', 'keydown', 'click'].forEach((ev) => document.addEventListener(ev, desbloquearAudio, { passive: true }));
+
+    function tonoCampana(ctx, freq, inicio, dur, vol) {
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, inicio);
+      g.gain.exponentialRampToValueAtTime(vol, inicio + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, inicio + dur);
+      g.connect(ctx.destination);
+      [[freq, 'sine', 1], [freq * 2, 'triangle', 0.35], [freq * 3.01, 'sine', 0.12]].forEach((p) => {
+        const o = ctx.createOscillator(), og = ctx.createGain();
+        o.type = p[1]; o.frequency.value = p[0]; og.gain.value = p[2];
+        o.connect(og); og.connect(g);
+        o.start(inicio); o.stop(inicio + dur + 0.05);
+      });
+    }
+
+    function sonidoNuevoViaje(repeticiones) {
+      const ctx = crearAudio();
+      if (!ctx) return;
+      const pedido = Date.now();
+      const reproducir = () => {
+        // Si no se pudo activar el audio a tiempo, no se reproduce un sonido atrasado
+        if (ctx.state !== 'running' || Date.now() - pedido > 5000) return;
+        const t0 = ctx.currentTime + 0.05;
+        for (let r = 0; r < (repeticiones || 2); r++) {
+          MELODIA_BIKAR.forEach((n) => tonoCampana(ctx, n[0], t0 + r * 2.6 + n[1], n[2], 0.3));
+        }
+      };
+      if (ctx.state === 'running') reproducir();
+      else ctx.resume().then(reproducir).catch(() => {});
+    }
+
+    // Suena una sola vez por viaje (evita duplicados entre el tiempo real y el aviso del Service Worker)
+    function avisarViajesNuevos(ids) {
+      let hayNuevo = false;
+      (ids || []).forEach((id) => {
+        if (id === null || id === undefined) return;
+        const k = String(id);
+        if (viajesAvisados.has(k)) return;
+        viajesAvisados.add(k);
+        hayNuevo = true;
+      });
+      if (viajesAvisados.size > 300) Array.from(viajesAvisados).slice(0, 100).forEach((x) => viajesAvisados.delete(x));
+      if (hayNuevo) sonidoNuevoViaje(2);
+    }
+
+    /* ---------- Service Worker ---------- */
+    async function registrarServiceWorker() {
+      if (!('serviceWorker' in navigator)) return null;
+      if (!swListenerOk) {
+        swListenerOk = true;
+        navigator.serviceWorker.addEventListener('message', alMensajeServiceWorker);
+      }
+      if (swRegistro) return swRegistro;
+      try {
+        swRegistro = await navigator.serviceWorker.register(URL_SW);
+        return swRegistro;
+      } catch (e) {
+        console.warn('Service Worker no disponible:', e && e.message);
+        return null;
+      }
+    }
+
+    function alMensajeServiceWorker(ev) {
+      const d = ev && ev.data;
+      if (!d || typeof d !== 'object') return;
+      if (d.tipo === 'push-viaje') {
+        // Llegó un push de viaje nuevo con la app abierta (o en segundo plano): suena el tono BIKAR y se actualiza la lista
+        if (modoActual === 'conductor' && conductorActivo) {
+          avisarViajesNuevos([d.viaje_id]);
+          cargarViajesSolicitados();
+        }
+      } else if (d.tipo === 'abrir-viaje') {
+        if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
+      } else if (d.tipo === 'renovar-push') {
+        if (esConductorSesion()) suscribirPush(false);
+      }
+    }
+
+    /* ---------- Suscripción Web Push ---------- */
+    function urlBase64ToUint8Array(b64) {
+      const pad = '='.repeat((4 - b64.length % 4) % 4);
+      const base64 = (b64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+      const raw = atob(base64);
+      const out = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+      return out;
+    }
+
+    function bufferABase64Url(buf) {
+      if (!buf) return '';
+      const bytes = new Uint8Array(buf);
+      let s = '';
+      for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+      return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    async function suscribirPush(pedirPermiso) {
+      if (!db || !usuarioActual || usuarioActual.id == null || !esConductorSesion() || !PUSH_SOPORTADO) return false;
+      if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
+      try {
+        // El permiso se pide primero, mientras el toque del usuario sigue siendo válido
+        let permiso = Notification.permission;
+        if (permiso === 'default' && pedirPermiso) {
+          try { permiso = await Notification.requestPermission(); } catch (e) { permiso = Notification.permission; }
+        }
+        if (permiso !== 'granted') return false;
+
+        const reg = await registrarServiceWorker();
+        if (!reg) return false;
+        await navigator.serviceWorker.ready;
+
+        let sub = await reg.pushManager.getSubscription();
+        // Si la llave VAPID cambió, se renueva la suscripción
+        if (sub && sub.options && sub.options.applicationServerKey &&
+            bufferABase64Url(sub.options.applicationServerKey) !== VAPID_PUBLIC_KEY) {
+          try { await sub.unsubscribe(); } catch (e) {}
+          sub = null;
+        }
+        if (!sub) {
+          sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+        }
+
+        const j = sub.toJSON(), keys = j.keys || {};
+        const { error } = await db.rpc('bikar_registrar_push', {
+          p_usuario_id: String(usuarioActual.id),
+          p_rol: 'conductor',
+          p_servicio: claveServicioConductor || null,
+          p_endpoint: sub.endpoint,
+          p_p256dh: keys.p256dh || '',
+          p_auth: keys.auth || '',
+          p_url_app: location.href.split('#')[0].split('?')[0],
+          p_user_agent: (navigator.userAgent || '').slice(0, 250)
+        });
+        if (error) {
+          console.warn('Push: no se pudo registrar la suscripción (¿ejecutaste supabase_push.sql?):', error.message);
+          return false;
+        }
+        pushSuscrito = true;
+        return true;
+      } catch (e) {
+        console.warn('Push: error al suscribir:', e && e.message);
+        return false;
+      }
+    }
+
+    async function desactivarPush() {
+      try {
+        if (PUSH_SOPORTADO) {
+          const reg = swRegistro || await navigator.serviceWorker.getRegistration();
+          const sub = reg && await reg.pushManager.getSubscription();
+          if (sub) {
+            const endpoint = sub.endpoint;
+            try { await sub.unsubscribe(); } catch (e) {}
+            if (db) {
+              await db.rpc('bikar_eliminar_push', {
+                p_endpoint: endpoint,
+                p_usuario_id: usuarioActual && usuarioActual.id != null ? String(usuarioActual.id) : null
+              });
+            }
+          }
+        }
+      } catch (e) {}
+      pushSuscrito = false;
+    }
+
+    /* ---------- Aviso visual para el conductor ---------- */
+    function pintarAvisoPush(estado) {
+      if (!avisoPush) return;
+      const textos = {
+        activar:     { t: 'Activa los avisos de viajes', s: 'Recibe cada solicitud con el sonido BIKAR aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
+        bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de BIKAR en los ajustes del navegador o del sitio para recibir viajes con la app cerrada.', b: null, alerta: true },
+        instalar:    { t: 'Instala BIKAR en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre BIKAR desde su icono y activa los avisos.', b: null, alerta: false },
+        nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir viajes con la app cerrada.', b: null, alerta: true },
+        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
+      };
+      const x = textos[estado];
+      if (!x) { avisoPush.classList.add('oculto'); return; }
+      avisoPushTit.textContent = x.t;
+      avisoPushSub.textContent = x.s;
+      avisoPush.classList.toggle('alerta', !!x.alerta);
+      if (x.b) { btnActivarPush.textContent = x.b; btnActivarPush.classList.remove('oculto'); }
+      else btnActivarPush.classList.add('oculto');
+      avisoPush.classList.remove('oculto');
+    }
+
+    async function iniciarPushConductor(pedirPermiso) {
+      if (!usuarioActual || !esConductorSesion()) return;
+      if (!PUSH_SOPORTADO) {
+        pushSuscrito = false;
+        pintarAvisoPush(esIOS && !esPWAInstalada() ? 'instalar' : 'nosoportado');
+        return;
+      }
+      if (!vapidListo()) {
+        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.');
+        pintarAvisoPush(null);
+        return;
+      }
+      if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
+      if (Notification.permission === 'default' && !pedirPermiso) { pintarAvisoPush('activar'); return; }
+
+      const ok = await suscribirPush(pedirPermiso);
+      if (ok) pintarAvisoPush(null);
+      else if (Notification.permission === 'denied') pintarAvisoPush('bloqueado');
+      else if (Notification.permission === 'default') pintarAvisoPush('activar');
+      else pintarAvisoPush('error');
+    }
+
+    btnActivarPush.addEventListener('click', async () => {
+      desbloquearAudio();
+      btnActivarPush.disabled = true;
+      await iniciarPushConductor(true);
+      btnActivarPush.disabled = false;
+      if (pushSuscrito) {
+        mostrarToast('Notificaciones activadas · Recibirás los viajes con la app cerrada', '✓');
+        sonidoNuevoViaje(1); // Vista previa del sonido BIKAR
+      }
+    });
 
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
     /* Aplica el color correspondiente al estado del viaje en la alerta, el bloqueo y el acceso del menú */
@@ -1763,6 +2070,7 @@
         inicializarEstadoConductor();
         sincronizarEstadoConductorDB();
         await resolverServicioDelConductor();
+        iniciarPushConductor(false); // Registra / renueva las notificaciones push de este dispositivo
         if (conductorActivo) {
           cargarViajesSolicitados();
         } else {
@@ -1830,6 +2138,8 @@
           await db.from('usuarios').update({ conductor_activo: false }).eq('id', usuarioActual.id);
         }
       } catch (e) {}
+      // Y este dispositivo deja de recibir notificaciones push de esa cuenta
+      try { await desactivarPush(); } catch (e) {}
       try { localStorage.removeItem(K_SESION); } catch (e) {}
       usuarioActual = null;
       documentacionVehiculo = null;
@@ -1890,7 +2200,7 @@
       'id', 'auth_user_id', 'conductor_id', 'usuario_id', 'user_id', 'id_usuario', 'id_conductor',
       'authuserid', 'conductorid', 'usuarioid', 'pass', 'password', 'contrasena', 'contraseña',
       'clave', 'token', 'hash', 'foto', 'foto_url', 'avatar', 'imagen', 'foto_perfil', 'docvehiculo',
-      'conductor_activo', 'ultima_conexion', 'cancelado_por', 'cancelado_en'
+      'conductor_activo', 'ultima_conexion', 'recibe_push', 'cancelado_por', 'cancelado_en'
     ];
 
     function valorLegible(clave, valor) {
@@ -2332,7 +2642,12 @@
       if (!db) return conteo;
 
       const res = await Promise.all([
-        leerTabla('usuarios', ['id,tipo_usuario,conductor_activo,ultima_conexion', 'id,tipo_usuario,conductor_activo', 'id,tipo_usuario'], ['tipo_usuario', 'conductor']),
+        leerTabla('usuarios', [
+          'id,tipo_usuario,conductor_activo,ultima_conexion,recibe_push',
+          'id,tipo_usuario,conductor_activo,ultima_conexion',
+          'id,tipo_usuario,conductor_activo',
+          'id,tipo_usuario'
+        ], ['tipo_usuario', 'conductor']),
         leerTabla('conductores', ['id,usuario_id']),
         leerTabla('vehiculos', ['conductor_id,tipo_servicio']),
         leerTabla('documentos_conductor', ['usuario_id,conductor_id,tipo_servicio'])
@@ -2355,15 +2670,17 @@
         if (d.conductor_id !== null && d.conductor_id !== undefined) servDocCond.set(String(d.conductor_id), k);
       });
 
-      // Estricto: existen las columnas conductor_activo (nivel 0 o 1) y, en nivel 0, ultima_conexion
-      const estricto = ru.nivel === 0 || ru.nivel === 1;
+      // Estricto: existe la columna conductor_activo (niveles 0, 1 y 2) y, en los niveles 0 y 1, ultima_conexion
+      const estricto = ru.nivel >= 0 && ru.nivel <= 2;
       if (!estricto) console.warn('usuarios.conductor_activo no existe: ejecuta el SQL de BIKAR para contar solo conductores activos.');
       const ahora = Date.now();
 
       ru.filas.forEach((u) => {
         if (estricto) {
           if (u.conductor_activo !== true) return;
-          if (ru.nivel === 0 && u.ultima_conexion) {
+          // Un conductor con notificaciones push activas (recibe_push) sigue ACTIVO aunque tenga la app cerrada:
+          // solo se le exige conexión reciente cuando NO puede recibir push.
+          if (ru.nivel <= 1 && u.ultima_conexion && u.recibe_push !== true) {
             const t = new Date(u.ultima_conexion).getTime();
             if (!isNaN(t) && (ahora - t) > VENTANA_ACTIVO_MS) return;
           }
@@ -2797,6 +3114,7 @@
       pintarEstadoLista();
 
       if (nuevos.length) {
+        avisarViajesNuevos(nuevos.map(v => v.id)); // Sonido BIKAR (una sola vez por viaje)
         mostrarToast(nuevos.length === 1 ? 'Nueva solicitud de viaje' : nuevos.length + ' nuevas solicitudes de viaje', '+');
         try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
       }
@@ -2828,6 +3146,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       inicializarTema();
       cargarGoogleMaps();
+      registrarServiceWorker(); // Habilita notificaciones push y la instalación como app
       suscribirRealtime();
       verificarSesionGuardada();
 
@@ -2846,9 +3165,11 @@
       });
 
       // Al volver desde viaje.html con el botón "atrás" (página restaurada de caché): sincronizar al instante
-      // Al cerrar o salir de la página el conductor deja de contarse como activo (se reactiva solo al volver)
+      // Al cerrar o salir de la página el conductor deja de contarse como activo (se reactiva solo al volver),
+      // EXCEPTO si tiene notificaciones push activas: entonces sigue ACTIVO y recibirá los viajes como notificación.
       window.addEventListener('pagehide', () => {
         if (!usuarioActual || modoActual !== 'conductor' || usuarioActual.id == null) return;
+        if (pushSuscrito) return;
         try {
           fetch(SUPABASE_URL + '/rest/v1/usuarios?id=eq.' + encodeURIComponent(usuarioActual.id), {
             method: 'PATCH', keepalive: true,
