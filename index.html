@@ -232,6 +232,7 @@
       background-position:16px center,right 16px center;background-size:20px 20px,18px 18px}
     #doc-marca{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%234785A7'/%3E%3C/svg%3E")}
     #doc-anio{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
+    #doc-capacidad{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E")}
     .btn-documentacion{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:14px;border:1px dashed rgba(71,133,167,.55);
       background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;
       transition:border-color .2s,box-shadow .2s,background .2s,transform .2s}
@@ -261,6 +262,20 @@
     .doc-quitar{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.06);color:var(--text-color);font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
     .doc-quitar:hover{background:rgba(231,76,60,.25);border-color:rgba(231,76,60,.60)}
+
+    /* ===== NUEVO: PET FRIENDLY (SÍ / NO) ===== */
+    .pet-friendly-group{margin:6px 0 12px 4px}
+    .pet-friendly-label{display:block;margin:0 0 8px 4px;font-size:.78rem;font-weight:600;color:var(--text-color)}
+    .pet-friendly-toggle{display:flex;gap:10px}
+    .pet-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 14px;border-radius:14px;
+      border:1px solid rgba(71,133,167,.45);background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:700;
+      cursor:pointer;transition:all .2s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    .pet-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .pet-btn:hover{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.18)}
+    .pet-btn:active{transform:scale(.98)}
+    .pet-btn.pet-si.activo{background:rgba(46,204,113,.18);border-color:#2ecc71;color:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.22),0 0 22px rgba(46,204,113,.25)}
+    .pet-btn.pet-no.activo{background:rgba(231,76,60,.18);border-color:#e74c3c;color:#e74c3c;box-shadow:0 0 0 3px rgba(231,76,60,.22),0 0 22px rgba(231,76,60,.25)}
+
     #modal-instalar-pwa .panel-title::before {
       display: none !important;
     }
@@ -602,10 +617,10 @@
       <div class="input-group">
         <select id="doc-tipo-servicio" required>
           <option value="" disabled selected>Tipo de servicio</option>
-          <option value="Taxi Auto">Taxi Auto</option>
-          <option value="Moto Delivery">Moto Delivery</option>
+          <option value="BIKAR TAXI">BIKAR TAXI</option>
+          <option value="BIKAR ENVIOS">BIKAR ENVIOS</option>
           <option value="Taxi Carga">Taxi Carga</option>
-          <option value="Moto Taxi">Moto Taxi</option>
+          <option value="BIKAR MOTO">BIKAR MOTO</option>
         </select>
       </div>
       <div class="input-group"><input type="text" id="doc-marca" placeholder="Marca del Vehículo (Ej: Chevrolet)" required autocomplete="off"></div>
@@ -614,6 +629,24 @@
       <div class="input-group"><input type="text" id="doc-anio" inputmode="numeric" maxlength="4" placeholder="Año del Vehículo (Ej: 2021)" required autocomplete="off"></div>
       <p class="doc-nota">Si el vehículo tiene más de 3 años deberás adjuntar la revisión técnica.</p>
       <div class="input-group"><input type="text" id="reg-placa" placeholder="Placa del Vehículo" required autocomplete="off"></div>
+
+      <!-- NUEVO: CAPACIDAD DE PASAJEROS -->
+      <div class="input-group"><input type="number" id="doc-capacidad" min="1" max="20" inputmode="numeric" placeholder="Capacidad de pasajeros (Ej: 4)" required autocomplete="off"></div>
+
+      <!-- NUEVO: PET FRIENDLY (SÍ / NO) -->
+      <div class="pet-friendly-group">
+        <span class="pet-friendly-label">¿Eres pet friendly?</span>
+        <div class="pet-friendly-toggle">
+          <button type="button" id="pet-si" class="pet-btn pet-si" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="8" cy="9" r="1.6"/><path d="M5 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M16.5 13c2.5.6 4 2.2 4 4.5"/></svg>
+            Sí
+          </button>
+          <button type="button" id="pet-no" class="pet-btn pet-no" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            No
+          </button>
+        </div>
+      </div>
 
       <p class="doc-seccion">Documentos (foto o PDF · máx. 5 MB)</p>
 
@@ -1096,7 +1129,7 @@
     const docContador = $('doc-contador');
     const docAnio = $('doc-anio');
     const docItemRevision = $('doc-item-revision');
-    const documentacionVehiculo = { completa: false, archivos: {} };
+    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null };
 
     function requiereRevisionTecnica() {
       const anio = parseInt(docAnio.value, 10);
@@ -1209,6 +1242,19 @@
       item.querySelector('.doc-quitar').addEventListener('click', () => { limpiar(); marcarDocumentacionPendiente(); });
     });
 
+    /* ================= PET FRIENDLY (SÍ / NO) ================= */
+    const petSi = $('pet-si');
+    const petNo = $('pet-no');
+    function seleccionarPetFriendly(valor) {
+      documentacionVehiculo.pet_friendly = valor;
+      petSi.classList.toggle('activo', valor === true);
+      petNo.classList.toggle('activo', valor === false);
+      petSi.setAttribute('aria-pressed', valor === true ? 'true' : 'false');
+      petNo.setAttribute('aria-pressed', valor === false ? 'true' : 'false');
+    }
+    petSi.addEventListener('click', () => seleccionarPetFriendly(true));
+    petNo.addEventListener('click', () => seleccionarPetFriendly(false));
+
     formDocumentacion.addEventListener('submit', (e) => {
       e.preventDefault();
       const camposTexto = [
@@ -1216,7 +1262,8 @@
         ['doc-marca', 'Ingresa la marca del vehículo.'],
         ['reg-vehiculo', 'Ingresa el modelo del vehículo.'],
         ['doc-anio', 'Ingresa el año del vehículo.'],
-        ['reg-placa', 'Ingresa la placa del vehículo.']
+        ['reg-placa', 'Ingresa la placa del vehículo.'],
+        ['doc-capacidad', 'Ingresa la capacidad de pasajeros.']
       ];
       for (const [id, mensaje] of camposTexto) {
         const campo = $(id);
@@ -1225,6 +1272,12 @@
       const anio = parseInt(docAnio.value, 10);
       const anioActual = new Date().getFullYear();
       if (isNaN(anio) || anio < 1950 || anio > anioActual + 1) { mostrarAlerta('Ingresa un año de vehículo válido.', "error"); docAnio.focus(); return; }
+      const capacidad = parseInt($('doc-capacidad').value, 10);
+      if (isNaN(capacidad) || capacidad < 1 || capacidad > 20) { mostrarAlerta('Ingresa una capacidad de pasajeros válida (1-20).', "error"); $('doc-capacidad').focus(); return; }
+      if (documentacionVehiculo.pet_friendly === null || documentacionVehiculo.pet_friendly === undefined) {
+        mostrarAlerta('Indica si eres pet friendly (Sí o No).', "error");
+        return;
+      }
       for (const [clave, nombre] of listaDocumentosRequeridos()) {
         if (!documentacionVehiculo.archivos[clave]) {
           mostrarAlerta(`Falta adjuntar: ${nombre}.`, "error");
@@ -1240,6 +1293,7 @@
       documentacionVehiculo.anio = anio;
       documentacionVehiculo.placa = $('reg-placa').value.trim();
       documentacionVehiculo.licencia = $('doc-licencia').value.trim();
+      documentacionVehiculo.capacidad_pasajeros = capacidad;
       documentacionVehiculo.requiere_revision_tecnica = requiereRevisionTecnica();
       marcarDocumentacionCompleta();
       cerrarModalDocumentacion();
@@ -1271,6 +1325,8 @@
         modelo: documentacionVehiculo.modelo || null,
         anio: documentacionVehiculo.anio || null,
         placa: documentacionVehiculo.placa || null,
+        capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
+        pet_friendly: documentacionVehiculo.pet_friendly || false,
         requiere_revision_tecnica: !!documentacionVehiculo.requiere_revision_tecnica,
         dni_ce: urlsDocumentos.dni_ce || null,
         antecedente_policial: urlsDocumentos.antecedente_policial || null,
@@ -1476,7 +1532,9 @@
     modelo: documentacionVehiculo.modelo || (inputVehiculoModelo ? inputVehiculoModelo.value : null),
     anio: documentacionVehiculo.anio || null,
     placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null),
-    color: documentacionVehiculo.color || null
+    color: documentacionVehiculo.color || null,
+    capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
+    pet_friendly: documentacionVehiculo.pet_friendly || false
   }]);
 
 if (errVehiculo) {
