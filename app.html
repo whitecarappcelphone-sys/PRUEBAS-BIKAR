@@ -1149,10 +1149,10 @@
     };
 
     const CATALOGO = [
-      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Económico y ágil · 1 pasajero',           base:2.50,  porKm:0.90, minTarifa:3.50,  espera:'2 min' },
-      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envíos de paquetes, comida y documentos',  base:3.20,  porKm:1.10, minTarifa:4.50,  espera:'3 min' },
-      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:4.50,  porKm:1.40, minTarifa:6.50,  espera:'4 min' },
-      { clave:'taxi_auto_6',   icono:'taxi_auto', etiqueta:'Taxi Auto 6 pasajeros', desc:'Auto amplio · hasta 6 pasajeros · tarifa +30%', base:4.50, porKm:1.40, minTarifa:6.50, recargo:1.30, espera:'5 min' },
+      { clave:'moto_taxi',     etiqueta:'BIKAR Moto',    desc:'Económico y ágil · 1 pasajero',           base:2.50,  porKm:0.90, minTarifa:3.50,  espera:'2 min' },
+      { clave:'moto_delivery', etiqueta:'BIKAR Envíos',  desc:'Envíos de paquetes, comida y documentos',  base:3.20,  porKm:1.10, minTarifa:4.50,  espera:'3 min' },
+      { clave:'taxi_auto',     etiqueta:'BIKAR Taxi',    desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:4.50,  porKm:1.40, minTarifa:6.50,  espera:'4 min' },
+      { clave:'taxi_auto_6',   icono:'taxi_auto', etiqueta:'BIKAR Taxi 6 pasajeros', desc:'Auto amplio · hasta 6 pasajeros · tarifa +30%', base:4.50, porKm:1.40, minTarifa:6.50, recargo:1.30, espera:'5 min' },
       { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga pesada y encomiendas',     base:16.00, porKm:2.80, minTarifa:20.00, espera:'8 min' }
     ];
 
@@ -2698,6 +2698,8 @@
         if (OCULTAS.includes(clave.toLowerCase())) return;
         // El campo "Disponible" no se muestra a los pasajeros
         if (!esCond && /^(disponible|disponibilidad|esta_disponible)$/i.test(clave)) return;
+        // El campo "Estado" (activo/inactivo) no se muestra en el perfil del conductor
+        if (esCond && /^(estado|estado_cuenta|estado_conductor)$/i.test(clave)) return;
         const valor = valorLegible(clave, u[clave]);
         if (valor === null) return;
         grid.appendChild(tarjetaDato(ETIQUETAS[clave] || tituloClave(clave), valor, i++));
