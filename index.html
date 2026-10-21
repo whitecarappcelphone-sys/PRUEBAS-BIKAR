@@ -232,7 +232,19 @@
       background-position:16px center,right 16px center;background-size:20px 20px,18px 18px}
     #doc-marca{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%234785A7'/%3E%3C/svg%3E")}
     #doc-anio{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
-    #doc-capacidad{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E")}
+    #doc-capacidad{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E")}
+    .pet-friendly-grupo{margin:2px 0 14px}
+    .pet-friendly-opciones{display:flex;gap:10px}
+    .btn-pet-friendly{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:12px 10px;border-radius:14px;
+      border:1px solid var(--field-border);background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:700;cursor:pointer;
+      transition:background .2s,border-color .2s,box-shadow .2s,color .2s,transform .2s}
+    .btn-pet-friendly svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .btn-pet-friendly:hover{border-color:var(--primary-color)}
+    .btn-pet-friendly:active{transform:scale(.98)}
+    .btn-pet-friendly.activo-si{background:rgba(46,204,113,.18);border-color:rgba(46,204,113,.70);color:#2ecc71;
+      box-shadow:0 0 0 3px rgba(46,204,113,.16),0 0 22px rgba(46,204,113,.20)}
+    .btn-pet-friendly.activo-no{background:rgba(231,76,60,.16);border-color:rgba(231,76,60,.68);color:#e74c3c;
+      box-shadow:0 0 0 3px rgba(231,76,60,.14),0 0 22px rgba(231,76,60,.18)}
     .btn-documentacion{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:14px;border:1px dashed rgba(71,133,167,.55);
       background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;
       transition:border-color .2s,box-shadow .2s,background .2s,transform .2s}
@@ -262,20 +274,6 @@
     .doc-quitar{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.06);color:var(--text-color);font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
     .doc-quitar:hover{background:rgba(231,76,60,.25);border-color:rgba(231,76,60,.60)}
-
-    /* ===== NUEVO: PET FRIENDLY (SÍ / NO) ===== */
-    .pet-friendly-group{margin:6px 0 12px 4px}
-    .pet-friendly-label{display:block;margin:0 0 8px 4px;font-size:.78rem;font-weight:600;color:var(--text-color)}
-    .pet-friendly-toggle{display:flex;gap:10px}
-    .pet-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 14px;border-radius:14px;
-      border:1px solid rgba(71,133,167,.45);background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:700;
-      cursor:pointer;transition:all .2s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-    .pet-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .pet-btn:hover{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.18)}
-    .pet-btn:active{transform:scale(.98)}
-    .pet-btn.pet-si.activo{background:rgba(46,204,113,.18);border-color:#2ecc71;color:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.22),0 0 22px rgba(46,204,113,.25)}
-    .pet-btn.pet-no.activo{background:rgba(231,76,60,.18);border-color:#e74c3c;color:#e74c3c;box-shadow:0 0 0 3px rgba(231,76,60,.22),0 0 22px rgba(231,76,60,.25)}
-
     #modal-instalar-pwa .panel-title::before {
       display: none !important;
     }
@@ -368,6 +366,17 @@
     .bikar-alerta-icono.icono-exito{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:#2ecc71}
     .bikar-alerta-icono svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
     .bikar-alerta-mensaje{color:var(--text-color);word-break:break-word}
+
+    /* MODAL POLÍTICAS PARA ENVÍOS Y CARGA */
+    @keyframes modalEnviosIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .modal-envios-overlay{position:fixed;inset:0;z-index:3400;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.52);animation:fadeIn .28s ease both}
+    .modal-envios-overlay.oculto{display:none!important}
+    .modal-envios-caja{position:relative;width:min(92vw,480px);height:min(74vh,680px);display:flex;flex-direction:column;background:var(--modal-box-bg);color:var(--text-color);border:1px solid var(--glass-border);border-radius:24px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 25px 60px rgba(0,0,0,.55),inset 0 1px 0 var(--glass-highlight);animation:modalEnviosIn .45s cubic-bezier(.2,.8,.2,1) both}
+    .modal-envios-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px 10px 16px;border-bottom:1px solid var(--glass-border);flex-shrink:0}
+    .modal-envios-top h3{font-size:.92rem;font-weight:800;color:var(--modal-box-title);text-align:left;line-height:1.25}
+    .modal-envios-x{width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg-strong);color:var(--text-color);font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:border-color .2s,color .2s,transform .2s}
+    .modal-envios-x:hover{border-color:var(--primary-color);color:var(--primary-color);transform:scale(1.04)}
+    .modal-envios-frame{flex:1;width:100%;min-height:0;border:0;background:#f8fafc}
   </style>
 </head>
 <body class="dark-mode">
@@ -602,8 +611,20 @@
         <input type="checkbox" id="check-politicas-modal">
         <span>Acepto todas estas políticas</span>
       </label>
+      <button type="button" id="btn-politicas-envios" class="btn-secondary">Políticas para envíos y carga</button>
       <button type="button" id="btn-aceptar-politicas-modal" class="btn-main">Confirmar y Aceptar</button>
       <button type="button" id="btn-cerrar-politicas-modal" class="btn-secondary">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- POLÍTICAS PARA ENVÍOS Y CARGA -->
+  <div id="modal-politicas-envios" class="modal-envios-overlay oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-politicas-envios">
+    <div class="modal-envios-caja">
+      <div class="modal-envios-top">
+        <h3 id="titulo-politicas-envios">Políticas para envíos y carga</h3>
+        <button type="button" id="btn-cerrar-politicas-envios" class="modal-envios-x" aria-label="Cerrar">✕</button>
+      </div>
+      <iframe id="frame-politicas-envios" class="modal-envios-frame" src="https://cazcadena-cmd.github.io/BIKAR-ENVIOS-POLITICAS/" title="Políticas de uso BIKAR Envíos y Taxi Carga" loading="lazy"></iframe>
     </div>
   </div>
 
@@ -629,20 +650,16 @@
       <div class="input-group"><input type="text" id="doc-anio" inputmode="numeric" maxlength="4" placeholder="Año del Vehículo (Ej: 2021)" required autocomplete="off"></div>
       <p class="doc-nota">Si el vehículo tiene más de 3 años deberás adjuntar la revisión técnica.</p>
       <div class="input-group"><input type="text" id="reg-placa" placeholder="Placa del Vehículo" required autocomplete="off"></div>
-
-      <!-- NUEVO: CAPACIDAD DE PASAJEROS -->
-      <div class="input-group"><input type="number" id="doc-capacidad" min="1" max="20" inputmode="numeric" placeholder="Capacidad de pasajeros (Ej: 4)" required autocomplete="off"></div>
-
-      <!-- NUEVO: PET FRIENDLY (SÍ / NO) -->
-      <div class="pet-friendly-group">
-        <span class="pet-friendly-label">¿Eres pet friendly?</span>
-        <div class="pet-friendly-toggle">
-          <button type="button" id="pet-si" class="pet-btn pet-si" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="8" cy="9" r="1.6"/><path d="M5 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M16.5 13c2.5.6 4 2.2 4 4.5"/></svg>
+      <div class="input-group"><input type="text" id="doc-capacidad" inputmode="numeric" maxlength="2" placeholder="Capacidad de pasajeros (Ej: 4)" required autocomplete="off"></div>
+      <div class="pet-friendly-grupo" id="bloque-pet-friendly">
+        <span class="doc-label">¿Eres pet friendly?</span>
+        <div class="pet-friendly-opciones" role="group" aria-label="¿Eres pet friendly?">
+          <button type="button" id="btn-pet-si" class="btn-pet-friendly" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.2" cy="8.2" r="1.7"/><circle cx="10.2" cy="5.2" r="1.7"/><circle cx="14.6" cy="5.6" r="1.7"/><circle cx="17.8" cy="9" r="1.7"/><path d="M8.1 13.4c.7-1.6 2.2-2.6 4-2.6s3.3 1 4 2.6c.8 1.8.2 3.9-1.5 4.9-1 .6-1.8.8-2.5.8s-1.5-.2-2.5-.8c-1.7-1-2.3-3.1-1.5-4.9z"/></svg>
             Sí
           </button>
-          <button type="button" id="pet-no" class="pet-btn pet-no" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <button type="button" id="btn-pet-no" class="btn-pet-friendly" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.2" cy="8.2" r="1.7"/><circle cx="10.2" cy="5.2" r="1.7"/><circle cx="14.6" cy="5.6" r="1.7"/><circle cx="17.8" cy="9" r="1.7"/><path d="M8.1 13.4c.7-1.6 2.2-2.6 4-2.6s3.3 1 4 2.6c.8 1.8.2 3.9-1.5 4.9-1 .6-1.8.8-2.5.8s-1.5-.2-2.5-.8c-1.7-1-2.3-3.1-1.5-4.9z"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
             No
           </button>
         </div>
@@ -1075,6 +1092,20 @@
     btnAbrirPoliticas.addEventListener('click', abrirModalPoliticas);
     btnCerrarPoliticasModal.addEventListener('click', cerrarModalPoliticas);
 
+    const modalPoliticasEnvios = $('modal-politicas-envios');
+    $('btn-politicas-envios').addEventListener('click', () => {
+      modalPoliticasEnvios.classList.remove('oculto');
+      const caja = modalPoliticasEnvios.querySelector('.modal-envios-caja');
+      if (caja) {
+        caja.style.animation = 'none';
+        void caja.offsetWidth;
+        caja.style.animation = '';
+      }
+    });
+    $('btn-cerrar-politicas-envios').addEventListener('click', () => {
+      modalPoliticasEnvios.classList.add('oculto');
+    });
+
     // Scroll indicator dentro del modal de políticas
     btnScrollAbajo.addEventListener('click', () => {
       scrollPoliticasBody.scrollTo({
@@ -1129,7 +1160,7 @@
     const docContador = $('doc-contador');
     const docAnio = $('doc-anio');
     const docItemRevision = $('doc-item-revision');
-    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null };
+    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null, capacidad_pasajeros: null };
 
     function requiereRevisionTecnica() {
       const anio = parseInt(docAnio.value, 10);
@@ -1173,6 +1204,22 @@
     btnDocumentacionVehiculo.addEventListener('click', abrirModalDocumentacion);
     $('btn-cancelar-documentacion').addEventListener('click', cerrarModalDocumentacion);
     docAnio.addEventListener('input', actualizarRevisionTecnica);
+
+    function aplicarEstadoPetFriendly(valor) {
+      documentacionVehiculo.pet_friendly = valor;
+      const btnSi = $('btn-pet-si');
+      const btnNo = $('btn-pet-no');
+      if (btnSi) {
+        btnSi.classList.toggle('activo-si', valor === true);
+        btnSi.setAttribute('aria-pressed', valor === true ? 'true' : 'false');
+      }
+      if (btnNo) {
+        btnNo.classList.toggle('activo-no', valor === false);
+        btnNo.setAttribute('aria-pressed', valor === false ? 'true' : 'false');
+      }
+    }
+    $('btn-pet-si').addEventListener('click', () => { aplicarEstadoPetFriendly(true); marcarDocumentacionPendiente(); });
+    $('btn-pet-no').addEventListener('click', () => { aplicarEstadoPetFriendly(false); marcarDocumentacionPendiente(); });
     formDocumentacion.addEventListener('input', marcarDocumentacionPendiente);
     formDocumentacion.addEventListener('change', marcarDocumentacionPendiente);
 
@@ -1242,19 +1289,6 @@
       item.querySelector('.doc-quitar').addEventListener('click', () => { limpiar(); marcarDocumentacionPendiente(); });
     });
 
-    /* ================= PET FRIENDLY (SÍ / NO) ================= */
-    const petSi = $('pet-si');
-    const petNo = $('pet-no');
-    function seleccionarPetFriendly(valor) {
-      documentacionVehiculo.pet_friendly = valor;
-      petSi.classList.toggle('activo', valor === true);
-      petNo.classList.toggle('activo', valor === false);
-      petSi.setAttribute('aria-pressed', valor === true ? 'true' : 'false');
-      petNo.setAttribute('aria-pressed', valor === false ? 'true' : 'false');
-    }
-    petSi.addEventListener('click', () => seleccionarPetFriendly(true));
-    petNo.addEventListener('click', () => seleccionarPetFriendly(false));
-
     formDocumentacion.addEventListener('submit', (e) => {
       e.preventDefault();
       const camposTexto = [
@@ -1272,12 +1306,10 @@
       const anio = parseInt(docAnio.value, 10);
       const anioActual = new Date().getFullYear();
       if (isNaN(anio) || anio < 1950 || anio > anioActual + 1) { mostrarAlerta('Ingresa un año de vehículo válido.', "error"); docAnio.focus(); return; }
-      const capacidad = parseInt($('doc-capacidad').value, 10);
-      if (isNaN(capacidad) || capacidad < 1 || capacidad > 20) { mostrarAlerta('Ingresa una capacidad de pasajeros válida (1-20).', "error"); $('doc-capacidad').focus(); return; }
-      if (documentacionVehiculo.pet_friendly === null || documentacionVehiculo.pet_friendly === undefined) {
-        mostrarAlerta('Indica si eres pet friendly (Sí o No).', "error");
-        return;
-      }
+      const capacidadTxt = $('doc-capacidad').value.trim();
+      const capacidad = parseInt(capacidadTxt, 10);
+      if (!/^\d+$/.test(capacidadTxt) || capacidad < 1 || capacidad > 99) { mostrarAlerta('Ingresa la capacidad de pasajeros.', "error"); $('doc-capacidad').focus(); return; }
+      if (documentacionVehiculo.pet_friendly !== true && documentacionVehiculo.pet_friendly !== false) { mostrarAlerta('Indica si eres pet friendly.', "error"); return; }
       for (const [clave, nombre] of listaDocumentosRequeridos()) {
         if (!documentacionVehiculo.archivos[clave]) {
           mostrarAlerta(`Falta adjuntar: ${nombre}.`, "error");
@@ -1326,7 +1358,7 @@
         anio: documentacionVehiculo.anio || null,
         placa: documentacionVehiculo.placa || null,
         capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
-        pet_friendly: documentacionVehiculo.pet_friendly || false,
+        pet_friendly: documentacionVehiculo.pet_friendly === true,
         requiere_revision_tecnica: !!documentacionVehiculo.requiere_revision_tecnica,
         dni_ce: urlsDocumentos.dni_ce || null,
         antecedente_policial: urlsDocumentos.antecedente_policial || null,
@@ -1383,6 +1415,21 @@
           const { data: cond } = await supabaseClient
             .from('conductores').select('id').eq('usuario_id', usuario.id || usuario.Id).limit(1);
           if (cond && cond.length > 0) usuario.conductor_id = cond[0].id;
+        }
+
+        if (usuario.tipo_usuario === 'conductor' && usuario.conductor_id) {
+          try {
+            const { data: vehs, error: errVehLogin } = await supabaseClient
+              .from('vehiculos')
+              .select('tipo_servicio, capacidad_pasajeros, pet_friendly')
+              .eq('conductor_id', usuario.conductor_id)
+              .limit(1);
+            if (!errVehLogin && vehs && vehs.length > 0) {
+              usuario.tipo_servicio = vehs[0].tipo_servicio;
+              usuario.capacidad_pasajeros = vehs[0].capacidad_pasajeros;
+              usuario.pet_friendly = vehs[0].pet_friendly;
+            }
+          } catch (errVehSesion) { console.warn("No se pudo adjuntar el vehículo a la sesión:", errVehSesion); }
         }
 
         usuarioActual = usuario;
@@ -1534,7 +1581,7 @@
     placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null),
     color: documentacionVehiculo.color || null,
     capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
-    pet_friendly: documentacionVehiculo.pet_friendly || false
+    pet_friendly: documentacionVehiculo.pet_friendly === true
   }]);
 
 if (errVehiculo) {
@@ -1545,6 +1592,9 @@ if (errVehiculo) {
         } else if (errCond) {
           console.warn("No se pudo guardar en la tabla 'conductores':", errCond.message);
         }
+        usuarioCreado.tipo_servicio = documentacionVehiculo.tipo_servicio || null;
+        usuarioCreado.capacidad_pasajeros = documentacionVehiculo.capacidad_pasajeros || null;
+        usuarioCreado.pet_friendly = documentacionVehiculo.pet_friendly === true;
       }
 
       usuarioActual = usuarioCreado;
