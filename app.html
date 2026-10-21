@@ -103,6 +103,11 @@
     .btn-theme-toggle:hover svg{transform:rotate(-20deg) scale(1.08)}
     /* BOTÓN ESTRELLA (debajo del botón de tema, mismas características) */
     .btn-theme-toggle.btn-star{top:calc(70px + env(safe-area-inset-top))}
+    /* BOTÓN MI UBICACIÓN (debajo de la estrella; para el conductor queda debajo del botón Activo/Inactivo) */
+    .btn-theme-toggle.btn-locate{top:calc(124px + env(safe-area-inset-top))}
+    .btn-theme-toggle.btn-locate.buscando svg{animation:spinRadar 1s linear infinite}
+    .btn-theme-toggle.btn-locate:hover svg{transform:scale(1.1)}
+    .btn-theme-toggle.btn-locate.buscando:hover svg{transform:none}
 
     /* BOTÓN ESTADO CONDUCTOR (ACTIVO / INACTIVO) */
     .btn-conductor-estado{position:absolute;top:calc(70px + env(safe-area-inset-top));right:16px;z-index:3000;
@@ -777,6 +782,15 @@
   <button id="btn-estrella" class="btn-theme-toggle btn-star oculto" title="Mis lugares guardados" aria-label="Mis lugares guardados" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  </button>
+
+  <!-- BOTÓN MI UBICACIÓN: CENTRA EL MAPA EN LA UBICACIÓN ACTUAL (PASAJERO Y CONDUCTOR) -->
+  <button id="btn-ubicacion" class="btn-theme-toggle btn-locate oculto" title="Centrar en mi ubicación" aria-label="Centrar en mi ubicación" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <circle cx="12" cy="12" r="8"/>
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
     </svg>
   </button>
 
@@ -2461,6 +2475,7 @@
       }
       fotoHeader.src = fotoDeUsuario(usuario);
       perfilSuperior.classList.remove('oculto');
+      $('btn-ubicacion').classList.remove('oculto'); // Botón "mi ubicación": pasajero y conductor
 
       // El rol se define directamente por su perfil
       if (usuario.tipo_usuario === 'conductor') {
@@ -3380,6 +3395,29 @@
       modalEstrella.classList.remove('oculto');
     }
     btnEstrella.addEventListener('click', abrirModalEstrella);
+
+    /* ============================ BOTÓN MI UBICACIÓN (PASAJERO Y CONDUCTOR) ============================
+       Solo centra el mapa en la ubicación GPS actual; no cambia el punto de partida ni el destino.
+    ======================================================================================== */
+    const btnUbicacion = $('btn-ubicacion');
+    btnUbicacion.addEventListener('click', () => {
+      if (!map) { mostrarToast('El mapa aún está cargando, intenta de nuevo', '!'); return; }
+      if (!('geolocation' in navigator)) { mostrarToast('Tu navegador no soporta GPS', '!'); return; }
+      if (btnUbicacion.classList.contains('buscando')) return;
+      btnUbicacion.classList.add('buscando');
+      navigator.geolocation.getCurrentPosition((pos) => {
+        btnUbicacion.classList.remove('buscando');
+        const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        map.panTo(coords);
+        if (map.getZoom() < 16) map.setZoom(16);
+        mostrarToast('Mapa centrado en tu ubicación');
+      }, (err) => {
+        btnUbicacion.classList.remove('buscando');
+        mostrarToast(err && err.code === 1
+          ? 'Permite el acceso a tu ubicación en el navegador'
+          : 'No se pudo obtener tu ubicación', '!');
+      }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 });
+    });
     $('btn-lugar-casa').addEventListener('click', () => guardarLugarComo('Mi casa'));
     $('btn-lugar-trabajo').addEventListener('click', () => guardarLugarComo('Mi trabajo'));
     $('btn-lugar-nuevo').addEventListener('click', () => { if (guardarLugarComo($('lugares-nombre-nuevo').value)) $('lugares-nombre-nuevo').value = ''; });
