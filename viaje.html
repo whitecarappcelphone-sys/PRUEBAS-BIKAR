@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0d1117">
+  <meta name="theme-color" content="#121212">
   <title>BIKAR · Estado del Viaje</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,20 +11,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
-      --bg-color:#f4f6f9; --card-bg:#ffffff; --text-color:#1f2937; --muted-text:#6b7280;
-      --primary-color:#134989; --primary-hover:#275c98; --brand:#4785A7; --border-color:#e5e7eb;
-      --accent-green:#10b981; --accent-amber:#f59e0b; --accent-blue:#3b82f6; --accent-red:#ef4444;
-      --field-bg:rgba(19,73,137,.05);
+      --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#1f2937; --muted-text:#6b7280;
+      --primary-color:#4785A8; --primary-hover:#4785A8; --brand:#4785A8; --border-color:#e5e7eb;
+      --accent-green:#4785A8; --accent-amber:#f59e0b; --accent-blue:#4785A8; --accent-red:#ef4444;
+      --field-bg:rgba(71,133,168,.05);
       --shadow:0 10px 30px -5px rgba(0,0,0,.08); --radius:18px;
     }
     body.dark-theme{
-      --bg-color:#0d1117; --card-bg:#161b22; --text-color:#f0f6fc; --muted-text:#8b949e;
-      --border-color:#30363d; --field-bg:rgba(71,133,167,.12);
+      --bg-color:#121212; --card-bg:#1e1e1e; --text-color:#f0f6fc; --muted-text:#8b949e;
+      --border-color:#30363d; --field-bg:rgba(71,133,168,.12);
       --shadow:0 10px 30px -5px rgba(0,0,0,.5);
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
     body{background:var(--bg-color);color:var(--text-color);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased}
-
     header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--card-bg);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:10}
     .brand{font-size:1.2rem;font-weight:800;color:var(--primary-color);display:flex;align-items:center;gap:8px;text-decoration:none}
     .brand small{display:block;font-size:.55rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--brand)}
@@ -32,19 +31,17 @@
     .btn-icon{background:transparent;border:1px solid var(--border-color);color:var(--text-color);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:all .2s}
     .btn-icon:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
     .btn-icon svg{width:18px;height:18px}
-
     main{flex:1;max-width:600px;width:100%;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:16px}
     .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow);position:relative;overflow:hidden}
     .card > *:not(.sonar-luxury), .status-card > *:not(.sonar-luxury){position:relative;z-index:1}
     .card-title{font-size:.8rem;text-transform:uppercase;color:var(--muted-text);font-weight:700;letter-spacing:.5px;margin-bottom:14px}
-
     /* ESTADO */
     .status-card{text-align:center}
     .status-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
     .status-badge.solicitado{background:rgba(245,158,11,.15);color:var(--accent-amber)}
-    .status-badge.aceptado{background:rgba(59,130,246,.15);color:var(--accent-blue)}
-    .status-badge.en_camino,.status-badge.en_progreso{background:rgba(19,73,137,.15);color:var(--primary-color)}
-    .status-badge.terminado{background:rgba(16,185,129,.15);color:var(--accent-green)}
+    .status-badge.aceptado{background:rgba(71,133,168,.15);color:var(--accent-blue)}
+    .status-badge.en_camino,.status-badge.en_progreso{background:rgba(71,133,168,.15);color:var(--primary-color)}
+    .status-badge.terminado{background:rgba(71,133,168,.15);color:var(--accent-green)}
     .status-badge.cancelado{background:rgba(239,68,68,.15);color:var(--accent-red)}
     /* [AJUSTE 3] En modo oscuro el badge "en progreso" va en blanco */
     body.dark-theme .status-badge.en_progreso{background:rgba(255,255,255,.14);color:#ffffff}
@@ -54,7 +51,6 @@
     /* [AJUSTE 2] Descripción de estado con trazo más grueso para que resalte */
     .status-desc{font-size:.875rem;color:#000000;margin-top:6px;line-height:1.45;font-weight:700;letter-spacing:-.005em}
     body.dark-theme .status-desc{color:#ffffff}
-
     .stepper{display:flex;justify-content:space-between;position:relative;margin:22px 0 4px}
     .stepper::before{content:'';position:absolute;top:14px;left:12%;right:12%;height:2px;background:var(--border-color);z-index:1}
     .step{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;width:25%}
@@ -63,7 +59,6 @@
     .step.completed .step-icon{border-color:var(--accent-green);background:var(--accent-green);color:#fff}
     .step-text{font-size:.66rem;color:var(--muted-text);font-weight:700;text-align:center;line-height:1.2}
     .step.active .step-text,.step.completed .step-text{color:var(--text-color)}
-
     /* Ring ring en los estados */
     .step.active .step-icon{animation:ringShake 1.6s ease-in-out infinite}
     .step.active .step-icon::before,.step.active .step-icon::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--primary-color);animation:ringWave 1.6s ease-out infinite;pointer-events:none}
@@ -71,7 +66,6 @@
     .step.completed .step-icon::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--accent-green);animation:ringWave 2.4s ease-out infinite;pointer-events:none}
     @keyframes ringWave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.1);opacity:0}}
     @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
-
     /* ============================================================
        [MODIFICACIÓN 1] ANIMACIÓN DE FONDO "BIKAR FLOW"
        (ÚNICAMENTE EN EL FONDO DE LA TARJETA DE ESTADO DEL VIAJE)
@@ -80,50 +74,46 @@
        ============================================================ */
     .sonar-luxury{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
     .sonar-luxury.on{display:block}
-
     /* Capa 1 · Aurora de profundidad */
     .fx-aurora{position:absolute;inset:-32%;filter:blur(40px);opacity:.9}
     .fx-blob{position:absolute;display:block;border-radius:50%;will-change:transform}
     .fx-blob.b1{width:58%;height:72%;left:-10%;top:-12%;
-      background:radial-gradient(circle at 50% 50%,rgba(71,133,167,.40),rgba(71,133,167,0) 70%);
+      background:radial-gradient(circle at 50% 50%,rgba(71,133,168,.40),rgba(71,133,168,0) 70%);
       animation:fxBlob1 18s ease-in-out infinite alternate}
     .fx-blob.b2{width:64%;height:80%;right:-14%;top:2%;
-      background:radial-gradient(circle at 50% 50%,rgba(19,73,137,.34),rgba(19,73,137,0) 70%);
+      background:radial-gradient(circle at 50% 50%,rgba(71,133,168,.34),rgba(71,133,168,0) 70%);
       animation:fxBlob2 23s ease-in-out infinite alternate}
     .fx-blob.b3{width:50%;height:62%;left:24%;bottom:-26%;
-      background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.26),rgba(96,165,250,0) 70%);
+      background:radial-gradient(circle at 50% 50%,rgba(71,133,168,.26),rgba(71,133,168,0) 70%);
       animation:fxBlob3 27s ease-in-out infinite alternate}
     @keyframes fxBlob1{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(13%,7%,0) scale(1.18)}}
     @keyframes fxBlob2{0%{transform:translate3d(0,4%,0) scale(1.08)}100%{transform:translate3d(-12%,-7%,0) scale(.92)}}
     @keyframes fxBlob3{0%{transform:translate3d(-7%,0,0) scale(.94)}100%{transform:translate3d(9%,-11%,0) scale(1.2)}}
-
     /* Capa 2 · Malla de puntos con deriva (parallax) */
     .fx-grid{position:absolute;inset:-40px;opacity:.6;
-      background-image:radial-gradient(rgba(19,73,137,.22) 1px,transparent 1.5px);
+      background-image:radial-gradient(rgba(71,133,168,.22) 1px,transparent 1.5px);
       background-size:22px 22px;
       -webkit-mask-image:radial-gradient(125% 95% at 50% 32%,#000 12%,transparent 78%);
       mask-image:radial-gradient(125% 95% at 50% 32%,#000 12%,transparent 78%);
       animation:fxGridDrift 22s linear infinite}
     @keyframes fxGridDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-22px,-22px,0)}}
-
     /* Capa 3 · Ruta viva + vehículo de luz */
     .fx-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-    .fx-route-base{fill:none;stroke:rgba(71,133,167,.20);stroke-width:2.4;stroke-linecap:round;vector-effect:non-scaling-stroke}
+    .fx-route-base{fill:none;stroke:rgba(71,133,168,.20);stroke-width:2.4;stroke-linecap:round;vector-effect:non-scaling-stroke}
     .fx-route-dash{fill:none;stroke:url(#bkRouteGrad);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:14 18;
       vector-effect:non-scaling-stroke;animation:fxDash 2.4s linear infinite}
     @keyframes fxDash{to{stroke-dashoffset:-32}}
-    .fx-node{fill:none;stroke:rgba(71,133,167,.55);stroke-width:1.6;vector-effect:non-scaling-stroke;
+    .fx-node{fill:none;stroke:rgba(71,133,168,.55);stroke-width:1.6;vector-effect:non-scaling-stroke;
       transform-box:fill-box;transform-origin:center;animation:fxNode 3.4s ease-out infinite}
     .fx-node.n2{animation-delay:1.15s}
     @keyframes fxNode{0%{transform:scale(.35);opacity:.9}65%{opacity:.2}100%{transform:scale(2.6);opacity:0}}
-    .fx-node-dot{fill:rgba(71,133,167,.75)}
-    .fx-comet{fill:#eaf7ff}
-    .fx-comet-tail{fill:rgba(125,196,232,.45)}
-    .fx-comet-tail2{fill:rgba(125,196,232,.20)}
-
+    .fx-node-dot{fill:rgba(71,133,168,.75)}
+    .fx-comet{fill:#e6f2f8}
+    .fx-comet-tail{fill:rgba(71,133,168,.45)}
+    .fx-comet-tail2{fill:rgba(71,133,168,.20)}
     /* Capa 4 · Destello especular */
     .fx-sweep{position:absolute;top:-70%;left:-45%;width:38%;height:240%;
-      background:linear-gradient(90deg,transparent,rgba(71,133,167,.14),transparent);
+      background:linear-gradient(90deg,transparent,rgba(71,133,168,.14),transparent);
       animation:fxSweep 8s ease-in-out infinite}
     @keyframes fxSweep{
       0%{transform:translateX(-20%) rotate(18deg);opacity:0}
@@ -131,11 +121,10 @@
       48%{opacity:.85}
       62%{transform:translateX(330%) rotate(18deg);opacity:0}
       100%{transform:translateX(330%) rotate(18deg);opacity:0}}
-
     /* Capa 5 · Micropartículas ascendentes */
     .fx-dust{position:absolute;inset:0}
     .fx-dust i{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;opacity:0;
-      background:rgba(71,133,167,.65);box-shadow:0 0 7px rgba(71,133,167,.55);
+      background:rgba(71,133,168,.65);box-shadow:0 0 7px rgba(71,133,168,.55);
       animation:fxDust 13s linear infinite;will-change:transform,opacity}
     .fx-dust i:nth-child(1){left:11%;animation-delay:0s;animation-duration:12s}
     .fx-dust i:nth-child(2){left:27%;animation-delay:2.6s;animation-duration:15s}
@@ -148,25 +137,45 @@
       14%{opacity:.85}
       78%{opacity:.45}
       100%{transform:translate3d(10px,-250px,0) scale(1.15);opacity:0}}
-
     /* Ajustes en modo oscuro */
-    body.dark-theme .fx-blob.b1{background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.34),rgba(96,165,250,0) 70%)}
-    body.dark-theme .fx-blob.b2{background:radial-gradient(circle at 50% 50%,rgba(71,133,167,.34),rgba(71,133,167,0) 70%)}
-    body.dark-theme .fx-blob.b3{background:radial-gradient(circle at 50% 50%,rgba(59,130,246,.26),rgba(59,130,246,0) 70%)}
-    body.dark-theme .fx-grid{background-image:radial-gradient(rgba(96,165,250,.26) 1px,transparent 1.5px);opacity:.55}
-    body.dark-theme .fx-route-base{stroke:rgba(96,165,250,.22)}
-    body.dark-theme .fx-node{stroke:rgba(96,165,250,.6)}
-    body.dark-theme .fx-node-dot{fill:rgba(147,197,253,.85)}
-    body.dark-theme .fx-comet-tail{fill:rgba(147,197,253,.5)}
-    body.dark-theme .fx-comet-tail2{fill:rgba(147,197,253,.22)}
+    body.dark-theme .fx-blob.b1{background:radial-gradient(circle at 50% 50%,rgba(71,133,168,.34),rgba(71,133,168,0) 70%)}
+    body.dark-theme .fx-blob.b2{background:radial-gradient(circle at 50% 50%,rgba(71,133,168,.34),rgba(71,133,168,0) 70%)}
+    body.dark-theme .fx-blob.b3{background:radial-gradient(circle at 50% 50%,rgba(71,133,168,.26),rgba(71,133,168,0) 70%)}
+    body.dark-theme .fx-grid{background-image:radial-gradient(rgba(71,133,168,.26) 1px,transparent 1.5px);opacity:.55}
+    body.dark-theme .fx-route-base{stroke:rgba(71,133,168,.22)}
+    body.dark-theme .fx-node{stroke:rgba(71,133,168,.6)}
+    body.dark-theme .fx-node-dot{fill:rgba(71,133,168,.85)}
+    body.dark-theme .fx-comet-tail{fill:rgba(71,133,168,.5)}
+    body.dark-theme .fx-comet-tail2{fill:rgba(71,133,168,.22)}
     body.dark-theme .fx-sweep{background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
-    body.dark-theme .fx-dust i{background:rgba(147,197,253,.75);box-shadow:0 0 8px rgba(96,165,250,.6)}
-
+    body.dark-theme .fx-dust i{background:rgba(71,133,168,.75);box-shadow:0 0 8px rgba(71,133,168,.6)}
     @media (prefers-reduced-motion:reduce){
       .fx-blob,.fx-grid,.fx-route-dash,.fx-node,.fx-sweep,.fx-dust i{animation:none}
       .fx-sweep{opacity:0}
     }
-
+    /* MÉTODO DE PAGO DEL VIAJE (efectivo o billetera digital del conductor) */
+    .pago-metodo{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;background:var(--field-bg);color:var(--primary-color);font-weight:800;font-size:.84rem;margin-bottom:10px}
+    .pago-metodo svg{width:16px;height:16px}
+    .pago-nota{font-size:.8rem;color:var(--muted-text);line-height:1.45;font-weight:600}
+    .pago-nota b{color:var(--text-color)}
+    .pago-billetera{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color);margin-bottom:10px}
+    .pago-billetera-datos{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .pago-billetera-nombre{font-size:.95rem;font-weight:800}
+    .pago-billetera-numero{font-size:1.05rem;font-weight:800;letter-spacing:.06em;color:var(--primary-color);word-break:break-all;background:none;border:0;padding:0;margin:0;cursor:pointer;text-align:left;font-family:inherit}
+    .pago-billetera-numero small{margin-left:6px;padding:2px 7px;border-radius:999px;border:1px solid var(--border-color);font-size:.58rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-text);vertical-align:middle}
+    .pago-billetera-numero:active{opacity:.7}
+    .pago-acepta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px}
+    .pago-acepta-label{font-size:.74rem;font-weight:700;color:var(--muted-text)}
+    .pago-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;background:var(--field-bg);border:1px solid var(--border-color);font-size:.72rem;font-weight:800;color:var(--text-color)}
+    .pago-chip svg{width:13px;height:13px;color:var(--primary-color)}
+    #pago-cuerpo .pago-billetera{margin-bottom:8px}
+    .pago-copiar{align-self:flex-start;margin-top:4px;padding:6px 10px;border-radius:9px;border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-color);font-size:.72rem;font-weight:700;cursor:pointer}
+    .pago-copiar:hover{border-color:var(--primary-color)}
+    .pago-qr-mini{flex-shrink:0;width:78px;height:78px;padding:4px;border-radius:12px;border:1px solid var(--border-color);background:#fff;cursor:pointer}
+    .pago-qr-mini img{width:100%;height:100%;object-fit:contain;display:block}
+    .qr-pago-marco{margin:12px auto;padding:12px;border-radius:16px;background:#fff;max-width:300px}
+    .qr-pago-marco img{width:100%;height:auto;display:block}
+    .qr-pago-titulo{font-size:.9rem;font-weight:800;margin-bottom:12px;color:var(--primary-color);word-break:break-word}
     /* PERFIL DE LA CONTRAPARTE */
     .profile-box{display:flex;align-items:center;gap:14px}
     .profile-img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color);background:var(--field-bg);flex-shrink:0}
@@ -175,7 +184,6 @@
     .profile-sub{font-size:.8rem;color:var(--muted-text);line-height:1.3}
     .profile-sub:empty{display:none}
     .profile-extra{margin-top:5px;display:flex;flex-direction:column;gap:6px;width:100%}
-
     .conductor-tags-top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
     .vehicle-tag,.mini-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--field-bg);color:var(--primary-color);border-radius:9px;font-weight:700;font-size:.74rem}
     .vehicle-tag svg,.mini-tag svg{width:13px;height:13px;flex-shrink:0}
@@ -183,7 +191,6 @@
     .mini-tag.placa-tag{border:1px dashed var(--primary-color);color:var(--primary-color)}
     .mini-tag.rating-tag{color:var(--accent-amber)}
     .placa{letter-spacing:1px;text-transform:uppercase;font-weight:800}
-
     /* [MODIFICACIÓN 4] PLACA CON FOTO REAL DEL VEHÍCULO Y CALIFICACIÓN DEBAJO */
     .vehiculo-placa-bloque{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:2px}
     .placa-foto-fila{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
@@ -196,7 +203,6 @@
     .vehiculo-mini-img{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);background:var(--card-bg)}
     .vehiculo-thumb-txt{font-size:.72rem;font-weight:700}
     .calificacion-debajo-placa{display:flex;align-items:center;gap:6px;margin-top:1px}
-
     /* [AJUSTE] EN MODO OSCURO: TIPO DE SERVICIO, MARCA/MODELO, PLACA Y FOTO DEL VEHÍCULO EN NEGRO */
     body.dark-theme #card-persona .vehicle-tag,
     body.dark-theme #card-persona .mini-tag.placa-tag,
@@ -215,7 +221,6 @@
     }
     body.dark-theme #card-persona .mini-tag.placa-tag{border:1px dashed #000000}
     body.dark-theme #card-persona .vehiculo-thumb-chip:hover{border-color:#000000}
-
     /* [MODIFICACIÓN 3 Y 7] BOTONES DE CONTACTO (CHAT Y LLAMADA APP ÚNICAMENTE) */
     .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
     .btn-contacto{
@@ -226,7 +231,6 @@
     .btn-contacto:hover{transform:translateY(-1px);border-color:var(--primary-color)}
     .btn-contacto svg{width:16px;height:16px}
     .badge-chat{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-red);color:#fff;font-size:.65rem;display:none;place-items:center}
-
     /* [MODIFICACIÓN 3] ANIMACIÓN RING RING MUY TENUE EN LOS ICONOS DE CHAT Y LLAMAR POR APP */
     #btn-chat-app svg, #btn-llamada-app svg{
       animation:ringRingTenue 3.2s ease-in-out infinite;
@@ -243,7 +247,6 @@
       88%{transform:rotate(2deg)}
       92%{transform:rotate(0) scale(1)}
     }
-
     /* [MODIFICACIÓN 7] EN MODO OSCURO, TEXTO E ICONOS DE CHAT Y LLAMAR POR APP CAMBIAN A BLANCO */
     body.dark-theme #btn-chat-app,
     body.dark-theme #btn-llamada-app,
@@ -265,7 +268,6 @@
       border-color:#ffffff;
       background:rgba(255,255,255,.16);
     }
-
     /* RUTA */
     .route-box{display:flex;flex-direction:column;gap:12px}
     .route-point{display:flex;align-items:flex-start;gap:12px}
@@ -283,9 +285,8 @@
     .kpi-tarifa .kpi-valor{font-size:1.2rem;color:var(--primary-color);font-weight:800}
     .servicio-linea{display:inline-flex;align-items:center;gap:6px}
     .servicio-linea svg{width:15px;height:15px;color:var(--brand)}
-
     /* ACCIONES */
-    .btn-action{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(90deg,#134989,#4785A7);color:#fff;
+    .btn-action{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(90deg,#4785A8,#4785A8);color:#fff;
       font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s,transform .1s,opacity .2s;text-decoration:none}
     .btn-action:hover{filter:brightness(1.08)}
     .btn-action:active{transform:scale(.985)}
@@ -295,18 +296,14 @@
     .btn-secundario{background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color)}
     .zona-acciones{display:flex;flex-direction:column;gap:8px}
     .zona-acciones > * + *{margin-top:8px}
-
     .aviso{padding:12px 14px;border-radius:12px;font-size:.78rem;font-weight:600;line-height:1.45;color:var(--muted-text);
       background:var(--field-bg);border:1px dashed var(--border-color)}
     .aviso b{color:var(--primary-color)}
-
     .skeleton{display:inline-block;border-radius:6px;background:var(--field-bg);animation:shimmer 1.4s infinite linear;background-size:200% 100%}
     @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#1f2937;color:#fff;
       padding:12px 24px;border-radius:30px;font-size:.88rem;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.25);transition:transform .3s ease;z-index:300;max-width:88vw;text-align:center}
     .toast.visible{transform:translateX(-50%) translateY(0)}
-
     /* MODALES */
     .modal{position:fixed;inset:0;z-index:150;display:none;align-items:flex-end;justify-content:center;padding:16px;background:rgba(5,10,20,.55);backdrop-filter:blur(4px)}
     .modal.open{display:flex;animation:fadeIn .25s ease}
@@ -340,7 +337,6 @@
     .pin-inputs input:focus{border-color:var(--primary-color)}
     .pin-inputs.error input{border-color:var(--accent-red);animation:shake .4s}
     @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
     /* TARJETA PIN COMPACTA */
     #card-pin{padding:14px 16px}
     #card-pin .card-title{margin-bottom:10px;display:flex;align-items:center;gap:7px}
@@ -357,7 +353,6 @@
     .pin-msg{font-size:.75rem;font-weight:700;color:var(--muted-text);text-align:center;min-height:15px;line-height:1.35}
     .pin-msg.ok{color:var(--accent-green)}
     .pin-msg.err{color:var(--accent-red)}
-
     .estrellas{display:flex;justify-content:center;gap:8px;margin:10px 0 14px}
     .estrellas button{background:none;border:none;cursor:pointer;color:var(--border-color);transition:transform .15s,color .15s}
     .estrellas button svg{width:40px;height:40px}
@@ -367,7 +362,6 @@
     .nav-app{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1px solid var(--border-color);background:var(--field-bg);color:var(--text-color);text-decoration:none;font-weight:700}
     .nav-app:hover{border-color:var(--primary-color)}
     .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
-
     /* [MODIFICACIÓN 2] MODAL DE FOTO DEL VEHÍCULO: TEXTOS EN BLANCO EN MODO OSCURO */
     body.dark-theme #modal-foto-vehiculo .modal-box,
     body.dark-theme #modal-foto-vehiculo .modal-title,
@@ -388,11 +382,10 @@
       background:rgba(255,255,255,.16);border-color:#ffffff;
     }
     body.dark-theme #modal-foto-vehiculo svg{color:#ffffff !important;stroke:#ffffff !important}
-
     /* Chat */
     .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
     .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:.86rem;line-height:1.35;word-break:break-word}
-    .msg.mio{align-self:flex-end;background:linear-gradient(90deg,#134989,#4785A7);color:#fff;border-bottom-right-radius:4px}
+    .msg.mio{align-self:flex-end;background:linear-gradient(90deg,#4785A8,#4785A8);color:#fff;border-bottom-right-radius:4px}
     .msg.otro{align-self:flex-start;background:var(--card-bg);border:1px solid var(--border-color);border-bottom-left-radius:4px}
     .msg small{display:block;font-size:.62rem;opacity:.7;margin-top:3px}
     .chat-form{display:flex;gap:8px;margin-top:10px}
@@ -400,11 +393,52 @@
     .chat-form button svg{width:18px;height:18px}
     .llamada-estado{text-align:center;font-weight:800;font-size:1rem;margin-bottom:4px}
     .llamada-tiempo{text-align:center;color:var(--muted-text);font-size:.85rem;margin-bottom:10px}
+    /* DETALLE DEL ENVÍO (BIKAR ENVÍOS) */
+    .envio-detalle-box{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .envio-detalle-fila{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px solid var(--border-color)}
+    .envio-detalle-etiqueta{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color)}
+    .envio-detalle-valor{font-size:.86rem;font-weight:700;line-height:1.4;word-break:break-word}
+    .envio-seguridad{display:flex;gap:9px;padding:11px;border-radius:12px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4)}
+    .envio-seguridad svg{flex-shrink:0;width:18px;height:18px;color:#f59e0b;margin-top:1px}
+    .envio-seguridad b{display:block;font-size:.74rem;color:#f59e0b;margin-bottom:3px}
+    .envio-seguridad span{display:block;font-size:.69rem;line-height:1.45;color:var(--text-color)}
+    /* PARADAS Y BENEFICIOS */
+    .paradas-viaje-lista{display:flex;flex-direction:column;gap:7px;margin:2px 0 2px}
+    .parada-linea{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:11px;
+      background:var(--field-bg);border:1px dashed rgba(214,139,31,.5)}
+    .parada-txt .parada-map{display:inline-flex;align-items:center;gap:4px;margin-top:4px;
+      font-size:.66rem;font-weight:800;color:var(--primary-color);text-decoration:none}
+    .parada-txt .parada-map:hover{text-decoration:underline}
+    .parada-linea .parada-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+      font-size:.6rem;font-weight:800;color:#fff;background:#d68b1f}
+    .parada-linea .parada-txt{flex:1;min-width:0;font-size:.78rem;font-weight:700;line-height:1.35;word-break:break-word}
+    .parada-linea .parada-txt small{display:block;margin-top:1px;font-size:.62rem;font-weight:600;color:var(--muted-text)}
+    .beneficios-viaje{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+    .beneficio-viaje{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;
+      background:var(--field-bg);border:1px solid var(--border-color);font-size:.63rem;font-weight:700;color:var(--text-color)}
+    .beneficio-viaje svg{width:11px;height:11px;color:var(--primary-color);flex-shrink:0}
+    /* AVISO DE PEAJE */
+    .peaje-aviso{padding:12px;border-radius:14px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.45);
+      display:flex;gap:9px;align-items:flex-start}
+    .peaje-aviso svg{flex-shrink:0;width:18px;height:18px;color:#f59e0b;margin-top:1px}
+    .peaje-aviso b{display:block;font-size:.8rem;color:#f59e0b;margin-bottom:3px}
+    .peaje-aviso span{display:block;font-size:.73rem;line-height:1.45;color:var(--text-color)}
+    /* MAPA EN VIVO DENTRO DEL ESTADO */
+    .mapa-viaje{position:relative;height:210px;margin-top:16px;border-radius:16px;overflow:hidden;
+      border:1px solid var(--border-color);background:var(--field-bg);z-index:1;animation:fadeIn .35s ease both}
+    .mapa-viaje.oculto{display:none!important}
+    .mapa-viaje-info{position:absolute;left:9px;top:9px;z-index:2;display:inline-flex;align-items:center;gap:6px;
+      padding:5px 10px;border-radius:999px;background:var(--card-bg);border:1px solid var(--border-color);
+      font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--primary-color);
+      box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    .mapa-viaje-info .punto-live{width:7px;height:7px;border-radius:50%;background:var(--primary-color);animation:pulse 1.4s infinite}
+    .mapa-viaje-cargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      font-size:.76rem;font-weight:700;color:var(--muted-text);background:var(--field-bg);z-index:2
+    }
     @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
 <body>
-
   <header>
     <a href="#" id="btn-volver" class="brand">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -420,7 +454,6 @@
       </button>
     </div>
   </header>
-
   <main>
     <!-- ESTADO -->
     <section class="status-card" id="card-status">
@@ -435,25 +468,22 @@
         <svg class="fx-route" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice" focusable="false">
           <defs>
             <linearGradient id="bkRouteGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#4785A7" stop-opacity="0"/>
-              <stop offset="26%" stop-color="#4785A7" stop-opacity=".85"/>
-              <stop offset="60%" stop-color="#60a5fa" stop-opacity=".9"/>
-              <stop offset="100%" stop-color="#134989" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#4785A8" stop-opacity="0"/>
+              <stop offset="26%" stop-color="#4785A8" stop-opacity=".85"/>
+              <stop offset="60%" stop-color="#4785A8" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#4785A8" stop-opacity="0"/>
             </linearGradient>
             <filter id="bkGlow" x="-150%" y="-150%" width="400%" height="400%">
               <feGaussianBlur stdDeviation="4.5" result="bkBlur"/>
               <feMerge><feMergeNode in="bkBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-
           <path class="fx-route-base" d="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
           <path class="fx-route-dash" d="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
-
           <circle class="fx-node n1" cx="238" cy="84" r="6"/>
           <circle class="fx-node-dot" cx="238" cy="84" r="2.6"/>
           <circle class="fx-node n2" cx="508" cy="128" r="6"/>
           <circle class="fx-node-dot" cx="508" cy="128" r="2.6"/>
-
           <circle class="fx-comet-tail2" r="5.4">
             <animateMotion dur="7s" repeatCount="indefinite" begin="-6.72s" calcMode="linear"
               path="M-40 172 C 84 152 116 54 238 84 C 344 110 396 186 508 128 C 566 98 602 74 660 66"/>
@@ -470,7 +500,6 @@
         <div class="fx-sweep"></div>
         <div class="fx-dust"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
-
       <div id="status-badge" class="status-badge solicitado">
         <span class="pulse-dot"></span>
         <span id="status-texto">Buscando conductor</span>
@@ -478,15 +507,18 @@
       <h2 id="status-titulo" class="status-titulo">Solicitud enviada</h2>
       <p id="status-desc" class="status-desc">Tu solicitud está visible para los conductores cercanos.</p>
       <p id="status-id" style="display:none;margin-top:10px;font-size:.68rem;font-weight:700;color:var(--muted-text);letter-spacing:.08em"></p>
-
       <div class="stepper" id="stepper">
         <div class="step active"><div class="step-icon">1</div><span class="step-text">Solicitado</span></div>
         <div class="step"><div class="step-icon">2</div><span class="step-text">Aceptado</span></div>
         <div class="step"><div class="step-icon">3</div><span class="step-text">En curso</span></div>
         <div class="step"><div class="step-icon">4</div><span class="step-text">Finalizado</span></div>
       </div>
+      <!-- MAPA EN VIVO: solo mientras el viaje está EN PROGRESO -->
+      <div id="mapa-viaje" class="mapa-viaje oculto">
+        <div class="mapa-viaje-info"><span class="punto-live"></span> En vivo</div>
+        <div class="mapa-viaje-cargando" id="mapa-viaje-cargando">Cargando mapa…</div>
+      </div>
     </section>
-
     <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
       <div class="card-title" id="titulo-persona">Información del conductor</div>
@@ -498,7 +530,6 @@
           <div class="profile-extra" id="persona-extra"></div>
         </div>
       </div>
-
       <!-- [MODIFICACIÓN 3] Únicamente botones de Chat y Llamar por app -->
       <div class="contacto" id="zona-contacto" style="display:none">
         <button class="btn-contacto" id="btn-chat-app" type="button">
@@ -512,14 +543,12 @@
         </button>
       </div>
     </section>
-
     <!-- PIN DE SEGURIDAD COMPACTO -->
     <section class="card" id="card-pin" style="display:none">
       <div class="card-title" id="pin-card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         <span>PIN de seguridad</span>
       </div>
-
       <!-- Vista pasajero -->
       <div class="pin-mini" id="pin-mini-pasajero" style="display:none">
         <div class="pin-mini-txt">
@@ -528,7 +557,6 @@
         </div>
         <div class="pin-digitos" id="pin-digitos"></div>
       </div>
-
       <!-- Vista conductor -->
       <div id="pin-mini-conductor" style="display:none">
         <div class="pin-mini-desc">Pide al pasajero su PIN de 4 dígitos para iniciar el viaje. Puedes seguir usando el chat y ver la información mientras tanto.</div>
@@ -542,7 +570,6 @@
         <button class="btn-action" id="pin-verificar"><span>Verificar e iniciar viaje</span></button>
       </div>
     </section>
-
     <!-- RUTA -->
     <section class="card">
       <div class="card-title">Detalles del viaje</div>
@@ -554,6 +581,8 @@
             <div class="route-sub">Punto de recogida</div>
           </div>
         </div>
+        <!-- Las paradas adicionales se muestran ANTES del destino -->
+        <div id="paradas-viaje" class="paradas-viaje-lista"></div>
         <div class="route-point">
           <span class="dot b">B</span>
           <div>
@@ -563,7 +592,6 @@
         </div>
         <a class="route-map" id="link-maps" href="#" target="_blank" rel="noopener">Ver ruta en Google Maps →</a>
       </div>
-
       <div class="ruta-total">
         <div>
           <span class="kpi-label">Servicio</span>
@@ -579,7 +607,59 @@
         <div><span class="kpi-label">Solicitado</span><div class="kpi-valor" id="txt-fecha">—</div></div>
       </div>
     </section>
-
+    <!-- DETALLE DEL ENVÍO (solo para viajes de BIKAR ENVÍOS) -->
+    <section class="card" id="card-envio" style="display:none">
+      <div class="card-title">Detalle del envío</div>
+      <div class="envio-detalle-box">
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">¿Qué se envía?</span>
+          <span class="envio-detalle-valor" id="envio-tipo">—</span>
+        </div>
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">Descripción del paquete</span>
+          <span class="envio-detalle-valor" id="envio-descripcion">—</span>
+        </div>
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">Remitente</span>
+          <span class="envio-detalle-valor" id="envio-remitente">—</span>
+        </div>
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">Destinatario</span>
+          <span class="envio-detalle-valor" id="envio-destinatario">—</span>
+        </div>
+      </div>
+      <div class="envio-seguridad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div>
+          <b>Envío seguro y responsable</b>
+          <span>El paquete está cerrado y no contiene artículos prohibidos: drogas, armas, explosivos, inflamables, dinero en efectivo, joyas, animales vivos ni documentos ajenos. BIKAR puede rechazar el envío si detecta contenido no permitido.</span>
+        </div>
+      </div>
+      <div class="envio-seguridad" id="envio-descuento" style="display:none;background:rgba(71,133,168,.12);border-color:rgba(71,133,168,.4);margin-top:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:#4785A8"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3H4a1 1 0 0 0-1 1v5.59A2 2 0 0 0 3.59 11l9.58 9.59a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>
+        <div>
+          <b style="color:#4785A8">Tarifa con descuento</b>
+          <span>Este servicio de envío tiene un 20% menos sobre la tarifa normal del servicio.</span>
+        </div>
+      </div>
+    </section>
+    <!-- AVISO DE PEAJE (viaje fuera de la ciudad) -->
+    <section class="card" id="card-peaje" style="display:none">
+      <div class="card-title">Aviso importante del recorrido</div>
+      <div class="peaje-aviso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <b>Viaje fuera de la ciudad</b>
+          <span id="peaje-texto">Este recorrido puede incluir peajes. Los peajes corren por cuenta del pasajero y se pagan aparte de la tarifa acordada.</span>
+        </div>
+      </div>
+    </section>
+    <!-- MÉTODO DE PAGO (efectivo o billetera digital del conductor) -->
+    <section class="card" id="card-pago" style="display:none">
+      <div class="card-title">Método de pago</div>
+      <div class="pago-metodo" id="pago-metodo"></div>
+      <div id="pago-cuerpo"></div>
+    </section>
     <!-- ACCIONES -->
     <section id="sec-acciones" class="zona-acciones" style="display:none">
       <div class="aviso" id="aviso-rol" style="display:none"></div>
@@ -599,7 +679,6 @@
       </a>
     </section>
   </main>
-
   <!-- MODAL CANCELACIÓN -->
   <div class="modal z3" id="modal-cancelar">
     <div class="modal-box">
@@ -613,7 +692,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL NAVEGACIÓN -->
   <div class="modal" id="modal-nav">
     <div class="modal-box">
@@ -625,7 +703,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL COMPARTIR -->
   <div class="modal" id="modal-compartir">
     <div class="modal-box" style="text-align:center">
@@ -641,7 +718,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL SELECTOR DE APPS PARA COMPARTIR -->
   <div class="modal z3" id="modal-enviar">
     <div class="modal-box">
@@ -653,7 +729,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL CALIFICACIÓN -->
   <div class="modal z2" id="modal-calificar">
     <div class="modal-box" style="text-align:center">
@@ -667,7 +742,6 @@
       </div>
     </div>
   </div>
-
   <!-- MODAL CHAT -->
   <div class="modal z2" id="modal-chat">
     <div class="modal-box">
@@ -679,7 +753,6 @@
       </form>
     </div>
   </div>
-
   <!-- MODAL LLAMADA -->
   <div class="modal z3" id="modal-llamada">
     <div class="modal-box" style="text-align:center">
@@ -693,7 +766,18 @@
       <audio id="audio-remoto" autoplay playsinline></audio>
     </div>
   </div>
-
+  <!-- MODAL QR DE PAGO (AMPLIACIÓN) -->
+  <div class="modal z3" id="modal-qr-pago">
+    <div class="modal-box" style="text-align:center;max-width:380px;padding:20px">
+      <div class="modal-head">
+        <div class="modal-title">Paga con QR</div>
+        <button class="modal-close" data-cerrar="modal-qr-pago">✕</button>
+      </div>
+      <div class="qr-pago-marco"><img id="img-qr-pago" src="" alt="Código QR de la billetera"></div>
+      <div id="qr-pago-titulo" class="qr-pago-titulo"></div>
+      <button class="btn-action btn-secundario" data-cerrar="modal-qr-pago" style="padding:12px"><span>Cerrar</span></button>
+    </div>
+  </div>
   <!-- MODAL FOTO VEHÍCULO (AMPLIACIÓN) -->
   <div class="modal z3" id="modal-foto-vehiculo">
     <div class="modal-box" style="text-align:center;max-width:440px;padding:20px">
@@ -708,13 +792,10 @@
       <button class="btn-action btn-secundario" data-cerrar="modal-foto-vehiculo" style="padding:12px"><span>Cerrar</span></button>
     </div>
   </div>
-
   <div id="toast" class="toast">Notificación</div>
-
   <script>
   (function () {
     'use strict';
-
     /* ============================================================
        CONFIGURACIÓN (mismas credenciales reales que index.html)
        ============================================================ */
@@ -722,12 +803,12 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
     const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
     window.supabaseClient = db;                      /* compatibilidad con otros scripts */
-
     const K_SESION = 'bikar_usuario';
     const FOTO_REPO_GITHUB = 'https://raw.githubusercontent.com/bikar-app/perfil/main/index.svg';
     const INTERVALO_REFRESCO = 8000;                 /* respaldo si Realtime no está disponible */
     const URL_SW = 'sw.js';                          /* service worker de notificaciones push (misma carpeta) */
-
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyAjIECrPNcpw4rEJhsPqqa1zxv-qYGOgRM';
+    let mapaViaje = null, marcadorViaje = null, rutaViaje = null, mapaCargando = false, geoWatch = null;
     /* ============================================================
        ESTADO
        ============================================================ */
@@ -736,7 +817,6 @@
     let rolUsuario = (urlParams.get('rol') || 'pasajero').toLowerCase();
     let viajeActual = null, usuarioSesion = null, canalRealtime = null, timerRefresco = null, realtimeOK = false;
     const cachePerfiles = new Map();
-
     /* ============================================================
        DOM
        ============================================================ */
@@ -750,7 +830,6 @@
     const secAcciones = $('sec-acciones'), btnSiguiente = $('btn-siguiente-estado');
     const btnInicio = $('btn-inicio'), avisoRol = $('aviso-rol');
     const cardPin = $('card-pin');
-
     /* ============================================================
        ICONOS SVG
        ============================================================ */
@@ -768,19 +847,27 @@
       candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
       placa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h2M11 10h2M16 10h2M6 14h12"/></svg>',
       camara: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
-      zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>'
+      zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>',
+      mascota: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="9.5" r="1.8"/><circle cx="9.5" cy="5.5" r="1.8"/><circle cx="14.5" cy="5.5" r="1.8"/><circle cx="18.5" cy="9.5" r="1.8"/><path d="M8 15.5c.8-2 2.3-3.2 4-3.2s3.2 1.2 4 3.2c.9 2.1-.2 4.2-2.3 4.2-.7 0-1.1-.3-1.7-.3s-1 .3-1.7.3c-2.1 0-3.2-2.1-2.3-4.2z"/></svg>'
     };
+    SVG.autoParticular = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.6 5H8.4a2 2 0 0 0-1.9 1.3L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>';
     const ICONO_SERVICIO = {
-      moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, taxi_carga: SVG.caja, default: SVG.ruta
+      moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, auto_particular: SVG.autoParticular,
+      taxi_carga: SVG.caja, encomienda: SVG.caja, pet: SVG.mascota, default: SVG.ruta
     };
-
     /* ============================================================
        HELPERS
        ============================================================ */
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const mismoId = (a, b) => a != null && b != null && String(a) === String(b);
     const lsJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
-    const formatoMoneda = (v) => { const n = Number(v); return 'S/ ' + (isFinite(n) ? n : 0).toFixed(2); };
+    /* Moneda oficial: SOLES PERUANOS */
+    const formatoMoneda = (v) => {
+      let n = Number(v || 0);
+      if (!isFinite(n)) n = 0;
+      if (n >= 2000) n = n / 1000; // registros antiguos en otra moneda
+      return 'S/ ' + n.toFixed(2);
+    };
     const tarifaDelViaje = (v) => {
       if (!v) return 0;
       const campos = ['tarifa', 'tarifa_total', 'precio', 'precio_total', 'monto', 'costo'];
@@ -789,7 +876,6 @@
       }
       return 0;
     };
-
     function mostrarToast(msg) {
       const t = $('toast');
       t.textContent = msg;
@@ -797,7 +883,6 @@
       clearTimeout(mostrarToast._t);
       mostrarToast._t = setTimeout(() => t.classList.remove('visible'), 3000);
     }
-
     /* ============================================================
        NOTIFICACIONES Y SONIDO BIKAR (PASAJERO Y CONDUCTOR)
        - Suena la melodía BIKAR cuando cambia el estado del viaje.
@@ -808,13 +893,11 @@
     let estadoVisto = null;      /* último estado visto del viaje (null = todavía no se ha leído) */
     let propioEstado = null;     /* estado que el propio usuario acaba de aplicar: no se anuncia a sí mismo */
     const avisosEstado = new Set(); /* "idViaje-grupo" ya anunciados (evita sonidos duplicados) */
-
     /* Melodía característica BIKAR: [frecuencia Hz, inicio s, duración s] */
     const MELODIA_BIKAR = [
       [659.25, 0.00, 0.35], [880.00, 0.14, 0.35], [1108.73, 0.28, 0.35], [1318.51, 0.42, 0.75],
       [1108.73, 0.95, 0.35], [1318.51, 1.09, 0.35], [1760.00, 1.23, 1.10]
     ];
-
     function crearAudio() {
       if (audioCtx) return audioCtx;
       const AC = window.AudioContext || window.webkitAudioContext;
@@ -822,7 +905,6 @@
       try { audioCtx = new AC(); } catch (e) { audioCtx = null; }
       return audioCtx;
     }
-
     function tonoCampana(ctx, freq, inicio, dur, vol) {
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.0001, inicio);
@@ -836,14 +918,12 @@
         o.start(inicio); o.stop(inicio + dur + 0.05);
       });
     }
-
     function tocarMelodia(ctx, rep) {
       const t0 = ctx.currentTime + 0.05;
       for (let r = 0; r < rep; r++) {
         MELODIA_BIKAR.forEach((n) => tonoCampana(ctx, n[0], t0 + r * 2.6 + n[1], n[2], 0.3));
       }
     }
-
     /* Si el navegador aún no permite sonar (no hubo ningún toque en esta página) el sonido queda en espera
        y suena en cuanto el usuario toque la pantalla (siempre que no hayan pasado más de 30 s). */
     function sonarPendiente() {
@@ -852,7 +932,6 @@
       sonidoPendiente = null;
       if (Date.now() - p.ts < 30000) tocarMelodia(ctx, p.rep);
     }
-
     function sonidoBikar(rep) {
       const ctx = crearAudio();
       if (!ctx) return;
@@ -861,7 +940,6 @@
       sonidoPendiente = { rep: rep, ts: Date.now() };
       ctx.resume().then(sonarPendiente).catch(() => {});
     }
-
     /* Los navegadores solo permiten sonar tras un toque del usuario: se desbloquea con el primer toque */
     function desbloquearAudio() {
       const ctx = crearAudio();
@@ -873,7 +951,6 @@
       } catch (e) {}
     }
     ['pointerdown', 'touchstart', 'keydown', 'click'].forEach((ev) => document.addEventListener(ev, desbloquearAudio, { passive: true }));
-
     /* Service worker: recibe los push y permite mostrar notificaciones del sistema */
     async function registrarServiceWorker() {
       if (!('serviceWorker' in navigator)) return null;
@@ -881,7 +958,6 @@
       catch (e) { swRegistro = null; console.warn('Service Worker no disponible:', e && e.message); }
       return swRegistro;
     }
-
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', (ev) => {
         const d = ev && ev.data;
@@ -891,7 +967,6 @@
         else if (d.tipo === 'abrir-viaje') obtenerDatosViaje(true);
       });
     }
-
     /* Notificación del sistema creada por la propia página (respaldo del push del servidor):
        aparece en la barra / pantalla principal del móvil si la página está en segundo plano o con la pantalla bloqueada */
     async function notificarSistema(titulo, cuerpo, op) {
@@ -900,7 +975,6 @@
         if (!('Notification' in window) || Notification.permission !== 'granted') return false;
         const enPrimerPlano = !document.hidden && document.hasFocus();
         if (enPrimerPlano && !op.forzar) return false;
-
         const icono = new URL('icon-192.png', location.href).href;
         const opciones = {
           body: cuerpo || '', icon: icono, tag: op.tag || 'bikar-aviso',
@@ -909,7 +983,6 @@
           vibrate: [250, 100, 250, 100, 400], timestamp: Date.now(),
           data: { url: op.url || location.href.split('#')[0], viaje_id: op.viaje_id || null, tipo: op.tipo || null }
         };
-
         let reg = swRegistro;
         if (!reg && 'serviceWorker' in navigator) {
           reg = await Promise.race([navigator.serviceWorker.ready, new Promise((r) => setTimeout(() => r(null), 3000))]);
@@ -926,22 +999,21 @@
         return false;
       }
     }
-
     /* Estado de la página → grupo usado por el servidor en las etiquetas de las notificaciones */
     const GRUPO_POR_ESTADO = { aceptado:'aceptado', en_camino:'encamino', en_progreso:'encurso', terminado:'finalizado', cancelado:'cancelado' };
-
     /* [título de la notificación, cuerpo, mensaje corto en pantalla] */
     const AVISOS_PASAJERO = {
       aceptado:    ['✅ ¡Conductor asignado!', 'Tu conductor aceptó el servicio y se prepara para recogerte.', '¡Conductor asignado!'],
       en_camino:   ['🚗 Tu conductor va en camino', 'Se dirige a tu punto de recogida. Ten a la mano tu PIN de seguridad.', 'Tu conductor va en camino'],
       en_progreso: ['🚖 Viaje en curso', 'Vas rumbo a tu destino. ¡Buen viaje!', 'Viaje en curso · ¡Buen viaje!'],
       terminado:   ['🏁 Viaje finalizado', 'Gracias por viajar con BIKAR. Toca para calificar tu experiencia.', 'Viaje finalizado'],
-      cancelado:   ['❌ Viaje cancelado', 'Tu viaje fue cancelado. Puedes solicitar otro cuando quieras.', 'Tu viaje fue cancelado']
+      cancelado:   ['❌ Viaje cancelado', 'Tu viaje fue cancelado. Puedes solicitar otro cuando quieras.', 'Tu viaje fue cancelado'],
+      /* El conductor canceló un viaje ya aceptado: vuelve a estar disponible para otros conductores */
+      solicitado:  ['🔄 Buscando otro conductor', 'Tu conductor canceló el viaje. Ya lo estamos mostrando a otros conductores cercanos.', 'Tu conductor canceló · buscando otro conductor']
     };
     const AVISOS_CONDUCTOR = {
       cancelado:   ['❌ Viaje cancelado', 'El pasajero canceló el viaje.', 'El pasajero canceló el viaje']
     };
-
     /* Suena el tono BIKAR, muestra un aviso y, si la página no está a la vista, una notificación del sistema.
        Una sola vez por cambio de estado. */
     function anunciarEstado(estado) {
@@ -951,18 +1023,16 @@
       if (!t) return;
       /* Si el propio usuario canceló, no se le avisa de lo que acaba de hacer */
       if (estado === 'cancelado' && String(v.cancelado_por || '').toLowerCase() === rolUsuario) return;
-
       const grupo = GRUPO_POR_ESTADO[estado] || estado;
-      const k = String(viajeId) + '-' + grupo;
+      /* «solicitado» puede repetirse si varios conductores cancelan: cada vez se avisa una sola vez */
+      const k = String(viajeId) + '-' + grupo + (estado === 'solicitado' ? '-' + Date.now() : '');
       if (avisosEstado.has(k)) return;
       avisosEstado.add(k);
-
       sonidoBikar(1);
       mostrarToast(t[2]);
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       notificarSistema(t[0], t[1], { tag: 'bikar-estado-' + viajeId + '-' + grupo, viaje_id: viajeId, tipo: 'estado_viaje' });
     }
-
     /* Detecta un cambio de estado distinto al de la lectura anterior (la primera lectura nunca se anuncia) */
     function detectarCambioEstado(estado) {
       if (estadoVisto === null) { estadoVisto = estado; return; }
@@ -971,7 +1041,6 @@
       if (propioEstado === estado) { propioEstado = null; return; }  /* lo cambió este mismo usuario */
       anunciarEstado(estado);
     }
-
     /* ============================================================
        Consultas tolerantes
        ============================================================ */
@@ -979,7 +1048,6 @@
     const logDebug = function () { if (DEBUG) console.info.apply(console, ['[BIKAR]'].concat(Array.prototype.slice.call(arguments))); };
     const tablasFallidas = new Set();
     const columnasTabla = new Map();
-
     async function consultaSegura(tabla, armar) {
       if (!db || tablasFallidas.has(tabla)) return null;
       try {
@@ -996,7 +1064,6 @@
         return r;
       } catch (e) { logDebug('excepción en', tabla, e); return null; }
     }
-
     async function columnasDe(tabla) {
       if (columnasTabla.has(tabla)) return columnasTabla.get(tabla);
       const r = await consultaSegura(tabla, (q) => q.select('*').limit(1));
@@ -1005,10 +1072,8 @@
       logDebug('columnas de', tabla, cols);
       return cols;
     }
-
     const colsViaje = () => (viajeActual ? Object.keys(viajeActual) : []);
     const viajeTiene = (c) => colsViaje().indexOf(c) >= 0;
-
     function valorPorPatron(obj, patron) {
       if (!obj) return null;
       const claves = Object.keys(obj);
@@ -1020,7 +1085,6 @@
       }
       return null;
     }
-
     /* ============================================================
        TEMA
        ============================================================ */
@@ -1032,7 +1096,6 @@
     }
     $('btn-tema').addEventListener('click', () => aplicarTema(!document.body.classList.contains('dark-theme')));
     aplicarTema((localStorage.getItem('bikar_tema') || 'oscuro') === 'oscuro');
-
     /* ============================================================
        NORMALIZACIÓN DE SERVICIO
        ============================================================ */
@@ -1043,14 +1106,14 @@
       c = c.replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
       if (/moto\s*deliver|delivery|domicili|paqueter|mensajer|reparto|envio/.test(c)) return 'moto_delivery';
       if (/moto\s*taxi|\bmoto\b/.test(c)) return 'moto_taxi';
-      if (/carga|mudanza|camion|furgon|encomienda/.test(c)) return 'taxi_carga';
+      if (/taxi\s*carga|\bcarga\b|mudanza|camion|furgon|encomienda/.test(c)) return 'taxi_carga';
+      if (/bikar\s*auto|particular/.test(c)) return 'auto_particular';
       if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c)) return 'taxi_auto';
       return null;
     }
     function etiquetaServicio(clave) {
-      return { moto_taxi:'Moto Taxi', moto_delivery:'Moto Delivery', taxi_auto:'Taxi Auto', taxi_carga:'Taxi Carga' }[clave] || 'Servicio BIKAR';
+      return { moto_taxi:'BIKAR MOTO', moto_delivery:'BIKAR ENVÍOS', taxi_auto:'BIKAR TAXI', auto_particular:'BIKAR AUTO', taxi_carga:'BIKAR TAXI CARGA' }[clave] || 'Servicio BIKAR';
     }
-
     /* ============================================================
        CARGA DE DATOS
        ============================================================ */
@@ -1067,7 +1130,6 @@
         if (!silencioso) estadoVacio('No se pudo leer el viaje', (e && e.message) || '');
       }
     }
-
     async function buscarUsuario(id, correo) {
       const llave = String(id != null ? 'id:' + id : 'c:' + correo);
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
@@ -1090,7 +1152,6 @@
       return fila;
     }
     const correoDe = (u) => (u && (u.email || u.correo)) || null;
-
     /* En BIKAR: viajes.conductor_id → conductores.id ; conductores.usuario_id → usuarios.id */
     const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa,foto_vehiculo';
     async function filaPorLlave(tabla, llave, valor, columnas) {
@@ -1099,55 +1160,44 @@
       if (!r && columnas) r = await consultaSegura(tabla, (q) => q.select('*').eq(llave, valor).limit(1));
       return (r && r.data && r.data[0]) || null;
     }
-
     async function resolverConductor(conductorId) {
       const llave = 'cond:' + conductorId;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
       const info = { conductorId: conductorId, usuarioId: null, conductor: null, vehiculo: null, doc: null, usuario: null };
-
       info.conductor = await filaPorLlave('conductores', 'id', conductorId);
       if (!info.conductor) {
         const porUsuario = await filaPorLlave('conductores', 'usuario_id', conductorId);
         if (porUsuario) { info.conductor = porUsuario; if (porUsuario.id != null) info.conductorId = porUsuario.id; }
       }
       info.usuarioId = (info.conductor && info.conductor.usuario_id != null) ? info.conductor.usuario_id : conductorId;
-
       /* Vehículo registrado */
       info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.conductorId);
       if (!info.vehiculo && info.usuarioId !== info.conductorId) info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.usuarioId);
-
       /* Documentación del vehículo */
       info.doc = await filaPorLlave('documentos_conductor', 'conductor_id', info.conductorId, COLS_DOC);
       if (!info.doc) info.doc = await filaPorLlave('documentos_conductor', 'usuario_id', info.usuarioId, COLS_DOC);
-
       /* Cuenta del conductor */
       info.usuario = await buscarUsuario(info.usuarioId);
       if (!info.usuario && info.usuarioId !== conductorId) info.usuario = await buscarUsuario(conductorId);
-
       logDebug('conductor resuelto', info);
       cachePerfiles.set(llave, info);
       return info;
     }
-
-/* [MODIFICACIÓN 4] Helper para extraer la foto real del vehículo guardada en Supabase */
-function obtenerFotoVehiculo(info, v) {
-  const veh = info && info.vehiculo;
-  const doc = info && info.doc;
-  const cond = info && info.conductor;
-
-  const foto = 
-    (doc && doc.foto_vehiculo) || 
-    (veh && veh.foto_vehiculo) || 
-    (cond && cond.foto_vehiculo) || 
-    (v && (v.foto_vehiculo || v.vehiculo_foto));
-
-  if (foto && typeof foto === 'string' && foto.trim().length > 6) {
-    return foto.trim();
-  }
-
-  return null;
-}
-
+    /* [MODIFICACIÓN 4] Helper para extraer la foto real del vehículo guardada en Supabase */
+    function obtenerFotoVehiculo(info, v) {
+      const veh = info && info.vehiculo;
+      const doc = info && info.doc;
+      const cond = info && info.conductor;
+      const foto =
+        (doc && doc.foto_vehiculo) ||
+        (veh && veh.foto_vehiculo) ||
+        (cond && cond.foto_vehiculo) ||
+        (v && (v.foto_vehiculo || v.vehiculo_foto));
+      if (foto && typeof foto === 'string' && foto.trim().length > 6) {
+        return foto.trim();
+      }
+      return null;
+    }
     /* Estadísticas de calificación promedio (los viajes se eliminan de la visualización según punto 5) */
     function limpiarCacheStats() {
       Array.from(cachePerfiles.keys()).forEach((k) => { if (String(k).indexOf('stats:') === 0) cachePerfiles.delete(k); });
@@ -1161,7 +1211,6 @@ function obtenerFotoVehiculo(info, v) {
         const cv = colsViaje().length ? colsViaje() : ((await columnasDe('viajes')) || []);
         const idsPersona = [id];
         if (usuarioId != null && String(usuarioId) !== String(id)) idsPersona.push(usuarioId);
-
         /* Promedio de estrellas recibidas (calificaciones) */
         const cc = await columnasDe('calificaciones');
         if (cc !== null && cc.length) {
@@ -1179,7 +1228,6 @@ function obtenerFotoVehiculo(info, v) {
             }
           }
         }
-
         /* Respaldo: columnas de calificación dentro de viajes */
         if (res.promedio == null) {
           const col = rolPersona === 'conductor' ? 'calificacion_conductor' : 'calificacion_pasajero';
@@ -1196,7 +1244,6 @@ function obtenerFotoVehiculo(info, v) {
       cachePerfiles.set(llave, res);
       return res;
     }
-
     let infoContraparte = null;
     function pintarPersona(info) {
       infoContraparte = info;
@@ -1204,7 +1251,6 @@ function obtenerFotoVehiculo(info, v) {
       personaNombre.textContent = nombre;
       personaSub.textContent = info.sub || '';
       personaFoto.src = info.foto || avatarDe(nombre);
-
       const chips = [];
       const chipRating = () => {
         if (info.calificacion) {
@@ -1213,7 +1259,6 @@ function obtenerFotoVehiculo(info, v) {
         }
         return '<span class="mini-tag rating-tag">' + SVG.estrella + 'Sin calificaciones</span>';
       };
-
       if (info.rol === 'conductor') {
         /* Fila de servicio / modelo de vehículo */
         const partesSrv = [];
@@ -1223,13 +1268,11 @@ function obtenerFotoVehiculo(info, v) {
           const claveSrv = normalizarClaveServicio(info.tipo_servicio);
           chips.push('<div class="conductor-tags-top"><span class="vehicle-tag">' + (ICONO_SERVICIO[claveSrv] || SVG.ruta) + esc(partesSrv.join(' · ')) + '</span></div>');
         }
-
         /* [MODIFICACIÓN 4]: Junto a la placa está la foto real del vehículo y la calificación debajo */
         let bloquePlaca = '<div class="vehiculo-placa-bloque">' +
           '<div class="placa-foto-fila">' +
             '<span class="mini-tag placa-tag">' + SVG.placa + '<span class="placa">' +
               (info.placa ? esc(info.placa) : 'Placa no registrada') + '</span></span>';
-
         if (info.foto_vehiculo) {
           bloquePlaca += '<button type="button" class="vehiculo-thumb-chip" id="btn-ver-foto-vehiculo" title="Ver foto completa del vehículo">' +
             '<img src="' + esc(info.foto_vehiculo) + '" alt="Vehículo" class="vehiculo-mini-img" onerror="this.parentElement.style.display=\'none\'">' +
@@ -1237,11 +1280,9 @@ function obtenerFotoVehiculo(info, v) {
             SVG.zoom +
             '</button>';
         }
-
         bloquePlaca += '</div>' +
           '<div class="calificacion-debajo-placa">' + chipRating() + '</div>' +
           '</div>';
-
         chips.push(bloquePlaca);
       } else {
         /* [MODIFICACIÓN 1 Y 5]: Pasajero sin teléfono, sin correo y sin viajes */
@@ -1250,9 +1291,15 @@ function obtenerFotoVehiculo(info, v) {
           chipRating() +
           '</div>');
       }
-
+      if (info.beneficios && typeof info.beneficios === 'object') {
+        const activos = Object.keys(info.beneficios).filter((k) => info.beneficios[k] === true);
+        if (activos.length) {
+          chips.push('<div class="beneficios-viaje">' + activos.map((k) =>
+            '<span class="beneficio-viaje"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+            esc(BENEFICIOS_ETIQUETAS[k] || k) + '</span>').join('') + '</div>');
+        }
+      }
       personaExtra.innerHTML = chips.filter(Boolean).join('');
-
       /* Evento para ver la foto ampliada del vehículo */
       const btnVerFoto = $('btn-ver-foto-vehiculo');
       if (btnVerFoto && info.foto_vehiculo) {
@@ -1262,10 +1309,8 @@ function obtenerFotoVehiculo(info, v) {
           abrirModal('modal-foto-vehiculo');
         };
       }
-
       actualizarContacto();
     }
-
     /* [MODIFICACIÓN 3]: Solo Chat y Llamar por app; sin teléfono ni WhatsApp */
     function actualizarContacto() {
       const estado = String((viajeActual && viajeActual.estado) || 'solicitado').toLowerCase();
@@ -1274,45 +1319,37 @@ function obtenerFotoVehiculo(info, v) {
         ? (viajeActual && viajeActual.pasajero_id != null)
         : (viajeActual && viajeActual.conductor_id != null);
       const appOK = activo && hayContraparte;
-
       $('btn-chat-app').style.display = appOK ? 'inline-flex' : 'none';
       $('btn-llamada-app').style.display = appOK ? 'inline-flex' : 'none';
       zonaContacto.style.display = appOK ? 'flex' : 'none';
-
       if (appOK) prepararCanalChat();
     }
-
     function avatarDe(nombre) {
       const letra = (String(nombre || 'B').trim().charAt(0) || 'B').toUpperCase();
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
-        '<stop offset="0" stop-color="#134989"/><stop offset="1" stop-color="#4785A7"/></linearGradient></defs>' +
+        '<stop offset="0" stop-color="#4785A8"/><stop offset="1" stop-color="#4785A8"/></linearGradient></defs>' +
         '<rect width="100" height="100" fill="url(#g)"/><text x="50" y="50" dy=".36em" text-anchor="middle" ' +
         'font-family="Inter,Arial" font-size="46" font-weight="800" fill="#fff">' + letra + '</text></svg>';
       return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
     }
-
     /* [MODIFICACIÓN 2, 4 Y 5]: Conductor sin teléfono, sin viajes, con foto de vehículo y placa */
     async function cargarPerfilConductor(id) {
       const info = await resolverConductor(id);
       const u = info.usuario, doc = info.doc, veh = info.vehiculo;
       const st = await estadisticasUsuario(id, 'conductor', info.usuarioId);
-
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
         || (u && (u.usuario || correoDe(u))) || 'Conductor BIKAR';
-
       const PAT_PLACA = /placa|matricul|patente/i;
       const placa = valorPorPatron(veh, PAT_PLACA) || valorPorPatron(doc, PAT_PLACA) ||
                     valorPorPatron(u, PAT_PLACA) || valorPorPatron(viajeActual, PAT_PLACA) || '';
-
       const fotoVehiculo = obtenerFotoVehiculo(info, viajeActual);
-
       const marca = (doc && doc.marca) || '';
       const modelo = (doc && doc.modelo) || (veh && veh.modelo) || '';
       const anio = (doc && doc.anio) || (veh && veh.anio) || '';
       const tipoServ = (doc && doc.tipo_servicio) || (viajeActual && (viajeActual.tipo_servicio || viajeActual.nombre_servicio)) || '';
-
+      let beneficios = (doc && doc.beneficios) || (veh && veh.beneficios) || (u && u.beneficios) || {};
+      if (typeof beneficios === 'string') { try { beneficios = JSON.parse(beneficios); } catch (e) { beneficios = {}; } }
       logDebug('perfil conductor', { usuario: u, vehiculo: veh, documento: doc, placa: placa, fotoVehiculo: fotoVehiculo, stats: st });
-
       pintarPersona({
         rol: 'conductor',
         nombre: nombre,
@@ -1322,17 +1359,16 @@ function obtenerFotoVehiculo(info, v) {
         vehiculo: [marca, modelo, anio].filter(Boolean).join(' '),
         placa: placa,
         foto_vehiculo: fotoVehiculo,
+        beneficios: beneficios,
         calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
         totalCalif: st.total
       });
     }
-
     /* [MODIFICACIÓN 1 Y 5]: Pasajero sin teléfono, sin correo, sin viajes y con espacios pulidos */
     async function cargarPerfilPasajero(id) {
       const [u, st] = await Promise.all([buscarUsuario(id), estadisticasUsuario(id, 'pasajero')]);
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
         || (u && (u.usuario || correoDe(u))) || 'Pasajero BIKAR';
-
       pintarPersona({
         rol: 'pasajero',
         nombre: nombre,
@@ -1342,7 +1378,6 @@ function obtenerFotoVehiculo(info, v) {
         totalCalif: st.total
       });
     }
-
     /* ============================================================
        RENDER
        ============================================================ */
@@ -1355,7 +1390,6 @@ function obtenerFotoVehiculo(info, v) {
       terminado:  ['Viaje finalizado', '¡Has llegado a tu destino!', 'Viaje completado exitosamente. Gracias por usar BIKAR.'],
       cancelado:  ['Cancelado', 'Viaje cancelado', 'Esta solicitud fue cancelada.']
     };
-
     /* [AJUSTE 2] Mensajes de estado redactados según el rol activo */
     const DESC_POR_ROL = {
       pasajero: {
@@ -1379,34 +1413,102 @@ function obtenerFotoVehiculo(info, v) {
       const mapa = DESC_POR_ROL[rolUsuario === 'conductor' ? 'conductor' : 'pasajero'];
       return (mapa && mapa[estado]) || respaldo;
     }
-
+    function esViajeEnvio(v) {
+      return !!v && (v.categoria_envio != null || v.detalle_envio != null ||
+        /env[ií]o|delivery|paquete|encomienda/i.test(String(v.tipo_servicio || '') + ' ' + String(v.nombre_servicio || '')));
+    }
+    function pintarDetalleEnvio() {
+      const card = $('card-envio'), v = viajeActual || {};
+      if (!esViajeEnvio(v)) { card.style.display = 'none'; return; }
+      $('envio-tipo').textContent = v.categoria_envio || 'Paquete / encomienda';
+      $('envio-descripcion').textContent = v.detalle_envio || 'El pasajero no agregó una descripción adicional.';
+      $('envio-remitente').textContent = [v.remitente_nombre, v.remitente_telefono].filter(Boolean).join(' · ') || 'No indicado';
+      $('envio-destinatario').textContent = [v.destinatario_nombre, v.destinatario_telefono].filter(Boolean).join(' · ') || 'No indicado';
+      const claveBase = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio);
+      const notaDescuento = $('envio-descuento');
+      const aplicaDescuento = claveBase !== 'moto_delivery' && /env[ií]o/i.test(String(v.nombre_servicio || ''));
+      if (notaDescuento) notaDescuento.style.display = aplicaDescuento ? 'flex' : 'none';
+      card.style.display = 'block';
+    }
+    /* PARADAS DEL VIAJE */
+    function enlaceRutaParada(parada) {
+      const v = viajeActual || {};
+      const nombre = (parada && (parada.nombre || parada.direccion)) || String(parada || '');
+      const lat = parada && parada.lat != null ? Number(parada.lat) : NaN;
+      const lng = parada && parada.lng != null ? Number(parada.lng) : NaN;
+      const destino = isFinite(lat) && isFinite(lng) ? (lat + ',' + lng) : nombre;
+      let origen = '';
+      if (v.origen_lat != null && v.origen_lon != null) origen = v.origen_lat + ',' + v.origen_lon;
+      else if (v.origen_nombre) origen = String(v.origen_nombre);
+      let url = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + encodeURIComponent(destino);
+      if (origen) url += '&origin=' + encodeURIComponent(origen);
+      return url;
+    }
+    function pintarParadasViaje() {
+      const cont = $('paradas-viaje'), v = viajeActual || {};
+      if (!cont) return;
+      let paradas = v.paradas;
+      if (typeof paradas === 'string') { try { paradas = JSON.parse(paradas); } catch (e) { paradas = []; } }
+      if (!Array.isArray(paradas)) paradas = [];
+      cont.innerHTML = paradas.map((p, i) => {
+        const nombre = (p && (p.nombre || p.direccion)) || String(p || '');
+        if (!nombre) return '';
+        return '<div class="parada-linea">' +
+          '<span class="parada-num">' + (i + 1) + '</span>' +
+          '<div class="parada-txt">' + esc(nombre) +
+            '<small>Parada adicional</small>' +
+            '<a class="parada-map" href="' + enlaceRutaParada(p) + '" target="_blank" rel="noopener">Ver ruta en Google Maps →</a>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      cont.style.display = paradas.some((p) => (p && (p.nombre || p.direccion)) || String(p || '').trim()) ? 'flex' : 'none';
+    }
+    /* AVISO DE PEAJE FUERA DE LA CIUDAD */
+    function pintarAvisoPeaje() {
+      const card = $('card-peaje'), v = viajeActual || {};
+      const fuera = v.fuera_ciudad === true || v.aviso_peaje === true;
+      card.style.display = fuera ? 'block' : 'none';
+      if (!fuera) return;
+      $('peaje-texto').textContent = rolUsuario === 'conductor'
+        ? 'Este recorrido sale de la ciudad. Recuerda al pasajero que los peajes corren por su cuenta y se pagan aparte de la tarifa.'
+        : 'Este recorrido sale de la ciudad. Los peajes del trayecto corren por tu cuenta y se pagan aparte de la tarifa acordada.';
+    }
     function renderizarUI() {
       if (!viajeActual) return;
+      setTimeout(() => { pintarParadasViaje(); pintarAvisoPeaje(); renderMapaViaje(); }, 0);
       const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
-
+      /* El conductor que canceló este viaje ya no lo gestiona (volvió a estar disponible para otros) */
+      if (rolUsuario === 'conductor' && canceladoPorEsteConductor()) {
+        estadoVisto = estado;
+        $('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
+        $('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
+        mostrarViajeLiberado();
+        return;
+      }
       /* Si el estado cambió respecto a la lectura anterior: suena el tono BIKAR y se avisa (pasajero y conductor) */
       detectarCambioEstado(estado);
-
       /* Ruta, servicio y tarifa */
       $('txt-origen').textContent = viajeActual.origen_nombre || 'Origen no especificado';
       $('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
       const clave = normalizarClaveServicio(viajeActual.tipo_servicio || viajeActual.nombre_servicio);
-      $('txt-servicio').innerHTML = (ICONO_SERVICIO[clave] || SVG.ruta) + '<span>' +
-        esc(viajeActual.tipo_servicio || viajeActual.nombre_servicio || etiquetaServicio(clave)) + '</span>';
+      // Servicio con mascota: se muestra «BIKAR TAXI · Con mascota» con la huella
+      const conMascota = viajeActual.con_mascota === true || /mascota|\bpet\b/i.test(String(viajeActual.nombre_servicio || ''));
+      const nombreRegistrado = String(viajeActual.nombre_servicio || '');
+      const nombreServicio = conMascota
+        ? (/mascota/i.test(nombreRegistrado) ? nombreRegistrado : (viajeActual.tipo_servicio || 'BIKAR TAXI') + ' · Con mascota')
+        : (esViajeEnvio(viajeActual) && nombreRegistrado ? nombreRegistrado : (viajeActual.tipo_servicio || nombreRegistrado || etiquetaServicio(clave)));
+      $('txt-servicio').innerHTML = (conMascota ? SVG.mascota : (esViajeEnvio(viajeActual) ? SVG.caja : (ICONO_SERVICIO[clave] || SVG.ruta))) + '<span>' + esc(nombreServicio) + '</span>';
       $('txt-tarifa').textContent = formatoMoneda(tarifaDelViaje(viajeActual));
       $('txt-distancia').textContent = viajeActual.distancia_km ? viajeActual.distancia_km + ' km' : '—';
-
       const fecha = viajeActual.created_at || viajeActual.creado_en || viajeActual.fecha;
       const d = fecha ? new Date(fecha) : null;
       $('txt-fecha').textContent = d && !isNaN(d)
         ? d.toLocaleDateString('es-CO', { day:'2-digit', month:'short' }) + ' · ' + d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' })
         : '—';
-
       const destinoMaps = (viajeActual.destino_lat != null && viajeActual.destino_lon != null)
         ? viajeActual.destino_lat + ',' + viajeActual.destino_lon
         : encodeURIComponent(viajeActual.destino_nombre || '');
       linkMaps.href = 'https://www.google.com/maps/dir/?api=1&destination=' + destinoMaps;
-
       /* Badge + textos */
       const t = TEXTOS_ESTADO[estado] || TEXTOS_ESTADO.solicitado;
       statusBadge.className = 'status-badge ' + estado;
@@ -1414,14 +1516,12 @@ function obtenerFotoVehiculo(info, v) {
       statusTitulo.textContent = t[1];
       statusDesc.textContent = descripcionEstado(estado, t[2]);
       statusId.textContent = 'SOLICITUD #' + (viajeActual.id != null ? viajeActual.id : '—');
-
       /* Stepper */
       const idx = INDICE_ESTADO[estado] != null ? INDICE_ESTADO[estado] : 0;
       pasos.forEach((el, i) => {
         el.classList.toggle('active', i === idx);
         el.classList.toggle('completed', i < idx);
       });
-
       /* Contraparte: pasajero ve al conductor / conductor ve al pasajero */
       if (rolUsuario === 'conductor') {
         tituloPersona.textContent = 'Datos del pasajero';
@@ -1432,11 +1532,126 @@ function obtenerFotoVehiculo(info, v) {
         if (viajeActual.conductor_id != null) cargarPerfilConductor(viajeActual.conductor_id);
         else pintarPersona({ rol:'conductor', nombre:'Buscando conductor…', sub:'Te avisaremos en cuanto alguien acepte.' });
       }
-
       configurarAcciones(estado);
       actualizarExtras(estado);
+      pintarDetalleEnvio();
+      pintarMetodoPago();
     }
-
+    /* ============================================================
+       MÉTODO DE PAGO DEL VIAJE
+       - Efectivo: se paga al conductor al terminar.
+       - Billetera digital: cuando un conductor acepta, el pasajero ve su billetera,
+         el número de cuenta (para copiar) y su QR (para ampliar y escanear).
+       ============================================================ */
+    const ETIQUETA_PAGO = { efectivo: 'Efectivo', billetera: 'Billetera digital' };
+    const SVG_EFECTIVO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>';
+    const SVG_BILLETERA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 9h-5a3 3 0 0 0 0 6h5V9z"/></svg>';
+    const metodoPagoDeViaje = (v) => {
+      const m = String((v && v.metodo_pago) || '').toLowerCase();
+      return m.indexOf('billetera') >= 0 ? 'billetera' : (m.indexOf('efectivo') >= 0 ? 'efectivo' : '');
+    };
+    let seqPago = 0;
+    async function copiarTexto(texto) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(texto);
+        else {
+          const ta = document.createElement('textarea');
+          ta.value = texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        }
+        mostrarToast('Número copiado');
+      } catch (e) { mostrarToast('No se pudo copiar el número'); }
+    }
+    function pintarCuerpoPago(html, enlazar) {
+      const cuerpo = $('pago-cuerpo');
+      if (cuerpo.dataset.k === html) return;
+      cuerpo.dataset.k = html;
+      cuerpo.innerHTML = html;
+      if (enlazar) enlazar();
+    }
+    // Lista de billeteras del conductor (columna 'billeteras'; si no existe, la billetera única de las columnas anteriores)
+    function billeterasDe(c) {
+      let lista = [];
+      let b = c && c.billeteras;
+      if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = null; } }
+      if (Array.isArray(b)) {
+        lista = b.filter((x) => x && (x.nombre || x.numero || x.qr)).map((x) => ({
+          nombre: String(x.nombre || '').trim(), numero: String(x.numero || '').trim(), qr: String(x.qr || '').trim()
+        }));
+      }
+      if (!lista.length && c && (c.billetera_nombre || c.billetera_numero || c.billetera_qr)) {
+        lista = [{ nombre: String(c.billetera_nombre || '').trim(), numero: String(c.billetera_numero || '').trim(), qr: String(c.billetera_qr || '').trim() }];
+      }
+      return lista;
+    }
+    async function pintarMetodoPago() {
+      const card = $('card-pago');
+      const v = viajeActual || {};
+      const metodo = metodoPagoDeViaje(v);
+      const estado = String(v.estado || 'solicitado').toLowerCase();
+      if (estado === 'cancelado' || (!metodo && v.conductor_id == null)) { card.style.display = 'none'; return; }
+      const miSeq = ++seqPago;
+      const tarifa = esc(formatoMoneda(tarifaDelViaje(v)));
+      const esCond = (rolUsuario === 'conductor');
+      $('pago-metodo').innerHTML = metodo
+        ? (metodo === 'billetera' ? SVG_BILLETERA : SVG_EFECTIVO) + '<span>' + (esCond ? 'El pasajero pagará con: ' : 'Elegiste: ') + ETIQUETA_PAGO[metodo] + '</span>'
+        : SVG_BILLETERA + '<span>Métodos de pago</span>';
+      card.style.display = 'block';
+      if (v.conductor_id == null) {
+        pintarCuerpoPago('<p class="pago-nota">' + (metodo === 'efectivo'
+          ? 'Paga <b>' + tarifa + '</b> en efectivo a tu conductor al terminar el viaje.'
+          : 'Cuando un conductor acepte tu viaje verás aquí los métodos de pago que acepta, sus billeteras digitales, números y códigos QR.') + '</p>');
+        return;
+      }
+      const info = await resolverConductor(v.conductor_id);
+      if (miSeq !== seqPago) return;
+      const c = (info && info.conductor) || {};
+      const tieneColumnas = ('acepta_efectivo' in c) || ('acepta_billetera' in c);
+      const billeteras = billeterasDe(c);
+      const aceptaEfectivo = !tieneColumnas || c.acepta_efectivo !== false;
+      const aceptaBilletera = c.acepta_billetera === true || billeteras.length > 0;
+      // Métodos de pago que acepta el conductor
+      const chips = '<div class="pago-acepta"><span class="pago-acepta-label">' + (esCond ? 'Aceptas:' : 'Tu conductor acepta:') + '</span>' +
+        (aceptaEfectivo ? '<span class="pago-chip">' + SVG_EFECTIVO + 'Efectivo</span>' : '') +
+        (aceptaBilletera ? '<span class="pago-chip">' + SVG_BILLETERA + 'Billetera digital' + (billeteras.length > 1 ? ' (' + billeteras.length + ')' : '') + '</span>' : '') +
+        '</div>';
+      // Sus billeteras (nombre, número para copiar y QR para ampliar) SOLO si el pasajero eligió billetera digital
+      const lista = (metodo === 'billetera' ? billeteras : []).map((w, i) =>
+        '<div class="pago-billetera">' +
+          '<div class="pago-billetera-datos">' +
+            '<span class="pago-billetera-nombre">' + esc(w.nombre || 'Billetera digital') + '</span>' +
+            (w.numero ? '<button type="button" class="pago-billetera-numero" data-copiar="' + i + '" title="Toca para copiar">' + esc(w.numero) + '<small>Copiar</small></button>' : '') +
+          '</div>' +
+          (w.qr ? '<button type="button" class="pago-qr-mini" data-qr="' + i + '" title="Ver código QR"><img src="' + esc(w.qr) + '" alt="QR de ' + esc(w.nombre || 'la billetera') + '"></button>' : '') +
+        '</div>').join('');
+      let nota = '';
+      if (esCond) {
+        if (metodo === 'billetera') nota = billeteras.length
+          ? 'El pasajero te pagará <b>' + tarifa + '</b> a una de tus billeteras.'
+          : 'El pasajero eligió billetera digital, pero no tienes billeteras registradas. Agrégalas en Perfil → Métodos de pago.';
+        else if (metodo === 'efectivo') nota = 'El pasajero te pagará <b>' + tarifa + '</b> en efectivo al terminar el viaje.';
+      } else if (metodo === 'billetera') {
+        nota = billeteras.length
+          ? 'Paga <b>' + tarifa + '</b> a una de estas billeteras (toca el número para copiarlo o el QR para ampliarlo) y muestra el comprobante a tu conductor.'
+          : 'Tu conductor aún no registró sus billeteras. Pídele los datos por el chat.';
+      } else if (metodo === 'efectivo') {
+        nota = 'Paga <b>' + tarifa + '</b> en efectivo a tu conductor al terminar el viaje.';
+      }
+      const html = chips + lista + (nota ? '<p class="pago-nota">' + nota + '</p>' : '');
+      pintarCuerpoPago(html, () => {
+        const cuerpo = $('pago-cuerpo');
+        cuerpo.querySelectorAll('[data-copiar]').forEach((btn) => {
+          btn.onclick = () => copiarTexto(billeteras[Number(btn.dataset.copiar)].numero);
+        });
+        cuerpo.querySelectorAll('[data-qr]').forEach((btn) => {
+          btn.onclick = () => {
+            const w = billeteras[Number(btn.dataset.qr)];
+            $('img-qr-pago').src = w.qr;
+            $('qr-pago-titulo').textContent = (w.nombre || 'Billetera digital') + (w.numero ? ' · ' + w.numero : '');
+            abrirModal('modal-qr-pago');
+          };
+        });
+      });
+    }
     /* ============================================================
        ACCIONES SEGÚN EL ROL
        ============================================================ */
@@ -1449,14 +1664,12 @@ function obtenerFotoVehiculo(info, v) {
       avisoRol.style.display = 'none';
       secAcciones.style.display = 'block';
     }
-
     function configurarAcciones(estado) {
       if (estado === 'terminado' || estado === 'cancelado') {
         boton(SVG.check + '<span>Viaje ' + (estado === 'cancelado' ? 'cancelado' : 'finalizado') + '</span>', true, null, estado === 'cancelado');
         btnInicio.style.display = 'flex';
         return;
       }
-
       if (rolUsuario === 'conductor') {
         const flujo = {
           solicitado: ['Aceptar viaje', 'aceptado', false],
@@ -1477,7 +1690,6 @@ function obtenerFotoVehiculo(info, v) {
         });
         return;
       }
-
       /* Pasajero */
       if (estado === 'solicitado') {
         avisoRol.textContent = 'Aún no hay conductor asignado. Puedes cancelar sin costo mientras esperas.';
@@ -1487,7 +1699,6 @@ function obtenerFotoVehiculo(info, v) {
         boton(SVG.ruta + '<span>Seguimiento activo del viaje</span>', true, null);
       }
     }
-
     async function cambiarEstadoViaje(nuevoEstado) {
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Actualizando…</span>';
@@ -1511,7 +1722,6 @@ function obtenerFotoVehiculo(info, v) {
         return false;
       }
     }
-
     /* Ocultar viaje al cancelar */
     async function ocultarViajeDeApp() {
       if (db && viajeId) {
@@ -1536,7 +1746,6 @@ function obtenerFotoVehiculo(info, v) {
       try { if (window.opener && !window.opener.closed) window.opener.postMessage(aviso, '*'); } catch (e) {}
       try { if (window.parent && window.parent !== window) window.parent.postMessage(aviso, '*'); } catch (e) {}
     }
-
     async function cancelarViaje(motivo) {
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Cancelando…</span>';
@@ -1561,7 +1770,85 @@ function obtenerFotoVehiculo(info, v) {
         return false;
       }
     }
-
+    /* ============================================================
+       CANCELACIÓN POR EL CONDUCTOR → EL VIAJE VUELVE A ESTAR DISPONIBLE
+       Si el conductor cancela un viaje que ya aceptó, el viaje NO se cancela: vuelve a «solicitado»
+       sin conductor para que lo vean y acepten otros conductores. Solo el pasajero lo cancela de verdad.
+       ============================================================ */
+    let viajeLiberadoPorMi = false;
+    const K_RECHAZADOS_COND = 'bikar_viajes_rechazados';            /* mismas listas que usa app.html */
+    const K_CANCELADOS_COND = 'bikar_viajes_cancelados_conductor';
+    const idConductorSesion = () => (usuarioSesion ? (usuarioSesion.conductor_id || usuarioSesion.id || usuarioSesion.Id) : null);
+    function agregarAListaConductor(clave, idViaje) {
+      const idc = idConductorSesion();
+      if (idc == null) return;
+      let todo = lsJSON(clave);
+      if (!todo || typeof todo !== 'object' || Array.isArray(todo)) todo = {};
+      const k = String(idc);
+      const lista = Array.isArray(todo[k]) ? todo[k].map(String) : [];
+      if (lista.indexOf(String(idViaje)) < 0) lista.push(String(idViaje));
+      todo[k] = lista.slice(-300);
+      try { localStorage.setItem(clave, JSON.stringify(todo)); } catch (e) {}
+    }
+    function canceladoPorEsteConductor() {
+      if (viajeLiberadoPorMi) return true;
+      const idc = idConductorSesion();
+      if (idc == null || !viajeActual || mismoId(viajeActual.conductor_id, idc)) return false;
+      const todo = lsJSON(K_CANCELADOS_COND);
+      const lista = todo && typeof todo === 'object' ? todo[String(idc)] : null;
+      return Array.isArray(lista) && lista.map(String).indexOf(String(viajeId)) >= 0;
+    }
+    async function liberarViajeConductor(motivo) {
+      btnSiguiente.disabled = true;
+      btnSiguiente.innerHTML = '<span>Cancelando…</span>';
+      propioEstado = 'solicitado';   /* lo hace el propio conductor: no se anuncia con sonido */
+      try {
+        let q = db.from('viajes').update({ estado: 'solicitado', conductor_id: null })
+          .eq('id', viajeId).in('estado', ['aceptado', 'en_camino']);
+        if (viajeActual && viajeActual.conductor_id != null) q = q.eq('conductor_id', viajeActual.conductor_id);
+        const r = await q.select('id');
+        if (r.error) throw r.error;
+        if (!r.data || !r.data.length) {
+          propioEstado = null;
+          mostrarToast('El viaje ya cambió de estado y no se pudo cancelar');
+          await obtenerDatosViaje(true);
+          return false;
+        }
+        /* En este dispositivo: deja de aparecerle en sus solicitudes y queda en «Viajes disponibles» para retomarlo */
+        agregarAListaConductor(K_RECHAZADOS_COND, viajeId);
+        agregarAListaConductor(K_CANCELADOS_COND, viajeId);
+        if (motivo) logDebug('motivo de cancelación del conductor:', motivo);
+        viajeLiberadoPorMi = true;
+        viajeActual = Object.assign({}, viajeActual, { estado: 'solicitado', conductor_id: null });
+        mostrarToast('Cancelaste el viaje · volvió a estar disponible para otros conductores');
+        renderizarUI();
+        return true;
+      } catch (e) {
+        console.error(e);
+        propioEstado = null;
+        mostrarToast('No se pudo cancelar el viaje');
+        renderizarUI();
+        return false;
+      }
+    }
+    /* Vista del conductor que canceló: el viaje ya no es suyo */
+    function mostrarViajeLiberado() {
+      statusBadge.className = 'status-badge cancelado';
+      statusTexto.textContent = 'Cancelado por ti';
+      statusTitulo.textContent = 'Cancelaste este viaje';
+      statusDesc.textContent = 'El viaje volvió a estar disponible para otros conductores. Si sigue activo, puedes retomarlo desde «Viajes disponibles» en el menú de tu perfil.';
+      pasos.forEach((el) => { el.classList.remove('active'); el.classList.remove('completed'); });
+      const sonar = $('sonar-status');
+      if (sonar) sonar.classList.remove('on');
+      ocultarCardPin();
+      zonaContacto.style.display = 'none';
+      $('card-pago').style.display = 'none';
+      ['btn-extra-nav', 'btn-extra-compartir', 'btn-extra-cancelar'].forEach((id) => { $(id).style.display = 'none'; });
+      cerrarModal('modal-chat');
+      if (llamada.pc) terminarLlamada(true);
+      boton(SVG.check + '<span>Viaje cancelado por ti</span>', true, null, true);
+      btnInicio.style.display = 'flex';
+    }
     function estadoVacio(titulo, detalle) {
       statusBadge.className = 'status-badge cancelado';
       statusTexto.textContent = 'Sin datos';
@@ -1575,14 +1862,12 @@ function obtenerFotoVehiculo(info, v) {
       const sonar = $('sonar-status');
       if (sonar) sonar.classList.remove('on');
     }
-
     /* ============================================================
        MODALES
        ============================================================ */
     function abrirModal(id) { $(id).classList.add('open'); }
     function cerrarModal(id) { $(id).classList.remove('open'); }
     document.querySelectorAll('[data-cerrar]').forEach((b) => b.addEventListener('click', () => cerrarModal(b.getAttribute('data-cerrar'))));
-
     /* ============================================================
        EXTRAS SEGÚN ESTADO
        ============================================================ */
@@ -1591,10 +1876,8 @@ function obtenerFotoVehiculo(info, v) {
       const activoAuto = ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
       const sonar = $('sonar-status');
       if (sonar) sonar.classList.toggle('on', activoAuto);
-
       const bNav = $('btn-extra-nav'), bComp = $('btn-extra-compartir'), bCanc = $('btn-extra-cancelar');
       bNav.style.display = 'none'; bComp.style.display = 'none'; bCanc.style.display = 'none';
-
       if (rolUsuario === 'conductor') {
         if (estado === 'en_camino') { bNav.style.display = 'flex'; }
         if (estado === 'aceptado' || estado === 'en_camino') { bCanc.style.display = 'flex'; }
@@ -1602,7 +1885,6 @@ function obtenerFotoVehiculo(info, v) {
         if (estado === 'en_progreso') bComp.style.display = 'flex';
         if (estado === 'aceptado' || estado === 'en_camino') bCanc.style.display = 'flex';
       }
-
       /* PIN compacto */
       const pinPendiente = (estado === 'aceptado' || estado === 'en_camino');
       if (rolUsuario !== 'conductor') {
@@ -1612,24 +1894,19 @@ function obtenerFotoVehiculo(info, v) {
         if (estado === 'en_camino') mostrarPinConductor(false);
         else { ocultarCardPin(); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
       }
-
       /* Compartir ubicación */
       if (rolUsuario !== 'conductor' && estado === 'en_progreso' && !sessionStorage.getItem('bikar_share_' + viajeId)) {
         sessionStorage.setItem('bikar_share_' + viajeId, '1');
         setTimeout(() => { abrirModal('modal-compartir'); pedirPosicion(); }, 400);
       }
       if (estado !== 'en_progreso') cerrarModal('modal-compartir');
-
       /* Calificación */
       if (estado === 'terminado' && !localStorage.getItem('bikar_calif_' + viajeId + '_' + rolUsuario)) abrirCalificacion();
-
       if (estado === 'cancelado' || estado === 'terminado') { cerrarModal('modal-chat'); if (llamada.pc) terminarLlamada(true); }
     }
-
     $('btn-extra-nav').addEventListener('click', abrirModalNavegacion);
     $('btn-extra-compartir').addEventListener('click', () => { abrirModal('modal-compartir'); pedirPosicion(); });
     $('btn-extra-cancelar').addEventListener('click', abrirModalCancelacion);
-
     /* ============================================================
        MODAL DE CANCELACIÓN
        ============================================================ */
@@ -1664,7 +1941,8 @@ function obtenerFotoVehiculo(info, v) {
       }
       const b = $('cancel-confirmar');
       b.disabled = true;
-      const ok = await cancelarViaje(motivo);
+      /* Conductor: el viaje vuelve a estar disponible para otros · Pasajero: el viaje se cancela */
+      const ok = rolUsuario === 'conductor' ? await liberarViajeConductor(motivo) : await cancelarViaje(motivo);
       b.disabled = false;
       if (ok) {
         cerrarModal('modal-cancelar');
@@ -1672,7 +1950,6 @@ function obtenerFotoVehiculo(info, v) {
         sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
       }
     });
-
     /* ============================================================
        PIN DE SEGURIDAD COMPACTO
        ============================================================ */
@@ -1725,7 +2002,6 @@ function obtenerFotoVehiculo(info, v) {
         setTimeout(() => { try { pinInputs[0].focus(); } catch (e) {} }, 350);
       }
     }
-
     const pinInputs = Array.prototype.slice.call(document.querySelectorAll('#pin-inputs input'));
     pinInputs.forEach((inp, i) => {
       inp.addEventListener('input', () => {
@@ -1783,7 +2059,6 @@ function obtenerFotoVehiculo(info, v) {
       $('pin-verificar').disabled = false;
     }
     $('pin-verificar').addEventListener('click', verificarPin);
-
     /* ============================================================
        NAVEGACIÓN AL ORIGEN
        ============================================================ */
@@ -1800,7 +2075,6 @@ function obtenerFotoVehiculo(info, v) {
       abrirModal('modal-nav');
     }
     ['nav-google', 'nav-waze'].forEach((id) => $(id).addEventListener('click', () => setTimeout(() => cerrarModal('modal-nav'), 300)));
-
     /* ============================================================
        COMPARTIR UBICACIÓN
        ============================================================ */
@@ -1886,7 +2160,6 @@ function obtenerFotoVehiculo(info, v) {
         mostrarToast('Mensaje copiado');
       } catch (e) { mostrarToast('No se pudo copiar el mensaje'); }
     });
-
     /* ============================================================
        CALIFICACIÓN
        ============================================================ */
@@ -1941,7 +2214,6 @@ function obtenerFotoVehiculo(info, v) {
       cerrarModal('modal-calificar');
       mostrarToast(ok ? '¡Gracias por tu calificación!' : 'Calificación guardada localmente');
     });
-
     /* ============================================================
        CHAT INTERNO Y LLAMADA EN LA APP
        ============================================================ */
@@ -1999,7 +2271,6 @@ function obtenerFotoVehiculo(info, v) {
         await consultaSegura('mensajes_viaje', (q) => q.insert(fila));
       }
     });
-
     /* Llamada de voz WebRTC */
     const llamada = { pc: null, stream: null, ofertaPendiente: null, timer: null, inicio: 0, iceCola: [] };
     const RTC_CFG = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
@@ -2098,6 +2369,125 @@ function obtenerFotoVehiculo(info, v) {
       $('audio-remoto').srcObject = null;
       cerrarModal('modal-llamada');
     }
+    /* ============================================================
+       MAPA EN VIVO DEL VIAJE (solo con el viaje EN PROGRESO)
+       ============================================================ */
+    const BENEFICIOS_ETIQUETAS = {
+      aire: 'Aire acondicionado',
+      musica: 'Música',
+      pedir_musica: 'Puedes pedir música',
+      equipaje: 'Ayuda con equipaje',
+      cargador: 'Cargador',
+      asientos: 'Asientos cómodos',
+      silencio: 'Viaje en silencio',
+      mascotas: 'Apto para mascotas'
+    };
+    const recorridoViaje = [];
+
+    function cargarMapaViaje(cb) {
+      if (window.google && window.google.maps) { cb(); return; }
+      if (mapaCargando) { setTimeout(() => cargarMapaViaje(cb), 400); return; }
+      mapaCargando = true;
+      const s = document.createElement('script');
+      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_MAPS_API_KEY +
+              '&libraries=geometry&language=es&region=PE';
+      s.async = true; s.defer = true;
+      s.onload = () => { mapaCargando = false; cb(); };
+      s.onerror = () => { mapaCargando = false; mostrarToast('No se pudo cargar el mapa'); };
+      document.head.appendChild(s);
+    }
+
+    function puntoDelViaje() {
+      const v = viajeActual || {};
+      const lat = Number(v.conductor_lat), lng = Number(v.conductor_lon);
+      if (isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0) return { lat, lng };
+      const oLat = Number(v.origen_lat), oLng = Number(v.origen_lon);
+      if (isFinite(oLat) && isFinite(oLng) && oLat !== 0) return { lat: oLat, lng: oLng };
+      return { lat: -12.0464, lng: -77.0428 };
+    }
+
+    function actualizarRutaMapa(punto) {
+      if (!mapaViaje || !marcadorViaje) return;
+      marcadorViaje.setPosition(punto);
+      if (rutaViaje) {
+        const path = rutaViaje.getPath();
+        const ultimo = path.getLength() ? path.getAt(path.getLength() - 1) : null;
+        if (!ultimo || Math.abs(ultimo.lat() - punto.lat) > 0.00002 || Math.abs(ultimo.lng() - punto.lng) > 0.00002) {
+          path.push(punto);
+        }
+      }
+      mapaViaje.panTo(punto);
+    }
+
+    function renderMapaViaje() {
+      const cont = $('mapa-viaje');
+      if (!cont) return;
+      const estado = String((viajeActual && viajeActual.estado) || '').toLowerCase();
+      const activo = estado === 'en_progreso';
+      cont.classList.toggle('oculto', !activo);
+      if (!activo) { detenerUbicacionConductor(); return; }
+      iniciarUbicacionConductor();
+
+      cargarMapaViaje(() => {
+        const punto = puntoDelViaje();
+        const v = viajeActual || {};
+        const oLat = Number(v.origen_lat), oLng = Number(v.origen_lon);
+        const dLat = Number(v.destino_lat), dLng = Number(v.destino_lon);
+
+        if (!mapaViaje) {
+          mapaViaje = new google.maps.Map(cont, {
+            center: punto, zoom: 15, disableDefaultUI: true, zoomControl: true,
+            clickableIcons: false, gestureHandling: 'greedy'
+          });
+          rutaViaje = new google.maps.Polyline({
+            strokeColor: '#4785A8', strokeWeight: 5, strokeOpacity: 0.9, map: mapaViaje
+          });
+          marcadorViaje = new google.maps.Marker({
+            map: mapaViaje,
+            position: punto,
+            title: 'Vehículo BIKAR',
+            icon: {
+              url: new URL('icon-192.png', location.href).href,
+              scaledSize: new google.maps.Size(42, 42),
+              anchor: new google.maps.Point(21, 21)
+            },
+            zIndex: 30
+          });
+          if (isFinite(oLat) && isFinite(oLng) && oLat !== 0) {
+            new google.maps.Marker({ map: mapaViaje, position: { lat: oLat, lng: oLng }, label: 'A', title: 'Origen' });
+          }
+          if (isFinite(dLat) && isFinite(dLng) && dLat !== 0) {
+            new google.maps.Marker({ map: mapaViaje, position: { lat: dLat, lng: dLng }, label: 'B', title: 'Destino' });
+          }
+        }
+        const cargando = $('mapa-viaje-cargando');
+        if (cargando) cargando.style.display = 'none';
+        actualizarRutaMapa(punto);
+        setTimeout(() => { if (mapaViaje) google.maps.event.trigger(mapaViaje, 'resize'); }, 220);
+      });
+    }
+
+    function iniciarUbicacionConductor() {
+      if (rolUsuario !== 'conductor' || !db || !viajeId || geoWatch != null) return;
+      if (!navigator.geolocation) return;
+      geoWatch = navigator.geolocation.watchPosition(async (pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        if (viajeActual) { viajeActual.conductor_lat = lat; viajeActual.conductor_lon = lng; }
+        actualizarRutaMapa({ lat, lng });
+        try {
+          await db.from('viajes')
+            .update({ conductor_lat: lat, conductor_lon: lng, conductor_ubicacion_en: new Date().toISOString() })
+            .eq('id', viajeId);
+        } catch (e) { console.warn('Ubicación conductor:', e); }
+      }, () => {}, { enableHighAccuracy: true, maximumAge: 4000, timeout: 20000 });
+    }
+
+    function detenerUbicacionConductor() {
+      if (geoWatch != null && navigator.geolocation) {
+        try { navigator.geolocation.clearWatch(geoWatch); } catch (e) {}
+      }
+      geoWatch = null;
+    }
 
     /* ============================================================
        TIEMPO REAL
@@ -2125,7 +2515,6 @@ function obtenerFotoVehiculo(info, v) {
         iniciarRefresco();
       }
     }
-
     function iniciarRefresco() {
       if (timerRefresco) return;
       timerRefresco = setInterval(() => obtenerDatosViaje(true), INTERVALO_REFRESCO);
@@ -2133,41 +2522,33 @@ function obtenerFotoVehiculo(info, v) {
     function detenerRefresco() {
       if (timerRefresco) { clearInterval(timerRefresco); timerRefresco = null; }
     }
-
     /* ============================================================
        ARRANQUE
        ============================================================ */
     function inicializar() {
       usuarioSesion = lsJSON(K_SESION);
       if (!urlParams.get('rol') && usuarioSesion && usuarioSesion.tipo_usuario === 'conductor') rolUsuario = 'conductor';
-
       registrarServiceWorker();   /* habilita los avisos push y las notificaciones del sistema en esta página */
-
       personaFoto.src = avatarDe('B');
       personaFoto.addEventListener('error', function () { this.src = avatarDe(personaNombre.textContent || 'B'); });
-
       if (!db) {
         estadoVacio('Sin conexión con el servidor', 'No se pudo inicializar Supabase. Revisa tu conexión a internet.');
         return;
       }
       if (!viajeId) { estadoVacio('Sin viaje activo', 'No se especificó un código de viaje válido.'); return; }
-
       renderCargando();
       obtenerDatosViaje();
       suscribirRealtime();
       iniciarRefresco();
-
       /* Al volver a la página (desde otra app o con la pantalla apagada) se lee el viaje al instante */
       document.addEventListener('visibilitychange', () => { if (!document.hidden) obtenerDatosViaje(true); });
     }
-
     function renderCargando() {
       personaNombre.innerHTML = '<span class="skeleton" style="width:150px;height:14px"></span>';
       personaSub.innerHTML = '<span class="skeleton" style="width:190px;height:11px;display:block;margin-top:6px"></span>';
       const sonar = $('sonar-status');
       if (sonar) sonar.classList.add('on');
     }
-
     $('btn-refrescar').addEventListener('click', () => { obtenerDatosViaje(); mostrarToast('Actualizando…'); });
     $('btn-volver').addEventListener('click', (e) => {
       e.preventDefault();
