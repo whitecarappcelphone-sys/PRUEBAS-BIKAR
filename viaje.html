@@ -435,6 +435,27 @@
     .mapa-viaje-cargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
       font-size:.76rem;font-weight:700;color:var(--muted-text);background:var(--field-bg);z-index:2
     }
+    /* MINI MAPA: lienzo propio, controles, chip de progreso y modo ampliado */
+    .mapa-viaje-canvas{position:absolute;inset:0;z-index:0}
+    .mapa-viaje-btn{position:absolute;right:9px;z-index:3;width:34px;height:34px;padding:0;border-radius:50%;display:grid;place-items:center;
+      border:1px solid var(--border-color);background:var(--card-bg);color:var(--primary-color);cursor:pointer;
+      box-shadow:0 6px 16px rgba(0,0,0,.25);transition:transform .15s,border-color .2s}
+    .mapa-viaje-btn:hover{transform:translateY(-1px);border-color:var(--primary-color)}
+    .mapa-viaje-btn svg{width:17px;height:17px}
+    #mapa-btn-ampliar{top:9px}
+    #mapa-btn-vista{top:51px}
+    .mapa-viaje-meta{position:absolute;left:9px;top:41px;z-index:2;display:none;align-items:center;gap:6px;
+      padding:5px 10px;border-radius:999px;background:var(--card-bg);border:1px solid var(--border-color);
+      font-size:.62rem;font-weight:800;letter-spacing:.04em;color:var(--text-color);
+      box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    .status-card .mapa-viaje.ampliado{position:fixed;inset:0;width:auto;height:auto;margin:0;border:0;border-radius:0;z-index:140}
+    .mapa-viaje.ampliado .mapa-viaje-info{left:12px;top:calc(12px + env(safe-area-inset-top))}
+    .mapa-viaje.ampliado .mapa-viaje-meta{left:12px;top:calc(46px + env(safe-area-inset-top));font-size:.72rem;padding:6px 12px}
+    .mapa-viaje.ampliado .mapa-viaje-btn{right:12px;width:40px;height:40px}
+    .mapa-viaje.ampliado .mapa-viaje-btn svg{width:19px;height:19px}
+    .mapa-viaje.ampliado #mapa-btn-ampliar{top:calc(12px + env(safe-area-inset-top))}
+    .mapa-viaje.ampliado #mapa-btn-vista{top:calc(60px + env(safe-area-inset-top))}
+    body.mapa-ampliado{overflow:hidden}
     @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
@@ -515,7 +536,15 @@
       </div>
       <!-- MAPA EN VIVO: solo mientras el viaje está EN PROGRESO -->
       <div id="mapa-viaje" class="mapa-viaje oculto">
+        <div id="mapa-viaje-canvas" class="mapa-viaje-canvas"></div>
         <div class="mapa-viaje-info"><span class="punto-live"></span> En vivo</div>
+        <div class="mapa-viaje-meta" id="mapa-viaje-meta"></div>
+        <button type="button" class="mapa-viaje-btn" id="mapa-btn-ampliar" title="Ampliar mapa" aria-label="Ampliar mapa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        </button>
+        <button type="button" class="mapa-viaje-btn" id="mapa-btn-vista" title="Seguir vehículo" aria-label="Seguir vehículo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/></svg>
+        </button>
         <div class="mapa-viaje-cargando" id="mapa-viaje-cargando">Cargando mapa…</div>
       </div>
     </section>
@@ -1093,6 +1122,8 @@
       $('ico-luna').style.display = oscuro ? 'none' : 'block';
       $('ico-sol').style.display = oscuro ? 'block' : 'none';
       try { localStorage.setItem('bikar_tema', oscuro ? 'oscuro' : 'claro'); } catch (e) {}
+      /* El mapa en vivo adopta el mismo tema que la página (oscuro / claro) */
+      aplicarTemaMapa();
     }
     $('btn-tema').addEventListener('click', () => aplicarTema(!document.body.classList.contains('dark-theme')));
     aplicarTema((localStorage.getItem('bikar_tema') || 'oscuro') === 'oscuro');
@@ -2371,6 +2402,10 @@
     }
     /* ============================================================
        MAPA EN VIVO DEL VIAJE (solo con el viaje EN PROGRESO)
+       - Ruta REAL de conducción del punto A al punto B (Google Directions; respaldo OSRM)
+       - Línea azul neón animada (trazado, brillo que fluye y tramo recorrido)
+       - Vehículo que se mueve suavemente con la posición real del conductor
+       - Mismo tema que la página (oscuro / claro) y botón para ampliar el mapa
        ============================================================ */
     const BENEFICIOS_ETIQUETAS = {
       aire: 'Aire acondicionado',
@@ -2383,7 +2418,48 @@
       mascotas: 'Apto para mascotas'
     };
     const recorridoViaje = [];
-
+    /* Colores azul neón de la ruta según el tema */
+    const COLORES_MAPA = {
+      oscuro: { glow: '#0a5cff', base: '#1ab5ff', rec: '#22e8ff', dash: '#eafcff', fondo: '#171a1f' },
+      claro:  { glow: '#0047ff', base: '#0a9bff', rec: '#00b3ff', dash: '#ffffff', fondo: '#e5e3df' }
+    };
+    const ESTILO_MAPA_CLARO = [
+      { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+      { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] }
+    ];
+    const ESTILO_MAPA_OSCURO = ESTILO_MAPA_CLARO.concat([
+      { elementType: 'geometry', stylers: [{ color: '#171a1f' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#171a1f' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#8b949e' }] },
+      { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#2a2f37' }] },
+      { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#c9d1d9' }] },
+      { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#171a1f' }] },
+      { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#15211d' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2a2f37' }] },
+      { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1b1e24' }] },
+      { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9aa4af' }] },
+      { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#3a414c' }] },
+      { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1b1e24' }] },
+      { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#c9d1d9' }] },
+      { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#22262d' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0a1520' }] },
+      { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4b5a6a' }] },
+      { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#0a1520' }] }
+    ]);
+    const svgMapa = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
+    const SVG_MAPA_AMPLIAR = svgMapa('<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>');
+    const SVG_MAPA_REDUCIR = svgMapa('<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>');
+    const SVG_MAPA_SEGUIR = svgMapa('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/>');
+    const SVG_MAPA_RUTA = svgMapa('<circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/>');
+    /* Estado del mapa */
+    let rutaReal = [], rutaAcum = [], rutaTotalM = 0, rutaKey = '', rutaPromesa = null, rutaEsReal = false, rutaTs = 0, rutaDibujada = null;
+    let polGlow = null, polRec = null, polAnim = null, haloVehiculo = null, marcadoresFijos = [];
+    let posVehiculo = null, moverDesde = null, moverHasta = null, moverT0 = 0, ultimaPosReal = null, progresoIdx = 0;
+    let animId = null, revelando = false, revT0 = 0, revIdx = 0;
+    let modoSeguir = false, mapaAmpliado = false, vistaAjustada = false, necesitaResize = true, scrollAntes = 0;
+    let timerUbicPasajero = null, ultimaUbicRealtime = 0, ultimaEscrituraUbic = 0;
+    const DUR_MOVER = 2200, DUR_REVELAR = 1600;
+    const reducirMov = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     function cargarMapaViaje(cb) {
       if (window.google && window.google.maps) { cb(); return; }
       if (mapaCargando) { setTimeout(() => cargarMapaViaje(cb), 400); return; }
@@ -2396,7 +2472,6 @@
       s.onerror = () => { mapaCargando = false; mostrarToast('No se pudo cargar el mapa'); };
       document.head.appendChild(s);
     }
-
     function puntoDelViaje() {
       const v = viajeActual || {};
       const lat = Number(v.conductor_lat), lng = Number(v.conductor_lon);
@@ -2405,68 +2480,453 @@
       if (isFinite(oLat) && isFinite(oLng) && oLat !== 0) return { lat: oLat, lng: oLng };
       return { lat: -12.0464, lng: -77.0428 };
     }
-
-    function actualizarRutaMapa(punto) {
-      if (!mapaViaje || !marcadorViaje) return;
-      marcadorViaje.setPosition(punto);
-      if (rutaViaje) {
-        const path = rutaViaje.getPath();
-        const ultimo = path.getLength() ? path.getAt(path.getLength() - 1) : null;
-        if (!ultimo || Math.abs(ultimo.lat() - punto.lat) > 0.00002 || Math.abs(ultimo.lng() - punto.lng) > 0.00002) {
-          path.push(punto);
-        }
-      }
-      mapaViaje.panTo(punto);
+    function coordenada(lat, lng) {
+      if (lat == null || lng == null || lat === '' || lng === '') return null;
+      const a = Number(lat), b = Number(lng);
+      if (!isFinite(a) || !isFinite(b) || (a === 0 && b === 0)) return null;
+      return { lat: a, lng: b };
     }
-
+    function distM(a, b) {
+      const R = 6371000, rad = Math.PI / 180;
+      const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+      const s = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.pow(Math.sin(dLng / 2), 2);
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+    }
+    function coloresMapa() {
+      return document.body.classList.contains('dark-theme') ? COLORES_MAPA.oscuro : COLORES_MAPA.claro;
+    }
+    /* ---------- Ruta real A → (paradas) → B ---------- */
+    function puntosRutaViaje() {
+      const v = viajeActual || {};
+      const o = coordenada(v.origen_lat, v.origen_lon != null ? v.origen_lon : v.origen_lng);
+      const d = coordenada(v.destino_lat, v.destino_lon != null ? v.destino_lon : v.destino_lng);
+      const origen = o || (v.origen_nombre ? String(v.origen_nombre) : null);
+      const destino = d || (v.destino_nombre ? String(v.destino_nombre) : null);
+      if (!origen || !destino) return null;
+      let paradas = v.paradas;
+      if (typeof paradas === 'string') { try { paradas = JSON.parse(paradas); } catch (e) { paradas = []; } }
+      if (!Array.isArray(paradas)) paradas = [];
+      const intermedias = [];
+      paradas.forEach((p) => {
+        if (!p || typeof p !== 'object') return;
+        const c = coordenada(p.lat, p.lng != null ? p.lng : p.lon);
+        if (c) intermedias.push(c);
+      });
+      return { origen: origen, destino: destino, paradas: intermedias };
+    }
+    function rutaGoogle(pts) {
+      return new Promise((resolve) => {
+        if (!(window.google && google.maps && google.maps.DirectionsService)) { resolve(null); return; }
+        let listo = false, tt = null;
+        const fin = (r) => { if (listo) return; listo = true; clearTimeout(tt); resolve(r); };
+        tt = setTimeout(() => fin(null), 7000);
+        try {
+          new google.maps.DirectionsService().route({
+            origin: pts.origen,
+            destination: pts.destino,
+            waypoints: pts.paradas.map((p) => ({ location: p, stopover: true })),
+            travelMode: google.maps.TravelMode.DRIVING,
+            optimizeWaypoints: false
+          }, (res, status) => {
+            try {
+              if (status === 'OK' && res && res.routes && res.routes[0]) {
+                const out = [];
+                res.routes[0].legs.forEach((leg) => {
+                  (leg.steps || []).forEach((st) => {
+                    (st.path || []).forEach((ll) => out.push({ lat: ll.lat(), lng: ll.lng() }));
+                  });
+                });
+                if (out.length < 2 && res.routes[0].overview_path) {
+                  res.routes[0].overview_path.forEach((ll) => out.push({ lat: ll.lat(), lng: ll.lng() }));
+                }
+                fin(out.length > 1 ? out : null);
+              } else fin(null);
+            } catch (e) { fin(null); }
+          });
+        } catch (e) { fin(null); }
+      });
+    }
+    async function rutaOSRM(pts) {
+      const todos = [pts.origen].concat(pts.paradas, [pts.destino]);
+      for (let i = 0; i < todos.length; i++) { if (!todos[i] || typeof todos[i] !== 'object') return null; }
+      const coords = todos.map((p) => p.lng.toFixed(6) + ',' + p.lat.toFixed(6)).join(';');
+      const ctrl = window.AbortController ? new AbortController() : null;
+      const to = setTimeout(() => { if (ctrl) ctrl.abort(); }, 9000);
+      try {
+        const r = await fetch('https://router.project-osrm.org/route/v1/driving/' + coords + '?overview=full&geometries=geojson', ctrl ? { signal: ctrl.signal } : {});
+        if (!r.ok) return null;
+        const j = await r.json();
+        const g = j && j.routes && j.routes[0] && j.routes[0].geometry && j.routes[0].geometry.coordinates;
+        if (!g || g.length < 2) return null;
+        return g.map((c) => ({ lat: c[1], lng: c[0] }));
+      } catch (e) { return null; }
+      finally { clearTimeout(to); }
+    }
+    function lineaRecta(pts) {
+      const l = [];
+      if (pts.origen && typeof pts.origen === 'object') l.push(pts.origen);
+      pts.paradas.forEach((p) => l.push(p));
+      if (pts.destino && typeof pts.destino === 'object') l.push(pts.destino);
+      return l.length > 1 ? l : [];
+    }
+    function asegurarRuta() {
+      const pts = puntosRutaViaje();
+      if (!pts) return Promise.resolve([]);
+      const key = JSON.stringify([pts.origen, pts.destino, pts.paradas]);
+      if (rutaPromesa && rutaKey === key && (rutaEsReal || Date.now() - rutaTs < 30000)) return rutaPromesa;
+      rutaKey = key;
+      rutaTs = Date.now();
+      rutaEsReal = false;
+      rutaPromesa = (async () => {
+        let r = await rutaGoogle(pts);
+        if (!r || r.length < 2) r = await rutaOSRM(pts);
+        if (r && r.length > 1) { if (rutaKey === key) rutaEsReal = true; return r; }
+        return lineaRecta(pts);
+      })();
+      return rutaPromesa;
+    }
+    function prepararRutaReal(arr) {
+      rutaReal = arr;
+      rutaAcum = [0];
+      for (let i = 1; i < arr.length; i++) rutaAcum[i] = rutaAcum[i - 1] + distM(arr[i - 1], arr[i]);
+      rutaTotalM = rutaAcum[arr.length - 1] || 0;
+      progresoIdx = 0;
+    }
+    /* Proyecta la posición real del vehículo sobre la ruta (tramo más cercano) */
+    function proyectarEnRuta(p) {
+      const n = rutaReal.length;
+      if (n < 2 || !p) return null;
+      const kx = Math.cos(p.lat * Math.PI / 180);
+      const buscar = (desde, hasta) => {
+        let mejor = null;
+        for (let i = desde; i < hasta; i++) {
+          const a = rutaReal[i], b = rutaReal[i + 1];
+          const ax = (a.lng - p.lng) * kx, ay = a.lat - p.lat;
+          const bx = (b.lng - p.lng) * kx, by = b.lat - p.lat;
+          const dx = bx - ax, dy = by - ay;
+          const l2 = dx * dx + dy * dy;
+          let t = l2 > 0 ? -(ax * dx + ay * dy) / l2 : 0;
+          t = Math.max(0, Math.min(1, t));
+          const cx = ax + t * dx, cy = ay + t * dy;
+          const d2 = cx * cx + cy * cy;
+          if (!mejor || d2 < mejor.d2) mejor = { i: i, d2: d2, lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) };
+        }
+        return mejor;
+      };
+      let m = buscar(Math.max(0, progresoIdx - 3), Math.min(n - 1, progresoIdx + 400));
+      if (!m || distM(p, m) > 150) {
+        const g = buscar(0, n - 1);
+        if (g && (!m || g.d2 < m.d2)) m = g;
+      }
+      if (!m) return null;
+      m.dist = distM(p, m);
+      m.acum = rutaAcum[m.i] + distM(rutaReal[m.i], m);
+      return m;
+    }
+    /* ---------- Iconos ---------- */
+    function iconoHalo(c, escala, fo, so) {
+      return { path: google.maps.SymbolPath.CIRCLE, scale: escala, fillColor: c.rec, fillOpacity: fo, strokeColor: c.rec, strokeOpacity: so, strokeWeight: 2 };
+    }
+    function iconoPunto(color, escala) {
+      return { path: google.maps.SymbolPath.CIRCLE, scale: escala, fillColor: color, fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2.5 };
+    }
+    /* ---------- Creación del mapa ---------- */
+    function crearMapaViaje(punto) {
+      const oscuro = document.body.classList.contains('dark-theme');
+      const c = coloresMapa();
+      mapaViaje = new google.maps.Map($('mapa-viaje-canvas'), {
+        center: punto, zoom: 15, disableDefaultUI: true, zoomControl: true,
+        zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+        clickableIcons: false, gestureHandling: 'greedy', keyboardShortcuts: false,
+        backgroundColor: c.fondo,
+        styles: oscuro ? ESTILO_MAPA_OSCURO : ESTILO_MAPA_CLARO
+      });
+      posVehiculo = { lat: punto.lat, lng: punto.lng };
+      haloVehiculo = new google.maps.Marker({
+        map: mapaViaje, position: punto, clickable: false, zIndex: 20,
+        icon: iconoHalo(c, 18, 0.3, 0.9)
+      });
+      const urlIcono = new URL('icon-192.png', location.href).href;
+      marcadorViaje = new google.maps.Marker({
+        map: mapaViaje,
+        position: punto,
+        title: 'Vehículo BIKAR',
+        icon: {
+          url: urlIcono,
+          scaledSize: new google.maps.Size(42, 42),
+          anchor: new google.maps.Point(21, 21)
+        },
+        zIndex: 30
+      });
+      /* Si el icono de la app no existe, se usa un punto neón como vehículo */
+      const prueba = new Image();
+      prueba.onerror = () => {
+        if (marcadorViaje) marcadorViaje.setIcon({ path: google.maps.SymbolPath.CIRCLE, scale: 9, fillColor: '#ffffff', fillOpacity: 1, strokeColor: coloresMapa().rec, strokeWeight: 4 });
+      };
+      prueba.src = urlIcono;
+      mapaViaje.addListener('dragstart', () => { if (modoSeguir) establecerModoSeguir(false, true); });
+    }
+    function dibujarMarcadoresFijos(pts) {
+      marcadoresFijos.forEach((m) => m.setMap(null));
+      marcadoresFijos = [];
+      const agregar = (pos, texto, color, titulo, escala) => {
+        marcadoresFijos.push(new google.maps.Marker({
+          map: mapaViaje, position: pos, title: titulo, clickable: false, zIndex: 10,
+          icon: iconoPunto(color, escala),
+          label: { text: texto, color: '#ffffff', fontWeight: '800', fontSize: '12px' }
+        }));
+      };
+      const ini = (pts && pts.origen && typeof pts.origen === 'object') ? pts.origen : rutaReal[0];
+      const fin = (pts && pts.destino && typeof pts.destino === 'object') ? pts.destino : rutaReal[rutaReal.length - 1];
+      if (ini) agregar(ini, 'A', '#22c55e', 'Origen', 11);
+      if (pts) pts.paradas.forEach((p, i) => agregar(p, String(i + 1), '#f59e0b', 'Parada ' + (i + 1), 9));
+      if (fin) agregar(fin, 'B', '#ef4444', 'Destino', 11);
+    }
+    /* Dibuja la ruta real en azul neón: halo, base, tramo recorrido y brillo que fluye de A hacia B */
+    function dibujarRutaCompleta(ruta) {
+      if (!mapaViaje || !ruta || ruta.length < 2 || rutaDibujada === ruta) return;
+      rutaDibujada = ruta;
+      prepararRutaReal(ruta);
+      const c = coloresMapa();
+      if (!polGlow) {
+        polGlow = new google.maps.Polyline({ map: mapaViaje, path: [], clickable: false, zIndex: 1, strokeColor: c.glow, strokeOpacity: 0.28, strokeWeight: 14 });
+        rutaViaje = new google.maps.Polyline({ map: mapaViaje, path: [], clickable: false, zIndex: 2, strokeColor: c.base, strokeOpacity: 0.55, strokeWeight: 5 });
+        polRec = new google.maps.Polyline({ map: mapaViaje, path: [], clickable: false, zIndex: 3, strokeColor: c.rec, strokeOpacity: 1, strokeWeight: 6, visible: false });
+        polAnim = new google.maps.Polyline({ map: mapaViaje, path: [], clickable: false, zIndex: 4, strokeOpacity: 0, visible: false, icons: [] });
+      }
+      dibujarMarcadoresFijos(puntosRutaViaje());
+      vistaAjustada = false;
+      if (reducirMov) {
+        polGlow.setPath(ruta); rutaViaje.setPath(ruta);
+        revelando = false;
+        polRec.setVisible(true); polAnim.setVisible(true);
+        refrescarProgreso();
+      } else {
+        revelando = true; revT0 = performance.now(); revIdx = 0;
+        polRec.setVisible(false); polAnim.setVisible(false);
+        polGlow.setPath(ruta.slice(0, 2)); rutaViaje.setPath(ruta.slice(0, 2));
+      }
+      iniciarAnimacionMapa();
+    }
+    /* ---------- Progreso y posición del vehículo ---------- */
+    function actualizarMeta(m) {
+      const el = $('mapa-viaje-meta');
+      if (!el || !m || !(rutaTotalM > 0)) return;
+      const falta = Math.max(0, rutaTotalM - m.acum);
+      const pct = Math.max(0, Math.min(100, Math.round((m.acum / rutaTotalM) * 100)));
+      el.textContent = falta < 40
+        ? 'Llegando al destino'
+        : 'Faltan ' + (falta >= 1000 ? (falta / 1000).toFixed(1) + ' km' : Math.round(falta) + ' m') + ' · ' + pct + '%';
+      el.style.display = 'inline-flex';
+    }
+    function aplicarProgreso(m) {
+      if (!m || !polRec || !polAnim) return;
+      progresoIdx = m.i;
+      const sn = { lat: m.lat, lng: m.lng };
+      polRec.setPath(rutaReal.slice(0, m.i + 1).concat([sn]));
+      polAnim.setPath([sn].concat(rutaReal.slice(m.i + 1)));
+      actualizarMeta(m);
+    }
+    function refrescarProgreso() {
+      if (!ultimaPosReal || rutaReal.length < 2) return;
+      aplicarProgreso(proyectarEnRuta(ultimaPosReal));
+    }
+    function moverVehiculo(destino) {
+      if (!marcadorViaje || !destino) return;
+      if (!posVehiculo) {
+        posVehiculo = { lat: destino.lat, lng: destino.lng };
+        marcadorViaje.setPosition(posVehiculo);
+        if (haloVehiculo) haloVehiculo.setPosition(posVehiculo);
+      }
+      const base = moverHasta || posVehiculo;
+      if (Math.abs(base.lat - destino.lat) < 1e-7 && Math.abs(base.lng - destino.lng) < 1e-7) return;
+      if (distM(posVehiculo, destino) > 600) {
+        posVehiculo = { lat: destino.lat, lng: destino.lng };
+        marcadorViaje.setPosition(posVehiculo);
+        if (haloVehiculo) haloVehiculo.setPosition(posVehiculo);
+        moverHasta = null;
+        if (modoSeguir && mapaViaje) mapaViaje.setCenter(posVehiculo);
+        return;
+      }
+      moverDesde = { lat: posVehiculo.lat, lng: posVehiculo.lng };
+      moverHasta = { lat: destino.lat, lng: destino.lng };
+      moverT0 = performance.now();
+      iniciarAnimacionMapa();
+    }
+    function actualizarRutaMapa(punto) {
+      if (!mapaViaje || !marcadorViaje || !punto) return;
+      ultimaPosReal = { lat: punto.lat, lng: punto.lng };
+      const m = rutaReal.length > 1 ? proyectarEnRuta(ultimaPosReal) : null;
+      const destino = (m && m.dist <= 45) ? { lat: m.lat, lng: m.lng } : ultimaPosReal;
+      moverVehiculo(destino);
+      aplicarProgreso(m);
+    }
+    /* ---------- Animación (vehículo, trazado inicial, brillo que fluye, pulso) ---------- */
+    function iniciarAnimacionMapa() {
+      if (animId != null) return;
+      let ultimoLento = 0;
+      const tick = (now) => {
+        animId = requestAnimationFrame(tick);
+        if (!mapaViaje || !(window.google && window.google.maps)) return;
+        /* 1 · Desplazamiento suave del vehículo hacia su posición real */
+        if (moverHasta && marcadorViaje) {
+          const t = Math.min(1, (now - moverT0) / DUR_MOVER);
+          posVehiculo = {
+            lat: moverDesde.lat + (moverHasta.lat - moverDesde.lat) * t,
+            lng: moverDesde.lng + (moverHasta.lng - moverDesde.lng) * t
+          };
+          marcadorViaje.setPosition(posVehiculo);
+          if (haloVehiculo) haloVehiculo.setPosition(posVehiculo);
+          if (modoSeguir) mapaViaje.setCenter(posVehiculo);
+          if (t >= 1) moverHasta = null;
+        }
+        /* 2 · Trazado inicial de la ruta de A hacia B */
+        if (revelando && polGlow && rutaReal.length > 1) {
+          const f = Math.min(1, (now - revT0) / DUR_REVELAR);
+          const objetivo = (1 - Math.pow(1 - f, 2)) * rutaTotalM;
+          while (revIdx < rutaReal.length - 2 && rutaAcum[revIdx + 1] <= objetivo) revIdx++;
+          if (f >= 1) {
+            polGlow.setPath(rutaReal); rutaViaje.setPath(rutaReal);
+            revelando = false;
+            polRec.setVisible(true); polAnim.setVisible(true);
+            refrescarProgreso();
+          } else {
+            const parcial = rutaReal.slice(0, revIdx + 2);
+            polGlow.setPath(parcial); rutaViaje.setPath(parcial);
+          }
+        }
+        /* 3 · Brillo neón que fluye por la línea y pulso del vehículo */
+        if (now - ultimoLento >= 70) {
+          ultimoLento = now;
+          if (!reducirMov) {
+            const c = coloresMapa();
+            if (polAnim && polAnim.getVisible()) {
+              polAnim.set('icons', [{
+                icon: { path: 'M 0,-1 0,1', strokeColor: c.dash, strokeOpacity: 0.95, strokeWeight: 3, scale: 2.6 },
+                offset: ((now / 45) % 28).toFixed(1) + 'px',
+                repeat: '28px'
+              }]);
+            }
+            if (haloVehiculo) {
+              const f = (now % 1900) / 1900;
+              haloVehiculo.setIcon(iconoHalo(c, 13 + f * 22, 0.34 * (1 - f), 0.95 * (1 - f)));
+            }
+          }
+        }
+      };
+      animId = requestAnimationFrame(tick);
+    }
+    function detenerAnimacionMapa() {
+      if (animId != null) { cancelAnimationFrame(animId); animId = null; }
+    }
+    /* ---------- Vista del mapa: ruta completa / seguir vehículo / ampliar ---------- */
+    function ajustarVista() {
+      if (!mapaViaje || !(window.google && window.google.maps)) return;
+      const b = new google.maps.LatLngBounds();
+      let hay = false;
+      rutaReal.forEach((p) => { b.extend(p); hay = true; });
+      marcadoresFijos.forEach((m) => { b.extend(m.getPosition()); hay = true; });
+      if (posVehiculo) { b.extend(posVehiculo); hay = true; }
+      if (!hay) return;
+      const pad = mapaAmpliado ? 70 : 34;
+      mapaViaje.fitBounds(b, { top: pad, right: pad, bottom: pad + (mapaAmpliado ? 40 : 30), left: pad });
+    }
+    function establecerModoSeguir(activo, sinAjustar) {
+      modoSeguir = !!activo;
+      const btn = $('mapa-btn-vista');
+      if (btn) {
+        btn.innerHTML = modoSeguir ? SVG_MAPA_RUTA : SVG_MAPA_SEGUIR;
+        btn.title = modoSeguir ? 'Ver ruta completa' : 'Seguir vehículo';
+        btn.setAttribute('aria-label', btn.title);
+      }
+      if (!mapaViaje || sinAjustar) return;
+      if (modoSeguir) {
+        mapaViaje.setZoom(Math.max(mapaViaje.getZoom() || 15, 16));
+        mapaViaje.panTo(posVehiculo || puntoDelViaje());
+      } else {
+        ajustarVista();
+      }
+    }
+    function alternarAmpliado(forzar) {
+      const cont = $('mapa-viaje');
+      if (!cont) return;
+      const nuevo = typeof forzar === 'boolean' ? forzar : !mapaAmpliado;
+      if (nuevo === mapaAmpliado) return;
+      if (nuevo) scrollAntes = window.pageYOffset || 0;
+      mapaAmpliado = nuevo;
+      cont.classList.toggle('ampliado', nuevo);
+      document.body.classList.toggle('mapa-ampliado', nuevo);
+      const btn = $('mapa-btn-ampliar');
+      if (btn) {
+        btn.innerHTML = nuevo ? SVG_MAPA_REDUCIR : SVG_MAPA_AMPLIAR;
+        btn.title = nuevo ? 'Reducir mapa' : 'Ampliar mapa';
+        btn.setAttribute('aria-label', btn.title);
+      }
+      if (!nuevo) window.scrollTo(0, scrollAntes);
+      if (mapaViaje && window.google && window.google.maps) {
+        setTimeout(() => {
+          google.maps.event.trigger(mapaViaje, 'resize');
+          establecerModoSeguir(false);
+        }, 80);
+      }
+    }
+    /* El mapa adopta el tema de la página: oscuro con modo oscuro, claro con modo claro */
+    function aplicarTemaMapa() {
+      if (!mapaViaje || !(window.google && window.google.maps)) return;
+      const oscuro = document.body.classList.contains('dark-theme');
+      const c = oscuro ? COLORES_MAPA.oscuro : COLORES_MAPA.claro;
+      mapaViaje.setOptions({ styles: oscuro ? ESTILO_MAPA_OSCURO : ESTILO_MAPA_CLARO, backgroundColor: c.fondo });
+      if (polGlow) polGlow.setOptions({ strokeColor: c.glow });
+      if (rutaViaje) rutaViaje.setOptions({ strokeColor: c.base });
+      if (polRec) polRec.setOptions({ strokeColor: c.rec });
+      if (haloVehiculo && reducirMov) haloVehiculo.setIcon(iconoHalo(c, 20, 0.3, 0.9));
+    }
     function renderMapaViaje() {
       const cont = $('mapa-viaje');
       if (!cont) return;
       const estado = String((viajeActual && viajeActual.estado) || '').toLowerCase();
       const activo = estado === 'en_progreso';
       cont.classList.toggle('oculto', !activo);
-      if (!activo) { detenerUbicacionConductor(); return; }
+      if (!activo) {
+        detenerUbicacionConductor();
+        detenerSeguimientoPasajero();
+        detenerAnimacionMapa();
+        if (mapaAmpliado) alternarAmpliado(false);
+        vistaAjustada = false;
+        necesitaResize = true;
+        return;
+      }
       iniciarUbicacionConductor();
-
+      iniciarSeguimientoPasajero();
       cargarMapaViaje(() => {
-        const punto = puntoDelViaje();
-        const v = viajeActual || {};
-        const oLat = Number(v.origen_lat), oLng = Number(v.origen_lon);
-        const dLat = Number(v.destino_lat), dLng = Number(v.destino_lon);
-
-        if (!mapaViaje) {
-          mapaViaje = new google.maps.Map(cont, {
-            center: punto, zoom: 15, disableDefaultUI: true, zoomControl: true,
-            clickableIcons: false, gestureHandling: 'greedy'
-          });
-          rutaViaje = new google.maps.Polyline({
-            strokeColor: '#4785A8', strokeWeight: 5, strokeOpacity: 0.9, map: mapaViaje
-          });
-          marcadorViaje = new google.maps.Marker({
-            map: mapaViaje,
-            position: punto,
-            title: 'Vehículo BIKAR',
-            icon: {
-              url: new URL('icon-192.png', location.href).href,
-              scaledSize: new google.maps.Size(42, 42),
-              anchor: new google.maps.Point(21, 21)
-            },
-            zIndex: 30
-          });
-          if (isFinite(oLat) && isFinite(oLng) && oLat !== 0) {
-            new google.maps.Marker({ map: mapaViaje, position: { lat: oLat, lng: oLng }, label: 'A', title: 'Origen' });
-          }
-          if (isFinite(dLat) && isFinite(dLng) && dLat !== 0) {
-            new google.maps.Marker({ map: mapaViaje, position: { lat: dLat, lng: dLng }, label: 'B', title: 'Destino' });
-          }
-        }
+        if (cont.classList.contains('oculto')) return;
+        if (!mapaViaje) crearMapaViaje(puntoDelViaje());
         const cargando = $('mapa-viaje-cargando');
         if (cargando) cargando.style.display = 'none';
-        actualizarRutaMapa(punto);
-        setTimeout(() => { if (mapaViaje) google.maps.event.trigger(mapaViaje, 'resize'); }, 220);
+        aplicarTemaMapa();
+        iniciarAnimacionMapa();
+        if (necesitaResize) {
+          necesitaResize = false;
+          setTimeout(() => { if (mapaViaje) google.maps.event.trigger(mapaViaje, 'resize'); }, 220);
+        }
+        actualizarRutaMapa(puntoDelViaje());
+        asegurarRuta().then((ruta) => {
+          if (cont.classList.contains('oculto') || !mapaViaje) return;
+          if (ruta && ruta.length > 1) dibujarRutaCompleta(ruta);
+          else if (!marcadoresFijos.length) dibujarMarcadoresFijos(puntosRutaViaje());
+          actualizarRutaMapa(puntoDelViaje());
+          if (!vistaAjustada) {
+            vistaAjustada = true;
+            google.maps.event.trigger(mapaViaje, 'resize');
+            if (modoSeguir) establecerModoSeguir(true); else ajustarVista();
+          }
+        });
       });
     }
-
+    $('mapa-btn-ampliar').addEventListener('click', () => alternarAmpliado());
+    $('mapa-btn-vista').addEventListener('click', () => establecerModoSeguir(!modoSeguir));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mapaAmpliado) alternarAmpliado(false); });
+    /* ---------- Ubicación real del conductor (se guarda en la tabla viajes) ---------- */
     function iniciarUbicacionConductor() {
       if (rolUsuario !== 'conductor' || !db || !viajeId || geoWatch != null) return;
       if (!navigator.geolocation) return;
@@ -2474,6 +2934,10 @@
         const lat = pos.coords.latitude, lng = pos.coords.longitude;
         if (viajeActual) { viajeActual.conductor_lat = lat; viajeActual.conductor_lon = lng; }
         actualizarRutaMapa({ lat, lng });
+        /* Se guarda como máximo cada 2.5 s para no saturar la base de datos */
+        const ahora = Date.now();
+        if (ahora - ultimaEscrituraUbic < 2500) return;
+        ultimaEscrituraUbic = ahora;
         try {
           await db.from('viajes')
             .update({ conductor_lat: lat, conductor_lon: lng, conductor_ubicacion_en: new Date().toISOString() })
@@ -2481,17 +2945,51 @@
         } catch (e) { console.warn('Ubicación conductor:', e); }
       }, () => {}, { enableHighAccuracy: true, maximumAge: 4000, timeout: 20000 });
     }
-
     function detenerUbicacionConductor() {
       if (geoWatch != null && navigator.geolocation) {
         try { navigator.geolocation.clearWatch(geoWatch); } catch (e) {}
       }
       geoWatch = null;
     }
-
+    /* Respaldo del pasajero: si Realtime no entrega la posición, la lee cada 4 s mientras el viaje está en curso */
+    function iniciarSeguimientoPasajero() {
+      if (rolUsuario === 'conductor' || timerUbicPasajero || !db || !viajeId) return;
+      timerUbicPasajero = setInterval(async () => {
+        if (document.hidden || Date.now() - ultimaUbicRealtime < 6000) return;
+        try {
+          const r = await db.from('viajes').select('estado,conductor_lat,conductor_lon,conductor_ubicacion_en').eq('id', viajeId).maybeSingle();
+          const d = r && !r.error ? r.data : null;
+          if (!d || !viajeActual) return;
+          if (String(d.estado || '').toLowerCase() !== String(viajeActual.estado || '').toLowerCase()) { obtenerDatosViaje(true); return; }
+          if (d.conductor_lat != null && d.conductor_lon != null &&
+              (String(d.conductor_lat) !== String(viajeActual.conductor_lat) || String(d.conductor_lon) !== String(viajeActual.conductor_lon))) {
+            viajeActual.conductor_lat = d.conductor_lat;
+            viajeActual.conductor_lon = d.conductor_lon;
+            if (d.conductor_ubicacion_en != null) viajeActual.conductor_ubicacion_en = d.conductor_ubicacion_en;
+            renderMapaViaje();
+          }
+        } catch (e) {}
+      }, 4000);
+    }
+    function detenerSeguimientoPasajero() {
+      if (timerUbicPasajero) { clearInterval(timerUbicPasajero); timerUbicPasajero = null; }
+    }
     /* ============================================================
        TIEMPO REAL
        ============================================================ */
+    /* Un cambio es «solo de ubicación» cuando únicamente varían las columnas de posición del conductor */
+    function soloCambioUbicacion(nuevo, previo) {
+      const UBIC = ['conductor_lat', 'conductor_lon', 'conductor_ubicacion_en'];
+      if (!nuevo || !previo || nuevo.id == null) return false;
+      const claves = Object.keys(nuevo);
+      let hayUbic = false;
+      for (let i = 0; i < claves.length; i++) {
+        const k = claves[i];
+        if (UBIC.indexOf(k) >= 0) { hayUbic = true; continue; }
+        if (JSON.stringify(nuevo[k]) !== JSON.stringify(previo[k])) return false;
+      }
+      return hayUbic;
+    }
     function suscribirRealtime() {
       if (!db || !viajeId) return;
       try {
@@ -2499,6 +2997,13 @@
           .on('postgres_changes',
             { event:'*', schema:'public', table:'viajes', filter:'id=eq.' + viajeId },
             (payload) => {
+              /* Movimiento del vehículo: solo actualiza el mapa (sin avisos ni redibujar toda la pantalla) */
+              if (payload.new && viajeActual && soloCambioUbicacion(payload.new, viajeActual)) {
+                ultimaUbicRealtime = Date.now();
+                viajeActual = Object.assign({}, viajeActual, payload.new);
+                renderMapaViaje();
+                return;
+              }
               viajeActual = payload.new || viajeActual;
               const estadoAntes = estadoVisto;
               renderizarUI();
